@@ -95,11 +95,71 @@ decl        :   dir_byte
 dir_byte    :   DIRBYTE byte_args
             ;
 
-text_block	:	't' '\n'
+byte_args   :   FLOAT
+            |   CHAR
+            |   DECIMAL
+            |   HEXADECIMAL                 // must be a HEXABYTE!
+            |   FLOAT ',' byte_args
+            |   CHAR ',' byte_args
+            |   DECIMAL ',' byte_args
+            |   HEXADECIMAL ',' byte_args   // must be a HEXABYTE!
+            ;
+
+dir_word    :   DIRWORD word_args
+            ;
+
+word_args   :   FLOAT
+            |   DECIMAL
+            |   HEXADECIMAL
+            |   FLOAT ',' word_args
+            |   DECIMAL ',' word_args
+            |   HEXADECIMAL ',' word_args
+            ;
+
+dir_float   :   DIRFLOAT float_args
+            ;
+
+float_args  :   FLOAT
+            |   DECIMAL
+            |   FLOAT ',' float_args
+            |   DECIMAL ',' float_args
+            ;
+
+dir_string  :   DIRSTRING STRING
+            ;
+
+dir_space   :   DIRSPACE DECIMAL
+            |   DIRSPACE HEXADECIMAL
+            ;
+
+text_block	:   DIRTEXT nline_block
+            |   DIRTEXT nline_block text_body
+            ;
+
+text_body   :   text_line nline_block
+            |   text_body text_line nline_block
+            ;
+
+text_line   :   LABEL ':'
+            |   LABEL ':'  instruction
+            |   instruction
 			;
 
-data_block	:	'd' '\n'
-
+instruction :   INTOP
+            |   REALOP
+            |   RET
+            |   JUMPOP LABEL
+            |   BIPUSH DECIMAL
+            |   IPUSH DECIMAL
+            |   IPUSH HEXADECIMAL
+            |   FPUSH FLOAT
+            |   MEMACCESS LABEL
+            |   STACK
+            |   NOP
+            |   HALT
+            |   READ
+            |   WRITE
+            ;
 
 %%
 
