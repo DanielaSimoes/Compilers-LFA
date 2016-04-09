@@ -53,4 +53,25 @@ ifeq          (ifeq)
 ifne          (ifne)
 iflt          (iflt)
 ifge          (ifge)
+
+%%
+
+\n              { yycolumn = 1; UPDATE_LOC; return '\n'; }
+{hexadecimal}   { UPDATE_LOC; yylval->vstr = (yytext); return HEXADECIMAL; }
+{decimal}       { UPDATE_LOC; yylval->vint = atof(yytext); return DECIMAL; }
+{float}         { UPDATE_LOC; yylval->vfloat = atof(yytext); return FLOAT; }
+{char}          { UPDATE_LOC; yylval->vstr = (yytext); return CHAR; }
+{string}        { UPDATE_LOC; yylval->vstr = (yytext); return STRING; }
+{iadd}          { UPDATE_LOC; yylval->opcode = 0x10; return INTOP; }
+{isub}          { UPDATE_LOC; yylval->opcode = 0x11; return INTOP; }
+{imul}          { UPDATE_LOC; yylval->opcode = 0x12; return INTOP; }
+{idiv}          { UPDATE_LOC; yylval->opcode = 0x13; return INTOP; }
+{irem}          { UPDATE_LOC; yylval->opcode = 0x14; return INTOP; }
+{ineg}          { UPDATE_LOC; yylval->opcode = 0x15; return INTOP; }
+{iand}          { UPDATE_LOC; yylval->opcode = 0x16; return INTOP; }
+{ior}           { UPDATE_LOC; yylval->opcode = 0x17; return INTOP; }
+{ixor}          { UPDATE_LOC; yylval->opcode = 0x18; return INTOP; }
+{ishl}          { UPDATE_LOC; yylval->opcode = 0x19; return INTOP; }
+{ishr}          { UPDATE_LOC; yylval->opcode = 0x1a; return INTOP; }
+
 %%
