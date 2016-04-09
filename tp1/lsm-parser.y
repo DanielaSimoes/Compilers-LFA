@@ -128,6 +128,39 @@ float_args  :   FLOAT
 dir_string  :   DIRSTRING STRING
             ;
 
+dir_space   :   DIRSPACE DECIMAL
+            |   DIRSPACE HEXADECIMAL
+            ;
+
+text_block	:   DIRTEXT nline_block
+            |   DIRTEXT nline_block text_body
+            ;
+
+text_body   :   text_line nline_block
+            |   text_body text_line nline_block
+            ;
+
+text_line   :   LABEL ':'
+            |   LABEL ':'  instruction
+            |   instruction
+			;
+
+instruction :   INTOP
+            |   REALOP
+            |   RET
+            |   JUMPOP LABEL
+            |   BIPUSH DECIMAL
+            |   IPUSH DECIMAL
+            |   IPUSH HEXADECIMAL
+            |   FPUSH FLOAT
+            |   MEMACCESS LABEL
+            |   STACK
+            |   NOP
+            |   HALT
+            |   READ
+            |   WRITE
+            ;
+
 %%
 
 #include <stdio.h>
