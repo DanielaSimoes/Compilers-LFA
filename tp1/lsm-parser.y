@@ -24,6 +24,37 @@
     char* vstr;
 }
 
+%token <vstr> HEXADECIMAL
+%token <vint> DECIMAL
+%token <vfloat> FLOAT
+%token <vstr> CHAR
+%token <vstr> STRING
+%token <vstr> INTOP
+%token <vstr> REALOP
+%token <vstr> RET
+%token <vstr> JUMPOP
+%token <vstr> BIPUSH
+%token <vstr> IPUSH
+%token <vstr> FPUSH
+%token <vstr> MEMACCESS
+%token <vstr> STACK
+%token <vstr> NOP
+%token <vstr> HALT
+%token <vstr> READ
+%token <vstr> WRITE
+%token <vstr> DIRBYTE
+%token <vstr> DIRWORD
+%token <vstr> DIRFLOAT
+%token <vstr> DIRSTRING
+%token <vstr> DIRSPACE
+%token <vstr> LABELASM
+%token <vstr> LABEL
+%token <vstr> WHITESPACE
+%token <vstr> DIRDATA
+%token <vstr> DIRTEXT
+%start lsm
+
+
 %%
 
 lsm         :   block_list

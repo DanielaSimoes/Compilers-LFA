@@ -15,13 +15,26 @@
 %option reentrant bison-bridge bison-locations
 %option header-file="lsm-lexer.h"
 
+/*intop         (iadd|isub|imul|idiv|irem|ineg|iand|ior|ixor|ishl|ishr|iushr)*/
+/*realop        (fadd|fsub|fmul|fdfv|frem|fneg|i2f|f2i)*/
+/*jumpop        (goto|jsr|ifeq|ifne|iflt|ifge|ifgt|ifle)*/
+/*stack         (pop|dup|dup_x1|dup2|swap|baload|bastore|iaload|iastore|faload|fastore)*/
+/*stacklabel    (load|store)*/
 
+hexadecimal   [+-]?0[Xx][0-9A-Fa-f]{1,8}
+decimal       [+-]?[0-9]+
+float         [+-]?(([0-9]*\.)*[0-9]+)|(\.[0-9]+)|([0-9]+\.)
+char		      ('.')
+string		    ("[A-za-z_][A-za-z0-9_]*")
+iadd          (iadd)
+isub          (isub)
+imul          (imul)
+idiv          (idiv)
+irem          (irem)
+ineg          (ineg)
+iand          (iand)
+ior           (ior)
+ixor          (ixor)
+ishl          (ishl)
+ishr          (ishr)
 %%
-
-.           { UPDATE_LOC; return yytext[0]; }
-
-\n          { yycolumn = 1; UPDATE_LOC; return '\n'; }
-
-%%
-
-
