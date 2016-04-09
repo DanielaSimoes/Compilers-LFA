@@ -106,5 +106,21 @@ whitespace    [ \r\t]*
 {ixor}          { UPDATE_LOC; yylval->opcode = 0x18; return INTOP; }
 {ishl}          { UPDATE_LOC; yylval->opcode = 0x19; return INTOP; }
 {ishr}          { UPDATE_LOC; yylval->opcode = 0x1a; return INTOP; }
+{iushr}         { UPDATE_LOC; yylval->opcode = 0x1b; return INTOP; }
+{fadd}          { UPDATE_LOC; yylval->opcode = 0x20; return REALOP; }
+{fsub}          { UPDATE_LOC; yylval->opcode = 0x21; return REALOP; }
+{fmul}          { UPDATE_LOC; yylval->opcode = 0x22; return REALOP; }
+{fdiv}          { UPDATE_LOC; yylval->opcode = 0x23; return REALOP; }
+{frem}          { UPDATE_LOC; yylval->opcode = 0x24; return REALOP; }
+{fneg}          { UPDATE_LOC; yylval->opcode = 0x25; return REALOP; }
+{i2f}           { UPDATE_LOC; yylval->opcode = 0x26; return REALOP; }
+{f2i}           { UPDATE_LOC; yylval->opcode = 0x27; return REALOP; }
+{ret}           { UPDATE_LOC; yylval->opcode = 0x40; return RET; }
+{goto}          { UPDATE_LOC; yylval->opcode = 0x30; return JUMPOP; }
+{jsr}           { UPDATE_LOC; yylval->opcode = 0x31; return JUMPOP; }
+{ifeq}          { UPDATE_LOC; yylval->opcode = 0x32; return JUMPOP; }
+{ifne}          { UPDATE_LOC; yylval->opcode = 0x33; return JUMPOP; }
+{iflt}          { UPDATE_LOC; yylval->opcode = 0x34; return JUMPOP; }
+{ifge}          { UPDATE_LOC; yylval->opcode = 0x35; return JUMPOP; }
 
 %%
