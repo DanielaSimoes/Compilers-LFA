@@ -122,5 +122,21 @@ whitespace    [ \r\t]*
 {ifne}          { UPDATE_LOC; yylval->opcode = 0x33; return JUMPOP; }
 {iflt}          { UPDATE_LOC; yylval->opcode = 0x34; return JUMPOP; }
 {ifge}          { UPDATE_LOC; yylval->opcode = 0x35; return JUMPOP; }
+{ifgt}          { UPDATE_LOC; yylval->opcode = 0x36; return JUMPOP; }
+{ifle}          { UPDATE_LOC; yylval->opcode = 0x37; return JUMPOP; }
+{bipush}        { UPDATE_LOC; yylval->opcode = 0x50; return BIPUSH;}
+{ipush}         { UPDATE_LOC; yylval->opcode = 0x51; return IPUSH;}
+{fpush}         { UPDATE_LOC; yylval->opcode = 0x52; return FPUSH;}
+{pop}           { UPDATE_LOC; yylval->opcode = 0x53; return STACK; }
+{dup}           { UPDATE_LOC; yylval->opcode = 0x54; return STACK; }
+{dup_x1}        { UPDATE_LOC; yylval->opcode = 0x55; return STACK; }
+{dup2}          { UPDATE_LOC; yylval->opcode = 0x56; return STACK; }
+{swap}          { UPDATE_LOC; yylval->opcode = 0x57; return STACK; }
+{store}         { UPDATE_LOC; yylval->opcode = 0x60; return MEMACCESS; }
+{load}          { UPDATE_LOC; yylval->opcode = 0x61; return MEMACCESS; }
+{baload}        { UPDATE_LOC; yylval->opcode = 0x62; return STACK; }
+{bastore}       { UPDATE_LOC; yylval->opcode = 0x63; return STACK; }
+{iaload}        { UPDATE_LOC; yylval->opcode = 0x64; return STACK; }
+{iastore}       { UPDATE_LOC; yylval->opcode = 0x65; return STACK; }
 
 %%
