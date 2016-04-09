@@ -69,4 +69,20 @@ baload        (baload)
 bastore       (bastore)
 iaload        (iaload)
 iastore       (iastore)
+faload        (faload)
+fastore       (fastore)
+nop           (nop)
+halt          (halt)
+read          (read)
+write         (write)
+dirdata       (\.data)
+dirtext       (\.text)
+dirbyte  	    (\.byte)
+dirword		    (\.word)
+dirfloat	    (\.float)
+dirstring	    (\.string)
+dirspace	    (\.space)
+label         [A-za-z_][A-za-z0-9_]*
+comment       ;[^\n\r]*
+whitespace    [ \r\t]*
 %%
