@@ -138,5 +138,21 @@ whitespace    [ \r\t]*
 {bastore}       { UPDATE_LOC; yylval->opcode = 0x63; return STACK; }
 {iaload}        { UPDATE_LOC; yylval->opcode = 0x64; return STACK; }
 {iastore}       { UPDATE_LOC; yylval->opcode = 0x65; return STACK; }
-
+{faload}        { UPDATE_LOC; yylval->opcode = 0x66; return STACK; }
+{fastore}       { UPDATE_LOC; yylval->opcode = 0x67; return STACK; }
+{nop}           { UPDATE_LOC; yylval->opcode = 0x00; yylval->vstr = (yytext); return NOP; }
+{halt}          { UPDATE_LOC; yylval->opcode = 0xF0; yylval->vstr = (yytext); return HALT; }
+{read}          { UPDATE_LOC; yylval->opcode = 0xF1; yylval->vstr = (yytext); return READ; }
+{write}         { UPDATE_LOC; yylval->opcode = 0xF2; yylval->vstr = (yytext); return WRITE; }
+{dirdata}		    { UPDATE_LOC; return DIRDATA; }
+{dirtext}		    { UPDATE_LOC; return DIRTEXT; }
+{dirbyte}       { UPDATE_LOC; yylval->vstr = (yytext); return DIRBYTE; }
+{dirword}       { UPDATE_LOC; yylval->vstr = (yytext); return DIRWORD; }
+{dirfloat}      { UPDATE_LOC; yylval->vstr = (yytext); return DIRFLOAT; }
+{dirstring}     { UPDATE_LOC; yylval->vstr = (yytext); return DIRSTRING; }
+{dirspace}      { UPDATE_LOC; yylval->vstr = (yytext); return DIRSPACE; }
+{label}         { UPDATE_LOC; yylval->vstr = (yytext); return LABEL; }
+{comment}       { }
+{whitespace}    { UPDATE_LOC; }
+.               { UPDATE_LOC; return yytext[0]; }
 %%
