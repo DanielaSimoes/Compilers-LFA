@@ -19,15 +19,15 @@
 hexadecimal   [+-]?0[Xx][0-9A-Fa-f]{1,8}
 decimal       [+-]?[0-9]+
 float         [+-]?(([0-9]*\.)*[0-9]+)|(\.[0-9]+)|([0-9]+\.)
-char		      ('.'|'\\n'|'\\t'|'\\r')
-string		    ("[A-Za-z_][A-Za-z0-9_]*")
+char		  ('.'|'\\n'|'\\t'|'\\r')
+string		  ("[A-Za-z_][A-Za-z0-9_]*")
 dirdata       (\.data)
 dirtext       (\.text)
-dirbyte  	    (\.byte)
-dirword		    (\.word)
-dirfloat	    (\.float)
-dirstring	    (\.string)
-dirspace	    (\.space)
+dirbyte  	  (\.byte)
+dirword		  (\.word)
+dirfloat	  (\.float)
+dirstring	  (\.string)
+dirspace	  (\.space)
 label         [A-Za-z_][A-Za-z0-9_]*
 comment       ;[^\n\r]*
 whitespace    [ \r\t]*
@@ -89,14 +89,14 @@ whitespace    [ \r\t]*
 "halt"          { UPDATE_LOC; yylval->opcode = 0xF0; return HALT; }
 "read"          { UPDATE_LOC; yylval->opcode = 0xF1; return READ; }
 "write"         { UPDATE_LOC; yylval->opcode = 0xF2; return WRITE; }
-{dirdata}		    { UPDATE_LOC; return DIRDATA; }
-{dirtext}		    { UPDATE_LOC; return DIRTEXT; }
-{dirbyte}       { UPDATE_LOC; yylval->vstr = (yytext); return DIRBYTE; }
-{dirword}       { UPDATE_LOC; yylval->vstr = (yytext); return DIRWORD; }
-{dirfloat}      { UPDATE_LOC; yylval->vstr = (yytext); return DIRFLOAT; }
-{dirstring}     { UPDATE_LOC; yylval->vstr = (yytext); return DIRSTRING; }
-{dirspace}      { UPDATE_LOC; yylval->vstr = (yytext); return DIRSPACE; }
-{label}         { UPDATE_LOC; yylval->vstr = (yytext); return LABEL; }
+{dirdata}		{ UPDATE_LOC; return DIRDATA; }
+{dirtext}		{ UPDATE_LOC; return DIRTEXT; }
+{dirbyte}       { UPDATE_LOC; yylval->vstr = strdup(yytext); return DIRBYTE; }
+{dirword}       { UPDATE_LOC; yylval->vstr = strdup(yytext); return DIRWORD; }
+{dirfloat}      { UPDATE_LOC; yylval->vstr = strdup(yytext); return DIRFLOAT; }
+{dirstring}     { UPDATE_LOC; yylval->vstr = strdup(yytext); return DIRSTRING; }
+{dirspace}      { UPDATE_LOC; yylval->vstr = strdup(yytext); return DIRSPACE; }
+{label}         { UPDATE_LOC; yylval->vstr = strdup(yytext); return LABEL; }
 {comment}       { }
 {whitespace}    { UPDATE_LOC; }
 .               { UPDATE_LOC; return yytext[0]; }
