@@ -160,11 +160,24 @@ float_args  :   FLOAT
             |   DECIMAL ',' float_args
             ;
 
-dir_string  :   DIRSTRING STRING
+dir_string  :   DIRSTRING STRING {
+                    if (p -> first_time) {
+                        for (int i = (strlen($2)*8)-1; i != -1; i-=8) {
+                            p -> data.push_back(($2)[i] & 0x00FF);
+                        }
+                        p -> data.push_back(0);
+                        while (((p -> data.size()) % 4) != 0) {
+                            p -> data.push_back(0);
+                        }
+                     }
+                }
             ;
 
-dir_space   :   DIRSPACE DECIMAL
-            |   DIRSPACE HEXADECIMAL
+dir_space   :   DIRSPACE INTEGER {
+                    if (p -> first_time) {
+                        increment_bss(p, $2);
+                    }
+                }
             ;
 
 text_block	:   DIRTEXT nline_block
@@ -211,4 +224,9 @@ void push_word(struct LSMData* p, uint32_t word){
     p -> data.push_back((word >> 16) & 0x00FF);
     p -> data.push_back((word >> 8) & 0x00FF);
     p -> data.push_back(word & 0x00FF);
+}
+
+void increment_bss(struct LSMData* p, uint16_t increment) {
+    // method to increment size of non-initialized variables (bss_size on lsm-data.h)
+    p -> bss_size += increment;
 }
