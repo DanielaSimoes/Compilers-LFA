@@ -1,0 +1,14 @@
+.DS_Store
+*.o
+*.bsm
+
+lsm-parser.h
+lsm-parser.dot
+lsm-parser.output
+lsm-parser.cpp
+
+lsm-lexer.h
+lsm-lexer.cpp
+
+lsm-asm.o
+lsm-asm
