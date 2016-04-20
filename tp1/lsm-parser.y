@@ -66,22 +66,22 @@
 
 lsm         :   block_list
             |   '\n' lsm
-			;
+			      ;
 
-block_list	:	block
-			|	block_list block
-			;
+block_list	:	  block
+			      |	  block_list block
+			      ;
 
-block		:	text_block
-			|	data_block
+block		    :	  text_block
+			      |	  data_block
             |   error '\n' { yyerrok; }
-			;
+			      ;
 
 nline_block :   '\n'
             |   nline_block '\n'
             ;
 
-data_block	:	DIRDATA nline_block
+data_block	:   DIRDATA nline_block
             |   DIRDATA nline_block data_body
             ;
 
@@ -89,15 +89,24 @@ data_body   :   data_line nline_block
             |   data_body data_line nline_block
             ;
 
-data_line   :   LABEL ':' decl
+data_line   :   LABEL ':' dir_decl {
+                    if(p -> first_time) {
+                        std::tuple<std::string,int16_t> varTuple ("DATA",p -> data.size()); p->lbl_table->add($1, varTuple); free($1);
+                    }
+                }
+            |   LABEL ':' dir_space {
+                    if(p -> first_time) {
+                        std::tuple<std::string,int16_t> varTuple ("BSS",p -> bss_size); p->lbl_table->add($1, varTuple); free($1);
+                    }
+                }
             ;
 
-decl        :   dir_byte
+dir_decl    :   dir_byte
             |   dir_word
             |   dir_float
             |   dir_string
-            |   dir_space
             ;
+
 
 dir_byte    :   DIRBYTE byte_args
             ;
