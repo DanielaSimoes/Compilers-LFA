@@ -223,12 +223,12 @@ text_label  :   LABEL {
             ;
 
 
-instruction :   regular_inst
-            |   JUMPOP LABEL
-            |   BIPUSH INTEGER
-            |   IPUSH INTEGER
-            |   FPUSH FLOAT
-            |   MEMACCESS LABEL
+instruction :   regular_inst        { if(p -> first_time) { increment_text_size(p, 1); } }
+            |   JUMPOP LABEL        { if(p -> first_time) { increment_text_size(p, 3); } }
+            |   BIPUSH INTEGER      { if(p -> first_time) { increment_text_size(p, 2); } }
+            |   IPUSH INTEGER       { if(p -> first_time) { increment_text_size(p, 5); } }
+            |   FPUSH FLOAT         { if(p -> first_time) { increment_text_size(p, 5); } }
+            |   MEMACCESS LABEL     { if(p -> first_time) { increment_text_size(p, 3); } }
             ;
 
 regular_inst:   INTOP { $$ = $1; }
@@ -261,4 +261,9 @@ void push_word(struct LSMData* p, uint32_t word){
 void increment_bss(struct LSMData* p, uint16_t increment) {
     // method to increment size of non-initialized variables (bss_size on lsm-data.h)
     p -> bss_size += increment;
+}
+
+void increment_text_size(struct LSMData* p, int t) {
+    // method to increment size of text segment (text_size on lsm-data.h)
+    p -> text_size += t;
 }
