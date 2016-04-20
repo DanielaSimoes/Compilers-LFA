@@ -66,16 +66,16 @@
 
 lsm         :   block_list
             |   '\n' lsm
-			      ;
+			;
 
-block_list	:	  block
-			      |	  block_list block
-			      ;
+block_list	:	block
+			|	block_list block
+			;
 
-block		    :	  text_block
-			      |	  data_block
+block		:	text_block
+			|	data_block
             |   error '\n' { yyerrok; }
-			      ;
+		    ;
 
 nline_block :   '\n'
             |   nline_block '\n'
@@ -111,14 +111,29 @@ dir_decl    :   dir_byte
 dir_byte    :   DIRBYTE byte_args
             ;
 
-byte_args   :   FLOAT
-            |   CHAR
-            |   DECIMAL
-            |   HEXADECIMAL                 // must be a HEXABYTE!
-            |   FLOAT ',' byte_args
-            |   CHAR ',' byte_args
-            |   DECIMAL ',' byte_args
-            |   HEXADECIMAL ',' byte_args   // must be a HEXABYTE!
+byte_args   :   INTEGER  {
+                    if (p -> first_time) {
+                        if ($1 < -128 || $1 > 127) {
+                            yyerror(&yylloc, p, YY_("warning: number must be bound between -128 and 127."));
+                            p -> data.push_back($1 & 0xFF);
+                        } else {
+                            p -> data.push_back($1);
+                            while (((p -> data.size()) % 4) != 0) {
+                                p -> data.push_back(0);
+                            }
+                        }
+                    }
+                }
+            |   INTEGER {
+                    if (p -> first_time) {
+                        if ($1 < -128 || $1 > 127) {
+                            yyerror(&yylloc, p, YY_("warning: number must be bound between -128 and 127."));
+                            p -> data.push_back($1 & 0xFF);
+                        } else {
+                            p -> data.push_back($1);
+                        }
+                    }
+                } ',' byte_args
             ;
 
 dir_word    :   DIRWORD word_args
