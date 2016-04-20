@@ -139,12 +139,16 @@ byte_args   :   INTEGER  {
 dir_word    :   DIRWORD word_args
             ;
 
-word_args   :   FLOAT
-            |   DECIMAL
-            |   HEXADECIMAL
-            |   FLOAT ',' word_args
-            |   DECIMAL ',' word_args
-            |   HEXADECIMAL ',' word_args
+word_args   :   INTEGER {
+                    if (p -> first_time) {
+                        push_word(p, $1);
+                    }
+                }
+            |   word_args ',' INTEGER {
+                    if (p -> first_time) {
+                        push_word(p, $3);
+                    }
+                }
             ;
 
 dir_float   :   DIRFLOAT float_args
@@ -200,4 +204,11 @@ void yyerror(YYLTYPE* loc, struct LSMData* p, const char* s)
 {
     fprintf(stderr, "@ line %d: columns %d-%d: %s\n",
             loc->first_line, loc->first_column, loc->last_column, s);
+}
+
+void push_word(struct LSMData* p, uint32_t word){
+    p -> data.push_back(word >> 24);
+    p -> data.push_back((word >> 16) & 0x00FF);
+    p -> data.push_back((word >> 8) & 0x00FF);
+    p -> data.push_back(word & 0x00FF);
 }
