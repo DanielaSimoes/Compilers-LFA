@@ -154,11 +154,33 @@ word_args   :   INTEGER {
 dir_float   :   DIRFLOAT float_args
             ;
 
-float_args  :   FLOAT
-            |   DECIMAL
-            |   FLOAT ',' float_args
-            |   DECIMAL ',' float_args
+float_args  :   FLOAT {
+                    if (p -> first_time) {
+                        unsigned char *fl; fl = (unsigned char*)&($1);
+                        for (int i = 3; i != -1; i--) {
+                        p -> data.push_back(fl[i]);
+                        }
+                    }
+                }
+            |   INTEGER {
+                    if (p -> first_time) {
+                        push_word(p, $1);
+                    }
+                }
+            |   float_args ',' FLOAT    {
+                    if (p -> first_time) {
+                        unsigned char *fl; fl = (unsigned char*)&($3);
+                        for (int i = 3; i != -1; i--)
+                        p -> data.push_back(fl[i]);
+                    }
+                }
+            |   float_args ','  INTEGER  {
+                    if (p -> first_time) {
+                        push_word(p, $3);
+                    }
+                }
             ;
+
 
 dir_string  :   DIRSTRING STRING {
                     if (p -> first_time) {
@@ -171,7 +193,6 @@ dir_string  :   DIRSTRING STRING {
                         }
                      }
                 }
-            ;
 
 dir_space   :   DIRSPACE INTEGER {
                     if (p -> first_time) {
