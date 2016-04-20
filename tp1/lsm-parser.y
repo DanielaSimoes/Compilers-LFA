@@ -209,25 +209,36 @@ text_body   :   text_line nline_block
             |   text_body text_line nline_block
             ;
 
-text_line   :   LABEL ':'
-            |   LABEL ':'  instruction
+text_line   :   text_label  instruction
             |   instruction
-			;
+            |   text_label
+		    ;
 
-instruction :   INTOP
-            |   REALOP
-            |   RET
+text_label  :   LABEL {
+                    if(p -> first_time)  {
+                        std::tuple<std::string,int16_t> varTuple ("TEXT",p -> text_size); // TEXT means label to a address in the text segment
+                        p->lbl_table->add($1, varTuple);
+                    }
+                } ':'
+            ;
+
+
+instruction :   regular_inst
             |   JUMPOP LABEL
-            |   BIPUSH DECIMAL
-            |   IPUSH DECIMAL
-            |   IPUSH HEXADECIMAL
+            |   BIPUSH INTEGER
+            |   IPUSH INTEGER
             |   FPUSH FLOAT
             |   MEMACCESS LABEL
-            |   STACK
-            |   NOP
-            |   HALT
-            |   READ
-            |   WRITE
+            ;
+
+regular_inst:   INTOP { $$ = $1; }
+            |   REALOP { $$ = $1; }
+            |   RET { $$ = $1; }
+            |   STACK { $$ = $1; }
+            |   NOP { $$ = $1; }
+            |   HALT { $$ = $1; }
+            |   READ { $$ = $1; }
+            |   WRITE { $$ = $1; }
             ;
 
 %%
