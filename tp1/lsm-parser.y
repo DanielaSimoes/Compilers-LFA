@@ -223,12 +223,12 @@ text_label  :   LABEL {
             ;
 
 
-instruction :   regular_inst        { if(p -> first_time) { increment_text_size(p, 1); } }
-            |   JUMPOP LABEL        { if(p -> first_time) { increment_text_size(p, 3); } }
-            |   BIPUSH INTEGER      { if(p -> first_time) { increment_text_size(p, 2); } }
-            |   IPUSH INTEGER       { if(p -> first_time) { increment_text_size(p, 5); } }
-            |   FPUSH FLOAT         { if(p -> first_time) { increment_text_size(p, 5); } }
-            |   MEMACCESS LABEL     { if(p -> first_time) { increment_text_size(p, 3); } }
+instruction :   regular_inst      { if(p -> first_time) {increment_text_size(p, 1);} else { parse_reg(p,$1); }                                                     }
+            |   JUMPOP LABEL      { if(p -> first_time) {increment_text_size(p, 3);} else { parse_jump(p, $1, p->lbl_table->getValue("TEXT", $2)); free($2); } }
+            |   BIPUSH INTEGER    { if(p -> first_time) {increment_text_size(p, 2);} else { parse_byte(p, $1, $2); } }
+            |   IPUSH INTEGER     { if(p -> first_time) {increment_text_size(p, 5);} else { parse_word(p, $1, $2); } }
+            |   FPUSH FLOAT       { if(p -> first_time) {increment_text_size(p, 5);} else { parse_word(p, $1, $2); } }
+            |   MEMACCESS LABEL   { if(p -> first_time) {increment_text_size(p, 3);} else { parse_mem(p, $1, p->lbl_table->getValue("DATA", $2)); free($2); } }
             ;
 
 regular_inst:   INTOP { $$ = $1; }
@@ -251,13 +251,6 @@ void yyerror(YYLTYPE* loc, struct LSMData* p, const char* s)
             loc->first_line, loc->first_column, loc->last_column, s);
 }
 
-void push_word(struct LSMData* p, uint32_t word){
-    p -> data.push_back(word >> 24);
-    p -> data.push_back((word >> 16) & 0x00FF);
-    p -> data.push_back((word >> 8) & 0x00FF);
-    p -> data.push_back(word & 0x00FF);
-}
-
 void increment_bss(struct LSMData* p, uint16_t increment) {
     // method to increment size of non-initialized variables (bss_size on lsm-data.h)
     p -> bss_size += increment;
@@ -266,4 +259,63 @@ void increment_bss(struct LSMData* p, uint16_t increment) {
 void increment_text_size(struct LSMData* p, int t) {
     // method to increment size of text segment (text_size on lsm-data.h)
     p -> text_size += t;
+}
+
+void parse_reg(struct LSMData* p, uint8_t opcode) {
+    // method to parse the regular instructions - identify operations (push back to text vector on lsm-data.h)
+    p -> text.push_back(opcode);
+}
+
+void parse_byte(struct LSMData* p, uint8_t opcode, uint8_t byte){
+    p -> text.push_back(opcode);
+    p -> text.push_back(byte);
+}
+
+void parse_word(struct LSMData* p, uint8_t opcode, uint32_t word){
+    p -> text.push_back(opcode);
+    p -> text.push_back(word >> 24);
+    p -> text.push_back((word >> 16) & 0x00FF);
+    p -> text.push_back((word >> 8) & 0x00FF);
+    p -> text.push_back(word & 0x00FF);
+}
+
+void parse_mem(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16_t> tuple) {
+    // method to parse the instructions working with memory - identify operations
+    if(!strcmp(std::get<0>(tuple).c_str(), "NONE")) {
+        fprintf(stdout, "error: label does not exist.\n"); // to change to a yyerror
+    }
+    if(!strcmp(std::get<0>(tuple).c_str(), "TEXT")) {
+        fprintf(stdout, "error: text label.\n"); // to change to a yyerror
+    }
+    int16_t label = std::get<1>(tuple);
+    if(!strcmp(std::get<0>(tuple).c_str(), "BSS")) {
+        label += p -> data.size();
+    }
+    
+    p -> text.push_back(opcode);
+    p -> text.push_back(label >> 8);
+    p -> text.push_back(label & 0x00FF);
+}
+
+void parse_jump(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16_t> tuple) {
+    // method to parse the instructions working with jumps - identify operations
+    if(!strcmp(std::get<0>(tuple).c_str(), "NONE")) {
+        fprintf(stdout, "error: label does not exist.\n"); // to change to a yyerror
+    }
+    if(!strcmp(std::get<0>(tuple).c_str(), "DATA") || !strcmp(std::get<0>(tuple).c_str(), "BSS")) {
+        fprintf(stdout, "error: data label.\n"); // to change to a yyerror
+    }
+    
+    int16_t label = std::get<1>(tuple) - p -> text.size();
+    p -> text.push_back(opcode);
+    p -> text.push_back(label >> 8);
+    p -> text.push_back(label & 0x00FF);
+}
+
+
+void push_word(struct LSMData* p, uint32_t word){
+    p -> data.push_back(word >> 24);
+    p -> data.push_back((word >> 16) & 0x00FF);
+    p -> data.push_back((word >> 8) & 0x00FF);
+    p -> data.push_back(word & 0x00FF);
 }
