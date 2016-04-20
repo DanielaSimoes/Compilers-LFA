@@ -1,17 +1,20 @@
 #include "lbl-table.h"
-
 #include <stdio.h>
+#include <tuple>
+#include <string.h>
 
-void LabelTable::add(const char* label, void* value)
+void LabelTable::add(const char* label, std::tuple<std::string, int16_t> varTuple)
 {
-    // to be substituted by your code
-    printf("assigning %p to %s\n", value, label);
+    table[std::string(label)] = varTuple;
 }
 
-void* LabelTable::getValue(const char* label)
+std::tuple<std::string, int16_t> LabelTable::getValue(std::string type, const char* label)
 {
-    // to be substituted by your code
-    printf("returning value of %s\n", label);
-    return NULL;
-}
+    std::tuple<std::string, int16_t> tuple = table[std::string(label)];
+    if (!strcmp(std::get<0>(tuple).c_str(),"")) {
+        std::tuple<std::string, int16_t> toReturn ("NONE",0);
+        return toReturn;
+    }
 
+    return tuple;
+}

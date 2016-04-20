@@ -2,21 +2,23 @@
 #define __LSM_LABEL_TABLE__
 
 #include <map>
+#include <tuple>
 #include <string>
+// #include "var-tuple.h"
 
-class LabelTable
-{
+class LabelTable {
 public:
-    
+
 public:
     LabelTable() {}
     ~LabelTable() {}
 
-    void add(const char* label, void* value);
-    void* getValue(const char* label);
+    void add(const char* label, std::tuple<std::string, int16_t> varTuple);
+    std::tuple<std::string, int16_t> getValue(std::string, const char* label);
 
 private:
-    std::map<std::string, void*> table;
+    std::map<std::string, std::tuple<std::string, int16_t>> table;
+    std::tuple<std::string, int16_t> varTuple;
 };
 
 #endif
