@@ -3,8 +3,16 @@
 }
 %code {
     #include "lsm-lexer.h"
-    void yyerror(YYLTYPE* loc, struct LSMData* p, const char*);
     #include "lsm-data.h"
+    void yyerror(YYLTYPE* loc, struct LSMData* p, const char*);
+    void increment_bss(struct LSMData* p, uint16_t increment);
+    void increment_text_size(struct LSMData* p, int);
+    void parse_byte(struct LSMData* p, uint8_t, uint8_t);
+    void parse_word(struct LSMData* p, uint8_t, uint32_t);
+    void parse_mem(struct LSMData* p, uint8_t, std::tuple<std::string, int16_t> tuple);
+    void parse_jump(struct LSMData* p, uint8_t, std::tuple<std::string, int16_t> tuple);
+    void parse_reg(struct LSMData* p, uint8_t);
+    void push_word(struct LSMData* p, uint32_t);
     #define scanner p->scanner
 }
 
@@ -24,24 +32,22 @@
     char* vstr;
 }
 
-%token <vstr> HEXADECIMAL
-%token <vint> DECIMAL
+%token <vint> INTEGER
 %token <vfloat> FLOAT
-%token <vstr> CHAR
 %token <vstr> STRING
-%token <vstr> INTOP
-%token <vstr> REALOP
-%token <vstr> RET
-%token <vstr> JUMPOP
-%token <vstr> BIPUSH
-%token <vstr> IPUSH
-%token <vstr> FPUSH
-%token <vstr> MEMACCESS
-%token <vstr> STACK
-%token <vstr> NOP
-%token <vstr> HALT
-%token <vstr> READ
-%token <vstr> WRITE
+%token <opcode> INTOP
+%token <opcode> REALOP
+%token <opcode> RET
+%token <opcode> JUMPOP
+%token <opcode> BIPUSH
+%token <opcode> IPUSH
+%token <opcode> FPUSH
+%token <opcode> MEMACCESS
+%token <opcode> STACK
+%token <opcode> NOP
+%token <opcode> HALT
+%token <opcode> READ
+%token <opcode> WRITE
 %token <vstr> DIRBYTE
 %token <vstr> DIRWORD
 %token <vstr> DIRFLOAT
@@ -54,6 +60,7 @@
 %token <vstr> DIRTEXT
 %start lsm
 
+%type <vint> regular_inst
 
 %%
 
