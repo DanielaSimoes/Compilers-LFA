@@ -134,6 +134,31 @@ int main(int argc, char *argv[])
             }
         }
         printf("\n\n");
+        
+        /* print text vector for debug */
+        address = 0;
+        fprintf(stdout, "Text Vector content:");
+        if (!lsm_data.text.size()) {
+            fprintf(stdout, " Empty");
+        }
+        else {
+            fprintf(stdout, "\n\ntext_size: %5d\n", lsm_data.text_size);
+            for(std::vector<uint8_t>::iterator it = lsm_data.text.begin(); it != lsm_data.text.end(); ++it) {
+                if (address % 4 == 0)
+                    fprintf(stdout, "\n %5x:\t", address);
+                address++;
+                fprintf(stdout, "%x\t", *it);
+            }
+        }
+        printf("\n\n");
+        
+        /* print symbol table for debug */
+        fprintf(stdout, "Symbol table:\n\n");
+        fprintf(stdout, "%20s%20s%20s\n", "Name", "Tipo", "Value");
+        for(auto p: lsm_data.lbl_table->table) {
+            fprintf(stdout, "%20s%20s%20d\n", p.first.c_str(), std::get<0>(p.second).c_str(), std::get<1>(p.second));
+        }
+        printf("\n");
 
     /* clean up and quit */
     yylex_destroy(lsm_data.scanner);
