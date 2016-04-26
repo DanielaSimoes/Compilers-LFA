@@ -43,14 +43,14 @@ public:
     LSMVM() {}
     LSMVM(const char* path);
     bool parse(const char* path);
-    
+
     void ALU(uint8_t);
     void FPU(uint8_t);
     void JUMP(uint8_t, uint16_t);
     void RET();
     void STACK(uint8_t,uint8_t,uint8_t,uint8_t,uint8_t);
     void OTHERS(uint8_t);
-    
+
     uint16_t parse16(uint8_t, uint8_t);
     uint32_t parse32(uint8_t, uint8_t, uint8_t, uint8_t);
 
@@ -81,6 +81,14 @@ LSMVM::LSMVM(const char* path)
         reset();
     }
 
+}
+
+uint16_t LSMVM::parse16(uint8_t b1, uint8_t b0) {
+    return (b1 << 8) | (b0 & 0xFF);
+}
+
+uint32_t LSMVM::parse32(uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0) {
+    return (b3 << 24) | ((b2 & 0xFF) << 16) | ((b1 & 0xFF) << 8) | (b0 & 0xFF);
 }
 
 void LSMVM::step()
@@ -189,10 +197,53 @@ void LSMVM::ALU(uint8_t opcode){
             ds.push(ub>>a);
             break;
     }
-    
+
     if (debug)
         printf("a: %x b: %x result: %x", a, b, ds.top());
 }
+
+void LSMVM::FPU(uint8_t opcode){
+
+    float a, b;
+    a = ds.top();
+    ds.pop();
+    b = ds.top();
+    ds.pop();
+    switch(opcode){
+        case 0x20:
+            ds.push(b+a);
+            break;
+        case 0x21:
+            ds.push(b-a);
+            break;
+        case 0x22:
+            ds.push(b*a);
+            break;
+        case 0x23:
+            ds.push(b/a);
+            break;
+        case 0x24:
+            ds.push(fmod(a, b));
+            break;
+        case 0x25:
+            ds.push(b);
+            ds.push(-a);
+            break;
+        case 0x26:
+            ds.push(b);
+            ds.push((float)a);
+            break;
+        case 0x27:
+            ds.push(b);
+            ds.push((int)a);
+            break;
+    }
+
+    if (debug)
+        printf("a: %f b: %f result: %f", a, b, (float)ds.top());
+}
+
+
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
     int32_t a = ds.top();
@@ -303,8 +354,12 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=2;
             break;
         case 0x62:
-=======
-
+            i = ds.top();
+            ds.pop();
+            a = ds.top();
+            ds.pop();
+            ds.push(data[a+i]);
+            break;
         case 0x63:
             v = ds.top();
             ds.pop();
@@ -345,6 +400,30 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             a = ds.top();
             ds.pop();
             data[a+i] = v;
+            break;
+    }
+}
+
+void LSMVM::OTHERS(uint8_t opcode) {
+
+    switch (opcode) {
+        case 0x00:
+            // do nothing
+            break;
+            case 0xF0:
+            exit(EXIT_SUCCESS);
+            break;
+        case 0xF1:
+            ds.push(getchar());
+            break;
+        case 0xF2:
+            if (debug)
+                fprintf(stdout, "putchar() '");
+
+            putchar(ds.top());
+
+            if (debug)
+                fprintf(stdout, "'");
             break;
     }
 }
@@ -455,6 +534,18 @@ bool LSMVM::parse(const char* path)
     opcodes[0x17] = "ior"    ;
     opcodes[0x18] = "ixor"   ;
     opcodes[0x19] = "ishl"   ;
+    opcodes[0x1a] = "ishr"   ;
+    opcodes[0x1b] = "iushr"  ;
+    opcodes[0x20] = "fadd"   ;
+    opcodes[0x21] = "fsub"   ;
+    opcodes[0x22] = "fmul"   ;
+    opcodes[0x23] = "fdiv"   ;
+    opcodes[0x24] = "frem"   ;
+    opcodes[0x25] = "fneg"   ;
+    opcodes[0x26] = "i2f"    ;
+    opcodes[0x27] = "f2i"    ;
+    opcodes[0x40] = "ret"    ;
+    opcodes[0x30] = "goto"   ;
     opcodes[0x31] = "jsr"    ;
     opcodes[0x32] = "ifeq"   ;
     opcodes[0x33] = "ifne"   ;

@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
             }
         }
         printf("\n\n");
-        
+
         /* print text vector for debug */
         address = 0;
         fprintf(stdout, "Text Vector content:");
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
             }
         }
         printf("\n\n");
-        
+
         /* print symbol table for debug */
         fprintf(stdout, "Symbol table:\n\n");
         fprintf(stdout, "%20s%20s%20s\n", "Name", "Tipo", "Value");
@@ -180,6 +180,24 @@ int main(int argc, char *argv[])
         i = 0;
         for(std::vector<uint8_t>::iterator it = lsm_data.text.begin(); it != lsm_data.text.end(); ++it) {
             text[i++] = *it;
+        }
+        uint16_t data_size_swapped = swap16(data_size / 4);
+        uint16_t text_size_swapped = swap16(text_size);
+
+        fprintf(stdout, "%x\t", *data);
+
+        /* fill file */
+        fwrite(&magic, 4, 1, ofp);
+        fwrite(&major_version, 2, 1, ofp);
+        fwrite(&minor_version, 2, 1, ofp);
+        fwrite(&bss_size, 2, 1, ofp);
+        fwrite(&data_size_swapped, 1, 2, ofp);
+        for (i = 0; i < data_size; i++) {
+            fwrite(&data[i], 1, 1, ofp);
+        }
+        fwrite(&text_size_swapped, 1, 2, ofp);
+        for (i = 0; i < text_size; i++) {
+            fwrite(&text[i], 1, 1, ofp);
         }
     }
 

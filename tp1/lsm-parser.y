@@ -290,7 +290,7 @@ void parse_mem(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16_
     }
     int16_t label = std::get<1>(tuple);
     if(!strcmp(std::get<0>(tuple).c_str(), "BSS")) {
-        label += p -> data.size();
+        label += p -> data.size()/4;
     }
 
     p -> text.push_back(opcode);
