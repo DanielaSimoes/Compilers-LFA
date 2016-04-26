@@ -15,8 +15,6 @@ public:
 
     void add(const char* label, std::tuple<std::string, int16_t> varTuple);
     std::tuple<std::string, int16_t> getValue(std::string, const char* label);
-
-private:
     std::map<std::string, std::tuple<std::string, int16_t>> table;
     std::tuple<std::string, int16_t> varTuple;
 };

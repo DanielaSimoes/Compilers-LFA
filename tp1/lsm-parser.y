@@ -227,6 +227,7 @@ instruction :   regular_inst      { if(p -> first_time) {increment_text_size(p, 
             |   JUMPOP LABEL      { if(p -> first_time) {increment_text_size(p, 3);} else { parse_jump(p, $1, p->lbl_table->getValue("TEXT", $2)); free($2); } }
             |   BIPUSH INTEGER    { if(p -> first_time) {increment_text_size(p, 2);} else { parse_byte(p, $1, $2); } }
             |   IPUSH INTEGER     { if(p -> first_time) {increment_text_size(p, 5);} else { parse_word(p, $1, $2); } }
+   	     |   FPUSH INTEGER     { if(p -> first_time) {increment_text_size(p, 5);} else { parse_word(p, $1, $2); } }
             |   FPUSH FLOAT       { if(p -> first_time) {increment_text_size(p, 5);} else { parse_word(p, $1, $2); } }
             |   MEMACCESS LABEL   { if(p -> first_time) {increment_text_size(p, 3);} else { parse_mem(p, $1, p->lbl_table->getValue("DATA", $2)); free($2); } }
             ;

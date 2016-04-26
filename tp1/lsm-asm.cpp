@@ -6,7 +6,7 @@
 
 static const char* options =
     "OPTIONS:\n"
-    "=======\n" 
+    "=======\n"
     " -h            this help\n"
     " -o file-path  output file (default: stdout)\n"
     " -s            syntax only\n";
@@ -103,9 +103,40 @@ int main(int argc, char *argv[])
     /* call the parser */
     yyparse(&lsm_data);
 
+    lsm_data.first_time = false;
+
+    /* reset the scanner */
+    ifp = fopen(argv[optind], "r");
+    yyset_in(ifp, lsm_data.scanner);
+
+    /* call the parser a second time */
+    yyparse(&lsm_data);
+
+    /* check for errors */
+    if (lsm_data.error_cnt) {
+        fprintf(stdout, "\n%d errors found. Binary file not generated.\n", lsm_data.error_cnt);
+    }
+    else {
+        /* print data vector for debug */
+        int address = 0;
+        fprintf(stdout, "\n");
+        fprintf(stdout, "Data Vector content:");
+        if (!lsm_data.data.size()) {
+            fprintf(stdout, " Empty");
+        }
+        else {
+            fprintf(stdout, "\n");
+            for(std::vector<uint8_t>::iterator it = lsm_data.data.begin(); it != lsm_data.data.end(); ++it) {
+                if (address % 4 == 0)
+                    fprintf(stdout, "\n %5x:\t", address);
+                address++;
+                fprintf(stdout, "%x\t", *it);
+            }
+        }
+        printf("\n\n");
+
     /* clean up and quit */
     yylex_destroy(lsm_data.scanner);
     delete lsm_data.lbl_table;
     return 0;
 }
-

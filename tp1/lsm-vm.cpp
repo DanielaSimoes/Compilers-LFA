@@ -3,9 +3,17 @@
 #include <stdint.h>
 #include <getopt.h>
 #include <string.h>
+#include <chrono>
+#include <thread>
+#include <iostream>
+#include <math.h>
 
 #include <stack>
 #include <map>
+
+using namespace std::this_thread; // sleep_for, sleep_until
+   using namespace std::chrono; // nanoseconds, system_clock, seconds
+
 
 class LSMVM
 {
@@ -21,13 +29,16 @@ public:
     uint16_t data_size = 0;
     uint16_t text_size = 0;
 
+    bool debug = true;
     bool good_ = false;
     inline bool good() { return good_; }
     inline bool bad() { return ! good_; }
 
     uint32_t magic = 0;
-    uint16_t major_version = 0,  
+    uint16_t major_version = 0,
              minor_version = 0;
+
+    std::string opcodes[0xF3];
 
     LSMVM() {}
     LSMVM(const char* path);
@@ -75,8 +86,85 @@ void LSMVM::run()
     while (ip < text_size && text[ip] != 0xf0) step();
 }
 
+void LSMVM::JUMP(uint8_t opcode, uint16_t label){
+
+    int32_t a = ds.top();
+    bool conditionalJump = true;
+    switch (opcode) {
+        case 0x30:
+            conditionalJump = false;
+            ip = ip+label-1;
+            break;
+        case 0x31:
+            conditionalJump = false;
+            cs.push(ip+3-1);
+            ip = ip+label-1;
+            break;
+        case 0x32:
+            a = ds.top();
+            ip = (a == 0 ? ip+label-1 : ip+2);
+            break;
+        case 0x33:
+            a = ds.top();
+            ip = (a != 0 ? ip+label-1 : ip+2);
+            break;
+        case 0x34:
+            a = ds.top();
+            ip = (a < 0 ? ip+label-1 : ip+2);
+            break;
+        case 0x35:
+            a = ds.top();
+            ip = (a >= 0 ? ip+label-1 : ip+2);
+            break;
+        case 0x36:
+            a = ds.top();
+            ip = (a > 0 ? ip+label-1 : ip+2);
+            break;
+        case 0x37:
+            a = ds.top();
+            ip = (a <= 0 ? ip+label-1 : ip+2);
+            break;
+    }
+    if (conditionalJump) ds.pop();
+}
+
+void LSMVM::RET(){
+    ip = cs.top();
+    cs.pop();
+}
+
+void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0){
+
+    switch (opcode) {
+        uint32_t a, b, i, v;
+
+        case 0x50:
+            ds.push(b3);
+            step();
+            break;
+        case 0x51:
+            ds.push(parse32(b3, b2, b1, b0));
+            ip+=4;
+            break;
+        case 0x52:
+            ds.push(parse32(b3, b2, b1, b0));
+            ip+=4;
+            break;
+        case 0x53:
+            ds.pop();
+            break;
+        case 0x54:
+            a = ds.top();
+            ds.push(a);
+            break;
+    }
+}
+
 bool LSMVM::parse(const char* path)
 {
+
+  if (debug)
+      fprintf(stdout, "Starting to parse!\n");
     reset();
 
     /* open binary file */
@@ -147,6 +235,17 @@ bool LSMVM::parse(const char* path)
         text[j] = m;
     }
 
+    opcodes[0x10] = "iadd"   ;
+    opcodes[0x11] = "isub"   ;
+    opcodes[0x12] = "imul"   ;
+    opcodes[0x13] = "idiv"   ;
+    opcodes[0x14] = "irem"   ;
+    opcodes[0x15] = "ineg"   ;
+    opcodes[0x16] = "iand"   ;
+    opcodes[0x17] = "ior"    ;
+    opcodes[0x18] = "ixor"   ;
+    opcodes[0x19] = "ishl"   ;
+
     return true;
 
 parse_fail:
@@ -187,7 +286,7 @@ void LSMVM::show()
 
 static const char* options =
     "OPTIONS:\n"
-    "=======\n" 
+    "=======\n"
     " -h            this help\n"
     " -x            show contents in ascii-hexa\n";
 
