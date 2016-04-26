@@ -135,6 +135,29 @@ int main(int argc, char *argv[])
         }
         printf("\n\n");
 
+        /* prepare content for binary file */
+        uint32_t magic = 0xDADABADE ;
+        uint16_t major_version = swap16(43343),
+                 minor_version = swap16(2016);
+        uint16_t bss_size =  swap16(lsm_data.bss_size);
+
+        uint16_t data_size = lsm_data.data.size();
+        uint8_t* data = new(std::nothrow) uint8_t[data_size];
+
+        int i = 0;
+        for(std::vector<uint8_t>::iterator it = lsm_data.data.begin(); it != lsm_data.data.end(); ++it) {
+            data[i++] = *it;
+        }
+
+        uint16_t text_size = lsm_data.text.size();
+        uint8_t* text = new(std::nothrow) uint8_t[text_size];
+
+        i = 0;
+        for(std::vector<uint8_t>::iterator it = lsm_data.text.begin(); it != lsm_data.text.end(); ++it) {
+            text[i++] = *it;
+        }
+    }
+
     /* clean up and quit */
     yylex_destroy(lsm_data.scanner);
     delete lsm_data.lbl_table;
