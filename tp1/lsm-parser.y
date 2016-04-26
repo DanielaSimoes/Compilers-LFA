@@ -196,7 +196,7 @@ dir_string  :   DIRSTRING STRING {
 
 dir_space   :   DIRSPACE INTEGER {
                     if (p -> first_time) {
-                        increment_bss(p, $2);
+                        increment_bss(p,($2+3)/4);
                     }
                 }
             ;
