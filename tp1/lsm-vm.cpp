@@ -105,6 +105,9 @@ void LSMVM::run()
     while (ip < text_size && text[ip] != 0xf0) {
         opcode = text[ip];
 
+        if (debug)
+            fprintf(stdout, "0x%04x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
+
         label = parse16(text[ip+1], text[ip+2]);
 
         b0 = text[ip+4];
@@ -119,8 +122,6 @@ void LSMVM::run()
             FPU(opcode);
         }
         else if (opcode >= 0x30 && opcode <= 0x37){
-            if (debug)
-                fprintf(stdout, "label: 0x%04x", label);
             JUMP(opcode, label);
         }
         else if (opcode == 0x40){
@@ -142,8 +143,8 @@ void LSMVM::run()
             sleep_for(nanoseconds(250000000)); // wait 0.25 secs in case we enter ina endless loop
         }
 
-        if (debug && continue_)
-            fprintf(stdout, "%4x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
+        //if (debug && continue_)
+        //    fprintf(stdout, "0x%04x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
 
     }
 
@@ -207,7 +208,7 @@ void LSMVM::ALU(uint8_t opcode){
     }
 
     if (debug)
-        printf("a: %x b: %x result: %x", a, b, ds.top());
+        printf("a: 0x%x, b: 0x%x, result: 0x%x", a, b, ds.top());
 }
 
 void LSMVM::FPU(uint8_t opcode){
@@ -254,7 +255,7 @@ void LSMVM::FPU(uint8_t opcode){
     }
 
     if (debug)
-        printf("a: %f b: %f result: %f", a, b, (float)ds.top());
+        printf("a: %f, b: %f, result: %f", a, b, (float)ds.top());
 }
 
 
@@ -266,6 +267,9 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
     exit(EXIT_SUCCESS);
   }
 
+  if (debug)
+      fprintf(stdout, "label: 0x%04x", label);
+
     int32_t a = ds.top();
     bool conditionalJump = true;
     switch (opcode) {
@@ -275,14 +279,17 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
             break;
         case 0x31:
             conditionalJump = false;
+            if (debug)
+                fprintf(stdout, ", push: 0x%04x", ip+3-1);
             cs.push(ip+3-1);
-            printf("%s%d\n", "\nO push é de: ", ip+3-1);
-            printf("%s%d\n", "A label para onde eu quero ir: ", label );
+            if (debug)
+                fprintf(stdout, ", go to: ip+0x%04x ", label);
             ip = (ip+label-1);
             break;
         case 0x32:
             ip = (a == 0 ? ip+label-1 : ip+2);
-            printf("%s%d\n"," TOS: " ,ds.top());
+            if (debug)
+                printf(", TOS: 0x%x", ds.top());
             break;
         case 0x33:
             ip = (a != 0 ? ip+label-1 : ip+2);
@@ -313,7 +320,9 @@ void LSMVM::RET(){
 
     ip = cs.top();
     cs.pop();
-    printf("%s%d\n", "IP: ", ip);
+
+    if (debug)
+        printf("%s0x%04x", "IP: ", ip);
 }
 
 void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0){
@@ -388,7 +397,8 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(b);
             break;
         case 0x60:
-            fprintf(stdout, "label: 0x%04x", parse16(b3, b2));
+            if (debug)
+                fprintf(stdout, "label: 0x%04x, ", parse16(b3, b2));
             ds.push(data[parse16(b3, b2)]);
             ip+=2;
             break;
@@ -400,7 +410,8 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             }
             a = ds.top();
             ds.pop();
-            fprintf(stdout, "label: 0x%04x", parse16(b3, b2));
+            if (debug)
+                fprintf(stdout, "label: 0x%04x, ", parse16(b3, b2));
             data[parse16(b3, b2)] = a;
             ip+=2;
             break;
@@ -483,6 +494,9 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             data[a+i] = v;
             break;
     }
+
+    if(debug)
+        printf("TOS: 0x%x", ds.top());
 }
 
 void LSMVM::OTHERS(uint8_t opcode) {
