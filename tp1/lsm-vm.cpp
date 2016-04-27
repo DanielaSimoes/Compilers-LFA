@@ -31,6 +31,7 @@ public:
 
     bool debug = true;
     bool good_ = false;
+    bool continue_ = true;
     inline bool good() { return good_; }
     inline bool bad() { return ! good_; }
 
@@ -104,9 +105,6 @@ void LSMVM::run()
     while (ip < text_size && text[ip] != 0xf0) {
         opcode = text[ip];
 
-        if (debug)
-            fprintf(stdout, "%4x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
-
         label = parse16(text[ip+1], text[ip+2]);
 
         b0 = text[ip+4];
@@ -143,6 +141,10 @@ void LSMVM::run()
             fprintf(stdout, "\n");
             sleep_for(nanoseconds(250000000)); // wait 0.25 secs in case we enter ina endless loop
         }
+
+        if (debug && continue_)
+            fprintf(stdout, "%4x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
+
     }
 
     if (debug)
@@ -152,9 +154,11 @@ void LSMVM::run()
 void LSMVM::ALU(uint8_t opcode){
 
     if(ds.size()<2){
-      fprintf(stderr, "\033[1m \033[91m Error:\033[0m] Incorrect number of operands in the data stack. Should be present at least 2 operands. \n");
-      exit(EXIT_FAILURE);
+      continue_ = false;
+      fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 2 operands. \n");
+      exit(EXIT_SUCCESS);
     }
+
     uint32_t a, b;
     a = ds.top();
     ds.pop();
