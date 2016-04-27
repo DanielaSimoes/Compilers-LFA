@@ -160,6 +160,7 @@ void LSMVM::ALU(uint8_t opcode){
     }
 
     uint32_t a, b;
+
     a = ds.top();
     ds.pop();
     b = ds.top();
@@ -270,28 +271,22 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
             ip = (ip+label-1);
             break;
         case 0x32:
-            a = ds.top();
             ip = (a == 0 ? ip+label-1 : ip+2);
             printf("%s%d\n"," TOS: " ,ds.top());
             break;
         case 0x33:
-            a = ds.top();
             ip = (a != 0 ? ip+label-1 : ip+2);
             break;
         case 0x34:
-            a = ds.top();
             ip = (a < 0 ? ip+label-1 : ip+2);
             break;
         case 0x35:
-            a = ds.top();
             ip = (a >= 0 ? ip+label-1 : ip+2);
             break;
         case 0x36:
-            a = ds.top();
             ip = (a > 0 ? ip+label-1 : ip+2);
             break;
         case 0x37:
-            a = ds.top();
             ip = (a <= 0 ? ip+label-1 : ip+2);
             break;
     }
@@ -356,13 +351,14 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(b);
             break;
         case 0x60:
+            fprintf(stdout, "label: 0x%04x", parse16(b3, b2));
             ds.push(data[parse16(b3, b2)]);
             ip+=2;
             break;
         case 0x61:
             a = ds.top();
             ds.pop();
-            printf("%d", parse16(b3, b2));
+            fprintf(stdout, "label: 0x%04x", parse16(b3, b2));
             data[parse16(b3, b2)] = a;
             ip+=2;
             break;
@@ -537,6 +533,7 @@ bool LSMVM::parse(const char* path)
     if (debug)
         fprintf(stdout, "Parsing completed.\n");
 
+    /* fill opcodes array */
     opcodes[0x10] = "iadd"   ;
     opcodes[0x11] = "isub"   ;
     opcodes[0x12] = "imul"   ;
@@ -586,6 +583,7 @@ bool LSMVM::parse(const char* path)
     opcodes[0xF0] = "halt"   ;
     opcodes[0xF1] = "read"   ;
     opcodes[0xF2] = "write"  ;
+
     return true;
 
 parse_fail:
