@@ -59,7 +59,6 @@ public:
     void step();
     void run();
 
-    void aaa();
     void bipush();
 
     union {
