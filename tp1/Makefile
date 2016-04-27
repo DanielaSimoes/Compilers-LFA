@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -Wall
 CXX = g++
-CXXFLAGS = -Wall -std=c++11
+CXXFLAGS = -Wall -std=c++11 -Wno-deprecated-register 
 LEX = flex
 YACC = bison
 
@@ -23,9 +23,9 @@ lsm-lexer.cpp lsm-lexer.h:	lsm-lexer.l
 	$(LEX) -olsm-lexer.cpp lsm-lexer.l
 
 
-clean:	
+clean:
 	rm -f *.o lsm-parser.h lsm-lexer.h lsm-parser.cpp lsm-lexer.cpp
-	rm -f *.output *.dot *~ 
+	rm -f *.output *.dot *~
 
 cleanall:	clean
 	rm -f lsm-asm lsm-vm
