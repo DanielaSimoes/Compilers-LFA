@@ -91,7 +91,7 @@ data_body   :   data_line nline_block
 
 data_line   :   LABEL ':' dir_decl {
                     if(p -> first_time) {
-                        std::tuple<std::string,int16_t> varTuple ("DATA",p -> data.size()); p->lbl_table->add($1, varTuple); free($1);
+                        std::tuple<std::string,int16_t> varTuple ("DATA",p -> data.size()/4); p->lbl_table->add($1, varTuple); free($1);
                     }
                 }
             |   LABEL ':' dir_space {
