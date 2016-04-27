@@ -12,6 +12,7 @@ typedef struct LSMData
     LabelTable* lbl_table;      // pointer to labels' symbol table
     std::vector<uint8_t> text;  // vector of opcodes
     std::vector<uint8_t> data;  // vector of variables
+    int data_size = 0;
     uint16_t bss_size;          // size of non-initializaed variables
     uint16_t text_size;         // size of text segment
     bool syntax_only;           // if true, does not generate code

@@ -12,3 +12,4 @@ lsm-lexer.cpp
 
 lsm-asm.o
 lsm-asm
+lsm-vm
