@@ -140,3 +140,4 @@ int main(int argc, char *argv[])
     delete lsm_data.lbl_table;
     return 0;
 }
+}

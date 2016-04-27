@@ -45,12 +45,20 @@ public:
 
     bool parse(const char* path);
 
+    void ALU(uint8_t);
+    void FPU(uint8_t);
+    void JUMP(uint8_t, uint16_t);
+    void RET();
+    void STACK(uint8_t,uint8_t,uint8_t,uint8_t,uint8_t);
+    void OTHERS(uint8_t);
+
+    uint16_t parse16(uint8_t, uint8_t);
+    uint32_t parse32(uint8_t, uint8_t, uint8_t, uint8_t);
     void reset();
     void show();
     void step();
     void run();
 
-    void aaa();
     void bipush();
 
     union {
