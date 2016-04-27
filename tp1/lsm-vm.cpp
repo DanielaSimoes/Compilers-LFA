@@ -150,7 +150,11 @@ void LSMVM::run()
 }
 
 void LSMVM::ALU(uint8_t opcode){
-    // FAZER FUNÇÃO DE VERIFICAÇÃO PARA SABER SE EXISTEM OPERANDOS NA STACK
+
+    if(ds.size()<2){
+      fprintf(stderr, "\033[1m \033[91m Error:\033[0m] Incorrect number of operands in the data stack. Should be present at least 2 operands. \n");
+      exit(EXIT_FAILURE);
+    }
     uint32_t a, b;
     a = ds.top();
     ds.pop();
@@ -202,6 +206,8 @@ void LSMVM::ALU(uint8_t opcode){
 }
 
 void LSMVM::FPU(uint8_t opcode){
+
+
 
     float a, b;
     a = ds.top();
@@ -255,11 +261,14 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
         case 0x31:
             conditionalJump = false;
             cs.push(ip+3-1);
-            ip = ip+label-1;
+            printf("%s%d\n", "\nO push é de: ", ip+3-1);
+            printf("%s%d\n", "A label para onde eu quero ir: ", label );
+            ip = (ip+label-1);
             break;
         case 0x32:
             a = ds.top();
             ip = (a == 0 ? ip+label-1 : ip+2);
+            printf("%s%d\n"," TOS: " ,ds.top());
             break;
         case 0x33:
             a = ds.top();
@@ -288,6 +297,7 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 void LSMVM::RET(){
     ip = cs.top();
     cs.pop();
+    printf("%s%d\n", "IP: ", ip);
 }
 
 void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0){
@@ -558,7 +568,6 @@ bool LSMVM::parse(const char* path)
     opcodes[0x53] = "pop"    ;
     opcodes[0x54] = "dup"    ;
     opcodes[0x55] = "dup_x1" ;
-
     opcodes[0x56] = "dup2"   ;
     opcodes[0x57] = "swap"   ;
     opcodes[0x60] = "load"   ;
