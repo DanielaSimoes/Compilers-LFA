@@ -135,6 +135,72 @@ int main(int argc, char *argv[])
         }
         printf("\n\n");
 
+        /* print text vector for debug */
+        address = 0;
+        fprintf(stdout, "Text Vector content:");
+        if (!lsm_data.text.size()) {
+            fprintf(stdout, " Empty");
+        }
+        else {
+            fprintf(stdout, "\n\ntext_size: %5d\n", lsm_data.text_size);
+            for(std::vector<uint8_t>::iterator it = lsm_data.text.begin(); it != lsm_data.text.end(); ++it) {
+                if (address % 4 == 0)
+                    fprintf(stdout, "\n %5x:\t", address);
+                address++;
+                fprintf(stdout, "%x\t", *it);
+            }
+        }
+        printf("\n\n");
+
+        /* print symbol table for debug */
+        fprintf(stdout, "Symbol table:\n\n");
+        fprintf(stdout, "%20s%20s%20s\n", "Name", "Tipo", "Value");
+        for(auto p: lsm_data.lbl_table->table) {
+            fprintf(stdout, "%20s%20s%20d\n", p.first.c_str(), std::get<0>(p.second).c_str(), std::get<1>(p.second));
+        }
+        printf("\n");
+
+        /* prepare content for binary file */
+        uint32_t magic = 0xDADABADE ;
+        uint16_t major_version = swap16(43343),
+                 minor_version = swap16(2016);
+        uint16_t bss_size =  swap16(lsm_data.bss_size);
+
+        uint16_t data_size = lsm_data.data.size();
+        uint8_t* data = new(std::nothrow) uint8_t[data_size];
+
+        int i = 0;
+        for(std::vector<uint8_t>::iterator it = lsm_data.data.begin(); it != lsm_data.data.end(); ++it) {
+            data[i++] = *it;
+        }
+
+        uint16_t text_size = lsm_data.text.size();
+        uint8_t* text = new(std::nothrow) uint8_t[text_size];
+
+        i = 0;
+        for(std::vector<uint8_t>::iterator it = lsm_data.text.begin(); it != lsm_data.text.end(); ++it) {
+            text[i++] = *it;
+        }
+        uint16_t data_size_swapped = swap16(data_size / 4);
+        uint16_t text_size_swapped = swap16(text_size);
+
+        fprintf(stdout, "%x\t", *data);
+
+        /* fill file */
+        fwrite(&magic, 4, 1, ofp);
+        fwrite(&major_version, 2, 1, ofp);
+        fwrite(&minor_version, 2, 1, ofp);
+        fwrite(&bss_size, 2, 1, ofp);
+        fwrite(&data_size_swapped, 1, 2, ofp);
+        for (i = 0; i < data_size; i++) {
+            fwrite(&data[i], 1, 1, ofp);
+        }
+        fwrite(&text_size_swapped, 1, 2, ofp);
+        for (i = 0; i < text_size; i++) {
+            fwrite(&text[i], 1, 1, ofp);
+        }
+    }
+
     /* clean up and quit */
     yylex_destroy(lsm_data.scanner);
     delete lsm_data.lbl_table;

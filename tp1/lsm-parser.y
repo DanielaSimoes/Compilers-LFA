@@ -74,7 +74,7 @@ block_list	:	block
 
 block		:	text_block
 			|	data_block
-            |   error '\n' { yyerrok; }
+            |   error '\n' { yyerrok; p -> error_cnt++; }
 		    ;
 
 nline_block :   '\n'
@@ -196,7 +196,7 @@ dir_string  :   DIRSTRING STRING {
 
 dir_space   :   DIRSPACE INTEGER {
                     if (p -> first_time) {
-                        increment_bss(p, $2);
+                        increment_bss(p,($2+3)/4);
                     }
                 }
             ;
@@ -290,9 +290,9 @@ void parse_mem(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16_
     }
     int16_t label = std::get<1>(tuple);
     if(!strcmp(std::get<0>(tuple).c_str(), "BSS")) {
-        label += p -> data.size();
+        label += p -> data.size()/4;
     }
-    
+
     p -> text.push_back(opcode);
     p -> text.push_back(label >> 8);
     p -> text.push_back(label & 0x00FF);
@@ -302,11 +302,13 @@ void parse_jump(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16
     // method to parse the instructions working with jumps - identify operations
     if(!strcmp(std::get<0>(tuple).c_str(), "NONE")) {
         fprintf(stdout, "error: label does not exist.\n"); // to change to a yyerror
+        p -> error_cnt++;
     }
     if(!strcmp(std::get<0>(tuple).c_str(), "DATA") || !strcmp(std::get<0>(tuple).c_str(), "BSS")) {
         fprintf(stdout, "error: data label.\n"); // to change to a yyerror
+        p -> error_cnt++;
     }
-    
+
     int16_t label = std::get<1>(tuple) - p -> text.size();
     p -> text.push_back(opcode);
     p -> text.push_back(label >> 8);

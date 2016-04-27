@@ -42,7 +42,6 @@ public:
 
     LSMVM() {}
     LSMVM(const char* path);
-
     bool parse(const char* path);
 
     void ALU(uint8_t);
@@ -54,6 +53,7 @@ public:
 
     uint16_t parse16(uint8_t, uint8_t);
     uint32_t parse32(uint8_t, uint8_t, uint8_t, uint8_t);
+
     void reset();
     void show();
     void step();
@@ -82,6 +82,14 @@ LSMVM::LSMVM(const char* path)
 
 }
 
+uint16_t LSMVM::parse16(uint8_t b1, uint8_t b0) {
+    return (b1 << 8) | (b0 & 0xFF);
+}
+
+uint32_t LSMVM::parse32(uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0) {
+    return (b3 << 24) | ((b2 & 0xFF) << 16) | ((b1 & 0xFF) << 8) | (b0 & 0xFF);
+}
+
 void LSMVM::step()
 {
 	ip++;
@@ -89,10 +97,151 @@ void LSMVM::step()
 
 void LSMVM::run()
 {
-    fprintf(stderr, "execution still not implemented\n");
+    uint8_t opcode;
+    uint16_t label;
+    uint8_t b0, b1, b2, b3;
     ip = 0;
-    while (ip < text_size && text[ip] != 0xf0) step();
+    while (ip < text_size && text[ip] != 0xf0) {
+        opcode = text[ip];
+
+        if (debug)
+            fprintf(stdout, "%4x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
+
+        label = parse16(text[ip+1], text[ip+2]);
+
+        b0 = text[ip+4];
+        b1 = text[ip+3];
+        b2 = text[ip+2];
+        b3 = text[ip+1];
+
+        if(opcode >= 0x10 && opcode <= 0x1b){
+            ALU(opcode);
+        }
+        else if (opcode >= 0x20 && opcode <= 0x27){
+            FPU(opcode);
+        }
+        else if (opcode >= 0x30 && opcode <= 0x37){
+            if (debug)
+                fprintf(stdout, "label: 0x%04x", label);
+            JUMP(opcode, label);
+        }
+        else if (opcode == 0x40){
+            RET();
+        }
+        else if (opcode >= 0x50 && opcode <= 0x67){
+            STACK(opcode, b3, b2, b1, b0);
+        }
+        else if ((opcode >= 0xF0 && opcode <= 0xF2) || opcode == 0x00){
+            OTHERS(opcode);
+        }
+        else{
+            //error
+        }
+        step();
+
+        if (debug) {
+            fprintf(stdout, "\n");
+            sleep_for(nanoseconds(250000000)); // wait 0.25 secs in case we enter ina endless loop
+        }
+    }
+
+    if (debug)
+        fprintf(stdout, "Execution ended. TOS: %8d decimal\n%30x hexadecimal\n%30.2f float\n", ds.top(), ds.top(), float(ds.top()));
 }
+
+void LSMVM::ALU(uint8_t opcode){
+    // FAZER FUNÇÃO DE VERIFICAÇÃO PARA SABER SE EXISTEM OPERANDOS NA STACK
+    uint32_t a, b;
+    a = ds.top();
+    ds.pop();
+    b = ds.top();
+    ds.pop();
+    switch(opcode){
+        case 0x10:
+            ds.push(b+a);
+            break;
+        case 0x11:
+            ds.push(b-a);
+            break;
+        case 0x12:
+            ds.push(b*a);
+            break;
+        case 0x13:
+            ds.push(b/a);
+            break;
+        case 0x14:
+            ds.push(a%b);
+            break;
+        case 0x15:
+            ds.push(b);
+            ds.push(-a);
+            break;
+        case 0x16:
+            ds.push(b&a);
+            break;
+        case 0x17:
+            ds.push(b|a);
+            break;
+        case 0x18:
+            ds.push(b^a);
+            break;
+        case 0x19:
+            ds.push(b<<a);
+            break;
+        case 0x1a:
+            ds.push(b>>a);
+            break;
+        case 0x1b:
+            uint32_t ub = b;
+            ds.push(ub>>a);
+            break;
+    }
+
+    if (debug)
+        printf("a: %x b: %x result: %x", a, b, ds.top());
+}
+
+void LSMVM::FPU(uint8_t opcode){
+
+    float a, b;
+    a = ds.top();
+    ds.pop();
+    b = ds.top();
+    ds.pop();
+    switch(opcode){
+        case 0x20:
+            ds.push(b+a);
+            break;
+        case 0x21:
+            ds.push(b-a);
+            break;
+        case 0x22:
+            ds.push(b*a);
+            break;
+        case 0x23:
+            ds.push(b/a);
+            break;
+        case 0x24:
+            ds.push(fmod(a, b));
+            break;
+        case 0x25:
+            ds.push(b);
+            ds.push(-a);
+            break;
+        case 0x26:
+            ds.push(b);
+            ds.push((float)a);
+            break;
+        case 0x27:
+            ds.push(b);
+            ds.push((int)a);
+            break;
+    }
+
+    if (debug)
+        printf("a: %f b: %f result: %f", a, b, (float)ds.top());
+}
+
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
@@ -165,6 +314,116 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             a = ds.top();
             ds.push(a);
             break;
+        case 0x55:
+            a = ds.top();
+            ds.pop();
+            b = ds.top();
+            ds.pop();
+            ds.push(a);
+            ds.push(b);
+            ds.push(a);
+            break;
+        case 0x56:
+            a = ds.top();
+            ds.pop();
+            b = ds.top();
+            ds.pop();
+            ds.push(b);
+            ds.push(a);
+            ds.push(b);
+            ds.push(a);
+            break;
+        case 0x57:
+            a = ds.top();
+            ds.pop();
+            b = ds.top();
+            ds.pop();
+            ds.push(a);
+            ds.push(b);
+            break;
+        case 0x60:
+            ds.push(data[parse16(b3, b2)]);
+            ip+=2;
+            break;
+        case 0x61:
+            a = ds.top();
+            ds.pop();
+            printf("%d", parse16(b3, b2));
+            data[parse16(b3, b2)] = a;
+            ip+=2;
+            break;
+        case 0x62:
+            i = ds.top();
+            ds.pop();
+            a = ds.top();
+            ds.pop();
+            ds.push(data[a+i]);
+            break;
+        case 0x63:
+            v = ds.top();
+            ds.pop();
+            i = ds.top();
+            ds.pop();
+            a = ds.top();
+            ds.pop();
+            data[a+i] = v;
+            break;
+        case 0x64:
+            i = ds.top();
+            ds.pop();
+            a = ds.top();
+            ds.pop();
+            ds.push(data[a+i]);
+            break;
+        case 0x65:
+            v = ds.top();
+            ds.pop();
+            i = ds.top();
+            ds.pop();
+            a = ds.top();
+            ds.pop();
+            data[a+i] = v;
+            break;
+        case 0x66:
+            i = ds.top();
+            ds.pop();
+            a = ds.top();
+            ds.pop();
+            ds.push(data[a+i]);
+            break;
+        case 0x67:
+            v = ds.top();
+            ds.pop();
+            i = ds.top();
+            ds.pop();
+            a = ds.top();
+            ds.pop();
+            data[a+i] = v;
+            break;
+    }
+}
+
+void LSMVM::OTHERS(uint8_t opcode) {
+
+    switch (opcode) {
+        case 0x00:
+            // do nothing
+            break;
+            case 0xF0:
+            exit(EXIT_SUCCESS);
+            break;
+        case 0xF1:
+            ds.push(getchar());
+            break;
+        case 0xF2:
+            if (debug)
+                fprintf(stdout, "putchar() '");
+
+            putchar(ds.top());
+
+            if (debug)
+                fprintf(stdout, "'");
+            break;
     }
 }
 
@@ -188,6 +447,9 @@ bool LSMVM::parse(const char* path)
         magic |= (m & 0xff);
     }
 
+    if (debug)
+        fprintf(stdout, "Reading version...\n");
+
     /* read version */
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     major_version = (m & 0xff) << 8;
@@ -198,17 +460,26 @@ bool LSMVM::parse(const char* path)
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     minor_version |= (m & 0xff);
 
+    if (debug)
+        fprintf(stdout, "Reading bss size...\n");
+
     /* read bss size */
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     bss_size = (m & 0xff) << 8;
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     bss_size |= (m & 0xff);
 
+    if (debug)
+        fprintf(stdout, "Reading data size... ");
+
     /* read data size */
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     data_size = (m & 0xff) << 8;
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     data_size |= (m & 0xff);
+
+    if (debug)
+        fprintf(stdout, "(%x)\nCreating data array...\n", data_size + bss_size);
 
     /* alocate data array */
     data = new(std::nothrow) uint32_t[data_size+bss_size];
@@ -227,11 +498,17 @@ bool LSMVM::parse(const char* path)
         data[j] = v;
     }
 
+    if (debug)
+        fprintf(stdout, "Reading text size... ");
+
     /* read text size */
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     text_size = (m & 0xff) << 8;
     if (fread(&m, 1, 1, ifp) != 1) goto parse_fail;
     text_size |= (m & 0xff);
+
+    if (debug)
+        fprintf(stdout, "(%x)\nCreating text array...\n", text_size);
 
     /* alocate text array */
     text = new(std::nothrow) uint8_t[text_size];
@@ -243,6 +520,9 @@ bool LSMVM::parse(const char* path)
         text[j] = m;
     }
 
+    if (debug)
+        fprintf(stdout, "Parsing completed.\n");
+
     opcodes[0x10] = "iadd"   ;
     opcodes[0x11] = "isub"   ;
     opcodes[0x12] = "imul"   ;
@@ -253,7 +533,46 @@ bool LSMVM::parse(const char* path)
     opcodes[0x17] = "ior"    ;
     opcodes[0x18] = "ixor"   ;
     opcodes[0x19] = "ishl"   ;
+    opcodes[0x1a] = "ishr"   ;
+    opcodes[0x1b] = "iushr"  ;
+    opcodes[0x20] = "fadd"   ;
+    opcodes[0x21] = "fsub"   ;
+    opcodes[0x22] = "fmul"   ;
+    opcodes[0x23] = "fdiv"   ;
+    opcodes[0x24] = "frem"   ;
+    opcodes[0x25] = "fneg"   ;
+    opcodes[0x26] = "i2f"    ;
+    opcodes[0x27] = "f2i"    ;
+    opcodes[0x40] = "ret"    ;
+    opcodes[0x30] = "goto"   ;
+    opcodes[0x31] = "jsr"    ;
+    opcodes[0x32] = "ifeq"   ;
+    opcodes[0x33] = "ifne"   ;
+    opcodes[0x34] = "iflt"   ;
+    opcodes[0x35] = "ifge"   ;
+    opcodes[0x36] = "ifgt"   ;
+    opcodes[0x37] = "ifle"   ;
+    opcodes[0x50] = "bipush" ;
+    opcodes[0x51] = "ipush"  ;
+    opcodes[0x52] = "fpush"  ;
+    opcodes[0x53] = "pop"    ;
+    opcodes[0x54] = "dup"    ;
+    opcodes[0x55] = "dup_x1" ;
 
+    opcodes[0x56] = "dup2"   ;
+    opcodes[0x57] = "swap"   ;
+    opcodes[0x60] = "load"   ;
+    opcodes[0x61] = "store"  ;
+    opcodes[0x62] = "baload" ;
+    opcodes[0x63] = "bastore";
+    opcodes[0x64] = "iaload" ;
+    opcodes[0x65] = "iastore";
+    opcodes[0x66] = "faload" ;
+    opcodes[0x67] = "fastore";
+    opcodes[0x00] = "nop"    ;
+    opcodes[0xF0] = "halt"   ;
+    opcodes[0xF1] = "read"   ;
+    opcodes[0xF2] = "write"  ;
     return true;
 
 parse_fail:
