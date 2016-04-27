@@ -688,10 +688,8 @@ void LSMVM::show()
     fprintf(stdout, "magic: 0x%08x\n", magic);
     fprintf(stdout, "major_version: %d\n", major_version);
     fprintf(stdout, "minor_version: %d\n", minor_version);
-
-    fprintf(stdout, "bss_size: %d (0x%0x)\n", bss_size, bss_size);
-
     fprintf(stdout, "data_size: %d (0x%0x)\n", data_size, data_size);
+    fprintf(stdout, "bss_size: %d (0x%0x)\n", bss_size, bss_size);
     fprintf(stdout, "data[] = {\n");
     for (int j = 0; j < data_size; j++)
     {
