@@ -13,6 +13,7 @@ static const char* options =
 
 
 int yyparse(LSMData*);
+uint16_t swap16(uint16_t);
 
 int main(int argc, char *argv[])
 {
@@ -205,4 +206,8 @@ int main(int argc, char *argv[])
     yylex_destroy(lsm_data.scanner);
     delete lsm_data.lbl_table;
     return 0;
+}
+
+uint16_t swap16(uint16_t value){
+    return ((value << 8 ) | ((value >> 8) & 0x00FF));
 }
