@@ -212,7 +212,11 @@ void LSMVM::ALU(uint8_t opcode){
 
 void LSMVM::FPU(uint8_t opcode){
 
-
+  if(ds.size()<2){
+    continue_ = false;
+    fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 2 operands. \n");
+    exit(EXIT_SUCCESS);
+  }
 
     float a, b;
     a = ds.top();
@@ -256,6 +260,12 @@ void LSMVM::FPU(uint8_t opcode){
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
+  if(ds.size()<1){
+    continue_ = false;
+    fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+    exit(EXIT_SUCCESS);
+  }
+
     int32_t a = ds.top();
     bool conditionalJump = true;
     switch (opcode) {
@@ -294,6 +304,13 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 }
 
 void LSMVM::RET(){
+
+  if(cs.size()<1){
+    continue_ = false;
+    fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the call stack. Should be present at least 1 operands. \n");
+    exit(EXIT_SUCCESS);
+  }
+
     ip = cs.top();
     cs.pop();
     printf("%s%d\n", "IP: ", ip);
@@ -317,6 +334,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=4;
             break;
         case 0x53:
+          if(ds.size()<1){
+            continue_ = false;
+            fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+            exit(EXIT_SUCCESS);
+          }
             ds.pop();
             break;
         case 0x54:
@@ -324,6 +346,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(a);
             break;
         case 0x55:
+          if(ds.size()<1){
+            continue_ = false;
+            fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+            exit(EXIT_SUCCESS);
+          }
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -333,6 +360,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(a);
             break;
         case 0x56:
+          if(ds.size()<1){
+            continue_ = false;
+            fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+            exit(EXIT_SUCCESS);
+          }
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -343,6 +375,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(a);
             break;
         case 0x57:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -356,6 +393,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=2;
             break;
         case 0x61:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             a = ds.top();
             ds.pop();
             fprintf(stdout, "label: 0x%04x", parse16(b3, b2));
@@ -363,6 +405,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=2;
             break;
         case 0x62:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -370,6 +417,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x63:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -379,6 +431,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             data[a+i] = v;
             break;
         case 0x64:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -386,6 +443,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x65:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -395,6 +457,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             data[a+i] = v;
             break;
         case 0x66:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -402,6 +469,11 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x67:
+            if(ds.size()<1){
+              continue_ = false;
+              fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
+              exit(EXIT_SUCCESS);
+            }
             v = ds.top();
             ds.pop();
             i = ds.top();
