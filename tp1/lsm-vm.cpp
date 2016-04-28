@@ -148,14 +148,19 @@ void LSMVM::run()
 
 void LSMVM::ALU(uint8_t opcode){
 
-    verifyOperands(ds, 2, "data");
-
     int32_t a, b;
 
-    a = ds.top();
-    ds.pop();
-    b = ds.top();
-    ds.pop();
+    if(opcode == 0x15){
+      verifyOperands(ds, 1, "data");
+      a = ds.top();
+      ds.pop();
+    }else{
+      verifyOperands(ds, 2, "data");
+      a = ds.top();
+      ds.pop();
+      b = ds.top();
+      ds.pop();
+    }
     switch(opcode){
         case 0x10:
             ds.push(b+a);
