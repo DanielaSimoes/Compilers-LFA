@@ -30,7 +30,6 @@ public:
 
     bool debug = true;
     bool good_ = false;
-    bool continue_ = true;
     inline bool good() { return good_; }
     inline bool bad() { return ! good_; }
 
@@ -53,14 +52,12 @@ public:
 
     uint16_t parse16(uint8_t, uint8_t);
     uint32_t parse32(uint8_t, uint8_t, uint8_t, uint8_t);
+    void verifyOperands(std::stack<uint32_t>, unsigned int, std::string);
 
     void reset();
     void show();
     void step();
     void run();
-    void verifyOne();
-
-    void bipush();
 
     union {
         int32_t ivalue;
@@ -106,7 +103,7 @@ void LSMVM::run()
         opcode = text[ip];
 
         if (debug)
-            fprintf(stdout, "0x%04x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
+            fprintf(stdout, "0x%04x - Fetching instruction %-10s ", ip, opcodes[opcode].c_str());
 
         label = parse16(text[ip+1], text[ip+2]);
 
@@ -134,7 +131,8 @@ void LSMVM::run()
             OTHERS(opcode);
         }
         else{
-            //error
+            fprintf(stderr, "\033[1m\033[91mError:\033[0m Invalid opcode: 0x%x.\n", opcode);
+            exit(EXIT_FAILURE);
         }
         step();
 
@@ -142,12 +140,6 @@ void LSMVM::run()
             fprintf(stdout, "\n");
             sleep_for(nanoseconds(250000000)); // wait 0.25 secs in case we enter ina endless loop
         }
-
-        //if (debug && continue_)
-        //    fprintf(stdout, "0x%04x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
-
-        //std::cout << ds;
-
     }
 
     if (debug)
@@ -156,11 +148,7 @@ void LSMVM::run()
 
 void LSMVM::ALU(uint8_t opcode){
 
-    if(ds.size()<2){
-      continue_ = false;
-      fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 2 operands. \n");
-      exit(EXIT_SUCCESS);
-    }
+    verifyOperands(ds, 2, "data");
 
     int32_t a, b;
 
@@ -215,11 +203,7 @@ void LSMVM::ALU(uint8_t opcode){
 
 void LSMVM::FPU(uint8_t opcode){
 
-  if(ds.size()<2){
-    continue_ = false;
-    fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 2 operands. \n");
-    exit(EXIT_SUCCESS);
-  }
+    verifyOperands(ds, 2, "data");
 
     float a, b;
     a = ds.top();
@@ -263,11 +247,8 @@ void LSMVM::FPU(uint8_t opcode){
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
-  if(ds.size()<1){
-    continue_ = false;
-    fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
-    exit(EXIT_SUCCESS);
-  }
+  verifyOperands(ds, 1, "data");
+
   if (debug)
       fprintf(stdout, "label: 0x%04x", label);
 
@@ -313,11 +294,7 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
 void LSMVM::RET(){
 
-    if(cs.size()<1){
-      continue_ = false;
-      fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the call stack. Should be present at least 1 operands. \n");
-      exit(EXIT_SUCCESS);
-    }
+    verifyOperands(cs, 1, "call");
 
     ip = cs.top();
     cs.pop();
@@ -344,15 +321,16 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=4;
             break;
         case 0x53:
-            verifyOne();
+            verifyOperands(ds, 1, "data");
             ds.pop();
             break;
         case 0x54:
+            verifyOperands(ds, 1, "data");
             a = ds.top();
             ds.push(a);
             break;
         case 0x55:
-            verifyOne();
+            verifyOperands(ds, 1, "data");
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -362,7 +340,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(a);
             break;
         case 0x56:
-            verifyOne();
+            verifyOperands(ds, 2, "data");
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -373,7 +351,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(a);
             break;
         case 0x57:
-            verifyOne();
+            verifyOperands(ds, 2, "data");
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -388,7 +366,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=2;
             break;
         case 0x61:
-            verifyOne();
+            verifyOperands(ds, 1, "data");
             a = ds.top();
             ds.pop();
             if (debug)
@@ -397,7 +375,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=2;
             break;
         case 0x62:
-            verifyOne();
+            verifyOperands(ds, 2, "data");
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -405,7 +383,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x63:
-            verifyOne();
+            verifyOperands(ds, 3, "data");
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -415,7 +393,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             data[a+i] = v;
             break;
         case 0x64:
-            verifyOne();
+            verifyOperands(ds, 2, "data");
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -423,7 +401,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x65:
-            verifyOne();
+            verifyOperands(ds, 3, "data");
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -433,7 +411,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             data[a+i] = v;
             break;
         case 0x66:
-            verifyOne();
+            verifyOperands(ds, 2, "data");
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -441,7 +419,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x67:
-            verifyOne();
+            verifyOperands(ds, 3, "data");
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -459,12 +437,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
 void LSMVM::OTHERS(uint8_t opcode) {
 
     switch (opcode) {
-        case 0x00:
-            // do nothing
-            break;
-            case 0xF0:
-            exit(EXIT_SUCCESS);
-            break;
+        // case 0x00: do nothing
         case 0xF1:
             ds.push(getchar());
             break;
@@ -474,7 +447,6 @@ void LSMVM::OTHERS(uint8_t opcode) {
 
             fprintf(stdout, "%c", ds.top());
             ds.pop();
-
 
             if (debug)
                 fprintf(stdout, "'");
@@ -665,12 +637,12 @@ void LSMVM::show()
     fprintf(stdout, "\n}\n");
 }
 
-void LSMVM::verifyOne(){
-  if(ds.size()<1){
-    continue_ = false;
-    fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
-    exit(EXIT_FAILURE);
-  }
+void LSMVM::verifyOperands(std::stack<uint32_t> stack, unsigned int n, std::string name){
+    unsigned int size = stack.size();
+    if(size < n) {
+        fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operands, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n, size);
+        exit(EXIT_FAILURE);
+    }
 }
 
 static const char* options =
