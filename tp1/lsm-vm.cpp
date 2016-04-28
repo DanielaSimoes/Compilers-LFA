@@ -7,7 +7,6 @@
 #include <thread>
 #include <iostream>
 #include <math.h>
-
 #include <stack>
 #include <map>
 
@@ -146,6 +145,8 @@ void LSMVM::run()
         //if (debug && continue_)
         //    fprintf(stdout, "0x%04x - Executing instruction %-10s ", ip, opcodes[opcode].c_str());
 
+        //std::cout << ds;
+
     }
 
     if (debug)
@@ -160,7 +161,7 @@ void LSMVM::ALU(uint8_t opcode){
       exit(EXIT_SUCCESS);
     }
 
-    uint32_t a, b;
+    int32_t a, b;
 
     a = ds.top();
     ds.pop();
@@ -514,8 +515,9 @@ void LSMVM::OTHERS(uint8_t opcode) {
             if (debug)
                 fprintf(stdout, "putchar() '");
 
-            putchar(ds.top());
-            ds.pop();
+            fprintf(stdout, "%c", ds.top());
+            //putchar(ds.top());
+
 
             if (debug)
                 fprintf(stdout, "'");
