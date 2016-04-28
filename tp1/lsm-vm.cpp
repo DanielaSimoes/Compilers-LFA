@@ -516,7 +516,7 @@ void LSMVM::OTHERS(uint8_t opcode) {
                 fprintf(stdout, "putchar() '");
 
             fprintf(stdout, "%c", ds.top());
-            //putchar(ds.top());
+            ds.pop();
 
 
             if (debug)
