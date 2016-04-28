@@ -52,7 +52,7 @@ public:
 
     uint16_t parse16(uint8_t, uint8_t);
     uint32_t parse32(uint8_t, uint8_t, uint8_t, uint8_t);
-    void verifyOperands(std::stack<uint32_t>, unsigned int, std::string, bool specialForUnaryOperations);
+    void verifyOperands(std::stack<uint32_t>, unsigned int, std::string);
 
     void reset();
     void show();
@@ -151,55 +151,52 @@ void LSMVM::ALU(uint8_t opcode){
     int32_t a, b;
 
     if(opcode == 0x15){
-      verifyOperands(ds, 1, "data", true);
+      verifyOperands(ds, 1, "data");
       a = ds.top();
       ds.pop();
+      ds.push(-a);
     }else{
-      verifyOperands(ds, 2, "data", false);
+      verifyOperands(ds, 2, "data");
       a = ds.top();
       ds.pop();
       b = ds.top();
       ds.pop();
-    }
-    switch(opcode){
-        case 0x10:
-            ds.push(b+a);
-            break;
-        case 0x11:
-            ds.push(b-a);
-            break;
-        case 0x12:
-            ds.push(b*a);
-            break;
-        case 0x13:
-            ds.push(b/a);
-            break;
-        case 0x14:
-            ds.push(a%b);
-            break;
-        case 0x15:
-            ds.push(b);
-            ds.push(-a);
-            break;
-        case 0x16:
-            ds.push(b&a);
-            break;
-        case 0x17:
-            ds.push(b|a);
-            break;
-        case 0x18:
-            ds.push(b^a);
-            break;
-        case 0x19:
-            ds.push(b<<a);
-            break;
-        case 0x1a:
-            ds.push(b>>a);
-            break;
-        case 0x1b:
-            uint32_t ub = b;
-            ds.push(ub>>a);
-            break;
+        switch(opcode){
+            case 0x10:
+                ds.push(b+a);
+                break;
+            case 0x11:
+                ds.push(b-a);
+                break;
+            case 0x12:
+                ds.push(b*a);
+                break;
+            case 0x13:
+                ds.push(b/a);
+                break;
+            case 0x14:
+                ds.push(a%b);
+                break;
+            case 0x16:
+                ds.push(b&a);
+                break;
+            case 0x17:
+                ds.push(b|a);
+                break;
+            case 0x18:
+                ds.push(b^a);
+                break;
+            case 0x19:
+                ds.push(b<<a);
+                break;
+            case 0x1a:
+                ds.push(b>>a);
+                break;
+            case 0x1b:
+                uint32_t ub = b;
+                ds.push(ub>>a);
+                break;
+        }
     }
 
     if (debug)
@@ -209,20 +206,29 @@ void LSMVM::ALU(uint8_t opcode){
 void LSMVM::FPU(uint8_t opcode){
 
     float a, b;
-
-    if(opcode == 0x25 || opcode == 0x26 || opcode == 0x27){
-      verifyOperands(ds, 1, "data", true);
+    bool fneg = opcode == 0x25, i2f = opcode == 0x26, f2i = opcode == 0x27;
+    if (fneg) {
+      verifyOperands(ds, 1, "data");
       a = ds.top();
       ds.pop();
-    }else{
-      verifyOperands(ds, 2, "data", false);
+      ds.push(-a);
+    } else if (i2f) {
+      verifyOperands(ds, 1, "data");
+      a = ds.top();
+      ds.pop();
+      ds.push((float)a);
+    } else if (f2i) {
+      verifyOperands(ds, 1, "data");
+      a = ds.top();
+      ds.pop();
+      ds.push((int)a);
+    } else {
+      verifyOperands(ds, 2, "data");
       a = ds.top();
       ds.pop();
       b = ds.top();
       ds.pop();
-    }
-
-    switch(opcode){
+      switch(opcode){
         case 0x20:
             ds.push(b+a);
             break;
@@ -238,18 +244,7 @@ void LSMVM::FPU(uint8_t opcode){
         case 0x24:
             ds.push(fmod(a, b));
             break;
-        case 0x25:
-            ds.push(b);
-            ds.push(-a);
-            break;
-        case 0x26:
-            ds.push(b);
-            ds.push((float)a);
-            break;
-        case 0x27:
-            ds.push(b);
-            ds.push((int)a);
-            break;
+        }
     }
 
     if (debug)
@@ -259,7 +254,7 @@ void LSMVM::FPU(uint8_t opcode){
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
-  verifyOperands(ds, 1, "data", false);
+  verifyOperands(ds, 1, "data");
 
   if (debug)
       fprintf(stdout, "label: 0x%04x", label);
@@ -306,7 +301,7 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
 void LSMVM::RET(){
 
-    verifyOperands(cs, 1, "call", false);
+    verifyOperands(cs, 1, "call");
 
     ip = cs.top();
     cs.pop();
@@ -333,16 +328,16 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=4;
             break;
         case 0x53:
-            verifyOperands(ds, 1, "data", false);
+            verifyOperands(ds, 1, "data");
             ds.pop();
             break;
         case 0x54:
-            verifyOperands(ds, 1, "data", false);
+            verifyOperands(ds, 1, "data");
             a = ds.top();
             ds.push(a);
             break;
         case 0x55:
-            verifyOperands(ds, 1, "data", false);
+            verifyOperands(ds, 1, "data");
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -352,7 +347,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(a);
             break;
         case 0x56:
-            verifyOperands(ds, 2, "data", false);
+            verifyOperands(ds, 2, "data");
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -363,7 +358,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(a);
             break;
         case 0x57:
-            verifyOperands(ds, 2, "data", false);
+            verifyOperands(ds, 2, "data");
             a = ds.top();
             ds.pop();
             b = ds.top();
@@ -378,7 +373,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=2;
             break;
         case 0x61:
-            verifyOperands(ds, 1, "data", false);
+            verifyOperands(ds, 1, "data");
             a = ds.top();
             ds.pop();
             if (debug)
@@ -387,7 +382,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ip+=2;
             break;
         case 0x62:
-            verifyOperands(ds, 2, "data", false);
+            verifyOperands(ds, 2, "data");
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -395,7 +390,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x63:
-            verifyOperands(ds, 3, "data", false);
+            verifyOperands(ds, 3, "data");
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -405,7 +400,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             data[a+i] = v;
             break;
         case 0x64:
-            verifyOperands(ds, 2, "data", false);
+            verifyOperands(ds, 2, "data");
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -413,7 +408,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x65:
-            verifyOperands(ds, 3, "data", false);
+            verifyOperands(ds, 3, "data");
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -423,7 +418,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             data[a+i] = v;
             break;
         case 0x66:
-            verifyOperands(ds, 2, "data", false);
+            verifyOperands(ds, 2, "data");
             i = ds.top();
             ds.pop();
             a = ds.top();
@@ -431,7 +426,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.push(data[a+i]);
             break;
         case 0x67:
-            verifyOperands(ds, 3, "data", false);
+            verifyOperands(ds, 3, "data");
             v = ds.top();
             ds.pop();
             i = ds.top();
@@ -457,7 +452,7 @@ void LSMVM::OTHERS(uint8_t opcode) {
             if (debug)
                 fprintf(stdout, "putchar() '");
 
-            verifyOperands(ds, 1, "data", false);
+            verifyOperands(ds, 1, "data");
             fprintf(stdout, "%c", ds.top());
             ds.pop();
 
@@ -650,18 +645,14 @@ void LSMVM::show()
     fprintf(stdout, "\n}\n");
 }
 
-void LSMVM::verifyOperands(std::stack<uint32_t> stack, unsigned int n, std::string name, bool specialForUnaryOperations) {
+void LSMVM::verifyOperands(std::stack<uint32_t> stack, unsigned int n, std::string name) {
     unsigned int size = stack.size();
-    if (specialForUnaryOperations) {
-        if(size < n-1) {
-            fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operand, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n-1, size);
-            exit(EXIT_FAILURE);
-        }
-    } else {
-        if(size < n) {
-            fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operands, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n, size);
-            exit(EXIT_FAILURE);
-        }
+    if(size < n && n == 1) {
+        fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operand, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n-1, size);
+        exit(EXIT_FAILURE);
+    } else if(size < n) {
+        fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operands, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n, size);
+        exit(EXIT_FAILURE);
     }
 }
 
