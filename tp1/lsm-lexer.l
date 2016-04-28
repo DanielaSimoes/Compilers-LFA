@@ -38,7 +38,7 @@ whitespace    [ \r\t]*
 {hexadecimal}   { UPDATE_LOC; yylval->vint = (int32_t)strtol(yytext, NULL, 0); return INTEGER; }
 {decimal}       { UPDATE_LOC; yylval->vint = atoi(yytext); return INTEGER; }
 {float}         { UPDATE_LOC; yylval->vfloat = atof(yytext); return FLOAT; }
-{char}          { UPDATE_LOC; yylval->vstr = strdup(yytext); return INTEGER; }
+{char}          { UPDATE_LOC; yylval->vint = int(yytext[1]); return INTEGER; }
 {string}        { UPDATE_LOC; yylval->vstr = strdup(yytext); return STRING; }
 "iadd"          { UPDATE_LOC; yylval->opcode = 0x10; return INTOP;  }
 "isub"          { UPDATE_LOC; yylval->opcode = 0x11; return INTOP;  }
