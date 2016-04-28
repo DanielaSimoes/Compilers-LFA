@@ -151,11 +151,11 @@ void LSMVM::ALU(uint8_t opcode){
     int32_t a, b;
 
     if(opcode == 0x15){
-      verifyOperands(ds, 1, "data");
+      verifyOperands(ds, 1, "data", true);
       a = ds.top();
       ds.pop();
     }else{
-      verifyOperands(ds, 2, "data");
+      verifyOperands(ds, 2, "data", false);
       a = ds.top();
       ds.pop();
       b = ds.top();
@@ -208,13 +208,20 @@ void LSMVM::ALU(uint8_t opcode){
 
 void LSMVM::FPU(uint8_t opcode){
 
-    verifyOperands(ds, 2, "data", opcode==0x25);
-
     float a, b;
-    a = ds.top();
-    ds.pop();
-    b = ds.top();
-    ds.pop();
+
+    if(opcode == 0x25 || opcode == 0x26 || opcode == 0x27){
+      verifyOperands(ds, 1, "data", true);
+      a = ds.top();
+      ds.pop();
+    }else{
+      verifyOperands(ds, 2, "data", false);
+      a = ds.top();
+      ds.pop();
+      b = ds.top();
+      ds.pop();
+    }
+
     switch(opcode){
         case 0x20:
             ds.push(b+a);
