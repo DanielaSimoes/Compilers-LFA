@@ -266,7 +266,6 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
     fprintf(stderr, "\033[1m \033[91m Error:\033[0m Incorrect number of operands in the data stack. Should be present at least 1 operands. \n");
     exit(EXIT_SUCCESS);
   }
-
   if (debug)
       fprintf(stdout, "label: 0x%04x", label);
 
@@ -516,6 +515,7 @@ void LSMVM::OTHERS(uint8_t opcode) {
                 fprintf(stdout, "putchar() '");
 
             putchar(ds.top());
+            ds.pop();
 
             if (debug)
                 fprintf(stdout, "'");
