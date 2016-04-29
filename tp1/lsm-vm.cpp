@@ -161,42 +161,50 @@ void LSMVM::ALU(uint8_t opcode){
       ds.pop();
       b = ds.top();
       ds.pop();
-        switch(opcode){
-            case 0x10:
-                ds.push(b+a);
-                break;
-            case 0x11:
-                ds.push(b-a);
-                break;
-            case 0x12:
-                ds.push(b*a);
-                break;
-            case 0x13:
-                ds.push(b/a);
-                break;
-            case 0x14:
-                ds.push(a%b);
-                break;
-            case 0x16:
-                ds.push(b&a);
-                break;
-            case 0x17:
-                ds.push(b|a);
-                break;
-            case 0x18:
-                ds.push(b^a);
-                break;
-            case 0x19:
-                ds.push(b<<a);
-                break;
-            case 0x1a:
-                ds.push(b>>a);
-                break;
-            case 0x1b:
-                uint32_t ub = b;
-                ds.push(ub>>a);
-                break;
-        }
+      if ((opcode == 0x19 || opcode == 0x1a || opcode == 0x1b) && a < 1) {
+          fprintf(stderr, "\033[1m\033[91mError:\033[0m Shift by a nonpositive value while executing instruction \"%s\".\n", opcodes[text[ip]].c_str());
+          exit(EXIT_FAILURE);
+      }
+      switch(opcode) {
+          case 0x10:
+              ds.push(b+a);
+              break;
+          case 0x11:
+              ds.push(b-a);
+              break;
+          case 0x12:
+              ds.push(b*a);
+              break;
+          case 0x13:
+              if (a == 0) {
+                  fprintf(stderr, "\033[1m\033[91mError:\033[0m Division by zero while executing instruction \"%s\".\n", opcodes[text[ip]].c_str());
+                  exit(EXIT_FAILURE);
+              }
+              ds.push(b/a);
+              break;
+          case 0x14:
+              ds.push(a%b);
+              break;
+          case 0x16:
+              ds.push(b&a);
+              break;
+          case 0x17:
+              ds.push(b|a);
+              break;
+          case 0x18:
+              ds.push(b^a);
+              break;
+          case 0x19:
+              ds.push(b<<a);
+              break;
+          case 0x1a:
+              ds.push(b>>a);
+              break;
+          case 0x1b:
+              uint32_t ub = b;
+              ds.push(ub>>a);
+              break;
+      }
     }
 
     if (debug)
@@ -239,6 +247,10 @@ void LSMVM::FPU(uint8_t opcode){
             ds.push(b*a);
             break;
         case 0x23:
+            if (a == 0) {
+                fprintf(stderr, "\033[1m\033[91mError:\033[0m Division by zero while executing instruction \"%s\".\n", opcodes[text[ip]].c_str());
+                exit(EXIT_FAILURE);
+            }
             ds.push(b/a);
             break;
         case 0x24:
@@ -250,7 +262,6 @@ void LSMVM::FPU(uint8_t opcode){
     if (debug)
         printf("a: %f, b: %f, result: %f", a, b, (float)ds.top());
 }
-
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
