@@ -613,7 +613,7 @@ bool LSMVM::parse(const char* path)
     opcodes[0x55] = "dup_x1" ;
     opcodes[0x56] = "dup2"   ;
     opcodes[0x57] = "swap"   ;
-    opcodes[0x59] = "la"   ;
+    opcodes[0x59] = "la"     ;
     opcodes[0x60] = "load"   ;
     opcodes[0x61] = "store"  ;
     opcodes[0x62] = "baload" ;
