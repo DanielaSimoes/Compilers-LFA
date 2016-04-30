@@ -156,7 +156,7 @@ dir_float   :   DIRFLOAT float_args
 
 float_args  :   FLOAT {
                     if (p -> first_time) {
-                        unsigned char *fl; fl = (unsigned char*)&($1);
+                        float *fl; fl = (float*)&($1);
                         for (int i = 3; i != -1; i--) {
                         p -> data.push_back(fl[i]);
                         }
@@ -169,7 +169,7 @@ float_args  :   FLOAT {
                 }
             |   float_args ',' FLOAT    {
                     if (p -> first_time) {
-                        unsigned char *fl; fl = (unsigned char*)&($3);
+                        float *fl; fl = (float*)&($3);
                         for (int i = 3; i != -1; i--)
                         p -> data.push_back(fl[i]);
                     }
