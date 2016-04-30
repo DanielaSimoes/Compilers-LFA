@@ -213,8 +213,9 @@ void LSMVM::ALU(uint8_t opcode){
 
 void LSMVM::FPU(uint8_t opcode){
 
-    float a, b;
+    float a = 0.0, b=0.0;
     bool fneg = opcode == 0x25, i2f = opcode == 0x26, f2i = opcode == 0x27;
+    bool f = true;
     if (fneg) {
       verifyOperands(ds, 1, "data");
       a = ds.top();
@@ -227,9 +228,12 @@ void LSMVM::FPU(uint8_t opcode){
       ds.push((float)a);
     } else if (f2i) {
       verifyOperands(ds, 1, "data");
+      f = false;
       a = ds.top();
       ds.pop();
       ds.push((int)a);
+      if (debug && f == false)
+           printf("a: %d, b: %d, result: %d", (int)a, (int)b, (int)ds.top());
     } else {
       verifyOperands(ds, 2, "data");
       a = ds.top();
@@ -258,9 +262,10 @@ void LSMVM::FPU(uint8_t opcode){
             break;
         }
     }
-
-    if (debug)
+    
+    if (debug && f == true)
         printf("a: %f, b: %f, result: %f", a, b, (float)ds.top());
+    
 }
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
