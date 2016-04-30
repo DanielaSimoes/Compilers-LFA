@@ -77,6 +77,7 @@ whitespace    [ \r\t]*
 "dup_x1"        { UPDATE_LOC; yylval->opcode = 0x55; return STACK; }
 "dup2"          { UPDATE_LOC; yylval->opcode = 0x56; return STACK; }
 "swap"          { UPDATE_LOC; yylval->opcode = 0x57; return STACK; }
+"la"			{ UPDATE_LOC; yylval->opcode = 0x59; return MEMACCESS; }
 "load"          { UPDATE_LOC; yylval->opcode = 0x60; return MEMACCESS; }
 "store"         { UPDATE_LOC; yylval->opcode = 0x61; return MEMACCESS; }
 "baload"        { UPDATE_LOC; yylval->opcode = 0x62; return STACK; }
