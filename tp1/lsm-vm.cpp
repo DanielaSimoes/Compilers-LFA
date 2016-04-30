@@ -161,8 +161,8 @@ void LSMVM::ALU(uint8_t opcode){
       ds.pop();
       b = ds.top();
       ds.pop();
-      if ((opcode == 0x19 || opcode == 0x1a || opcode == 0x1b) && a < 1) {
-          fprintf(stderr, "\033[1m\033[91mError:\033[0m Shift by a nonpositive value while executing instruction \"%s\".\n", opcodes[text[ip]].c_str());
+      if ((opcode == 0x19 || opcode == 0x1a || opcode == 0x1b) && a < 0) {
+          fprintf(stderr, "\033[1m\033[91mError:\033[0m Shift by a negative value while executing instruction \"%s\".\n", opcodes[text[ip]].c_str());
           exit(EXIT_FAILURE);
       }
       switch(opcode) {
@@ -262,10 +262,10 @@ void LSMVM::FPU(uint8_t opcode){
             break;
         }
     }
-    
+
     if (debug && f == true)
         printf("a: %f, b: %f, result: %f", a, b, (float)ds.top());
-    
+
 }
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
