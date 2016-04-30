@@ -124,7 +124,7 @@ void LSMVM::run()
         else if (opcode == 0x40){
             RET();
         }
-        else if (opcode >= 0x50 && opcode <= 0x67){
+        else if ((opcode >= 0x50 && opcode <= 0x57) || (opcode >= 0x59 && opcode <= 0x67)){
             STACK(opcode, b3, b2, b1, b0);
         }
         else if ((opcode >= 0xF0 && opcode <= 0xF2) || opcode == 0x00){
@@ -376,6 +376,12 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             ds.pop();
             ds.push(a);
             ds.push(b);
+            break;
+        case 0x59:
+            if (debug)
+                fprintf(stdout, "label: 0x%04x, ", parse16(b3, b2));
+            ds.push(parse16(b3, b2));
+            ip+=2;
             break;
         case 0x60:
             if (debug)

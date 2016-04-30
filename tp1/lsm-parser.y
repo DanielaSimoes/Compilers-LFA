@@ -181,7 +181,6 @@ float_args  :   FLOAT {
                 }
             ;
 
-
 dir_string  :   DIRSTRING STRING {
                     if (p -> first_time) {
                         for (int i = (strlen($2)*8)-1; i != -1; i-=8) {
@@ -221,7 +220,6 @@ text_label  :   LABEL {
                     }
                 } ':'
             ;
-
 
 instruction :   regular_inst      { if(p -> first_time) {increment_text_size(p, 1);} else { parse_reg(p,$1); }                                                     }
             |   JUMPOP LABEL      { if(p -> first_time) {increment_text_size(p, 3);} else { parse_jump(p, $1, p->lbl_table->getValue("TEXT", $2), &yylloc); free($2); } }
@@ -314,7 +312,6 @@ void parse_jump(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16
     p -> text.push_back(label >> 8);
     p -> text.push_back(label & 0x00FF);
 }
-
 
 void push_word(struct LSMData* p, uint32_t word){
     p -> data.push_back(word >> 24);
