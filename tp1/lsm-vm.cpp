@@ -28,7 +28,7 @@ public:
     uint16_t data_size = 0;
     uint16_t text_size = 0;
 
-    bool debug = true;
+    bool debug = false;
     bool good_ = false;
     inline bool good() { return good_; }
     inline bool bad() { return ! good_; }
@@ -682,6 +682,7 @@ void LSMVM::verifyOperands(std::stack<uint32_t> stack, unsigned int n, std::stri
 static const char* options =
     "OPTIONS:\n"
     "=======\n"
+    " -d            debug mode\n"
     " -h            this help\n"
     " -x            show contents in ascii-hexa\n";
 
@@ -689,13 +690,18 @@ int main(int argc, char* argv[])
 {
     /* mode variables */
     bool show_only = false;
+    bool debug_mode = false;
 
     /* process command line arguments */
     int op = -1;
-    while ((op = getopt(argc, argv, "hs")) != -1)
+    while ((op = getopt(argc, argv, "dhs")) != -1)
     {
         switch (op)
         {
+            case 'd':
+                debug_mode = true;
+                break;
+
             case 'h':
                 printf("%s [OPTIONS] lsm-file\n%s\n", argv[0], options);
                 return 0;
@@ -725,6 +731,9 @@ int main(int argc, char* argv[])
         fprintf(stderr, "LSMVM not good\n");
         return EXIT_FAILURE;
     }
+
+    /* set debug mode */
+    vm.debug = debug_mode;
 
     /* show or execute */
     if (show_only)

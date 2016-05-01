@@ -7,6 +7,7 @@
 static const char* options =
     "OPTIONS:\n"
     "=======\n"
+    " -d            debug mode\n"
     " -h            this help\n"
     " -o file-path  output file (default: stdout)\n"
     " -s            syntax only\n";
@@ -20,6 +21,9 @@ int main(int argc, char *argv[])
     /* instantiate main data structure and init it with default values */
     LSMData lsm_data;
     FILE* ofp = NULL;
+
+    /* instantiate debug flag for real-time values on vectors */
+    bool debug = false;
 
     if (yylex_init(&lsm_data.scanner))
     {
@@ -37,7 +41,7 @@ int main(int argc, char *argv[])
 
     /* process command line arguments */
     int op = -1;
-    while ((op = getopt(argc, argv, "ho:s")) != -1)
+    while ((op = getopt(argc, argv, "dho:s")) != -1)
     {
         switch (op)
         {
@@ -55,6 +59,10 @@ int main(int argc, char *argv[])
 
             case 's':
                 lsm_data.syntax_only = true;
+                break;
+
+            case 'd':
+                debug = true;
                 break;
 
             default:
@@ -118,48 +126,50 @@ int main(int argc, char *argv[])
         fprintf(stdout, "\n%d errors found. Binary file not generated.\n", lsm_data.error_cnt);
     }
     else {
-        /* print data vector for debug */
-        int address = 0;
-        fprintf(stdout, "\n");
-        fprintf(stdout, "Data Vector content:");
-        if (!lsm_data.data.size()) {
-            fprintf(stdout, " Empty");
-        }
-        else {
+        if (debug) {
+            /* print data vector for debug */
+            int address = 0;
             fprintf(stdout, "\n");
-            for(std::vector<uint8_t>::iterator it = lsm_data.data.begin(); it != lsm_data.data.end(); ++it) {
-                if (address % 4 == 0)
-                    fprintf(stdout, "\n %5x:\t", address);
-                address++;
-                fprintf(stdout, "%x\t", *it);
+            fprintf(stdout, "Data Vector content:");
+            if (!lsm_data.data.size()) {
+                fprintf(stdout, " Empty");
             }
-        }
-        printf("\n\n");
-
-        /* print text vector for debug */
-        address = 0;
-        fprintf(stdout, "Text Vector content:");
-        if (!lsm_data.text.size()) {
-            fprintf(stdout, " Empty");
-        }
-        else {
-            fprintf(stdout, "\n\ntext_size: %5d\n", lsm_data.text_size);
-            for(std::vector<uint8_t>::iterator it = lsm_data.text.begin(); it != lsm_data.text.end(); ++it) {
-                if (address % 4 == 0)
-                    fprintf(stdout, "\n %5x:\t", address);
-                address++;
-                fprintf(stdout, "%x\t", *it);
+            else {
+                fprintf(stdout, "\n");
+                for(std::vector<uint8_t>::iterator it = lsm_data.data.begin(); it != lsm_data.data.end(); ++it) {
+                    if (address % 4 == 0)
+                        fprintf(stdout, "\n %5x:\t", address);
+                    address++;
+                    fprintf(stdout, "%x\t", *it);
+                }
             }
-        }
-        printf("\n\n");
+            printf("\n\n");
 
-        /* print symbol table for debug */
-        fprintf(stdout, "Symbol table:\n\n");
-        fprintf(stdout, "%20s%20s%20s\n", "Name", "Tipo", "Value");
-        for(auto p: lsm_data.lbl_table->table) {
-            fprintf(stdout, "%20s%20s%20d\n", p.first.c_str(), std::get<0>(p.second).c_str(), std::get<1>(p.second));
+            /* print text vector for debug */
+            address = 0;
+            fprintf(stdout, "Text Vector content:");
+            if (!lsm_data.text.size()) {
+                fprintf(stdout, " Empty");
+            }
+            else {
+                fprintf(stdout, "\n\ntext_size: %5d\n", lsm_data.text_size);
+                for(std::vector<uint8_t>::iterator it = lsm_data.text.begin(); it != lsm_data.text.end(); ++it) {
+                    if (address % 4 == 0)
+                        fprintf(stdout, "\n %5x:\t", address);
+                    address++;
+                    fprintf(stdout, "%x\t", *it);
+                }
+            }
+            printf("\n\n");
+
+            /* print symbol table for debug */
+            fprintf(stdout, "Symbol table:\n\n");
+            fprintf(stdout, "%20s%20s%20s\n", "Name", "Tipo", "Value");
+            for(auto p: lsm_data.lbl_table->table) {
+                fprintf(stdout, "%20s%20s%20d\n", p.first.c_str(), std::get<0>(p.second).c_str(), std::get<1>(p.second));
+            }
+            printf("\n");
         }
-        printf("\n");
 
         /* prepare content for binary file */
         uint32_t magic = 0xDADABADE ;
@@ -185,7 +195,7 @@ int main(int argc, char *argv[])
         uint16_t data_size_swapped = swap16(data_size / 4);
         uint16_t text_size_swapped = swap16(text_size);
 
-        fprintf(stdout, "%x\t", *data);
+        if (debug) fprintf(stdout, "%x\t", *data);
 
         /* fill file */
         fwrite(&magic, 4, 1, ofp);
