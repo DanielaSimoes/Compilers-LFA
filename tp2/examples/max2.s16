@@ -1,0 +1,104 @@
+/* Programa escrito em S16 */
+
+procedure printStr(string s)
+{
+    int i = 0;
+    loop 
+    {
+        if ( s[i] == 0 ) return;
+        writeChar(s[i]);
+        i++;
+    }
+}
+
+procedure printInt(int n)
+{
+    byte buf[6];
+    buf[5] = '\0';
+    int r, d;
+    int i = 4;
+    loop
+    {
+        r = n % 10;
+        buf[i] = r;
+        d = n / 10;
+        if ( d == 0 ) break;
+        i--;
+    }
+    int j = 0;
+    if ( i != 0 )
+    {
+        loop
+        {
+            buf[j] = buf[i];
+            if ( i == 6 ) break;
+            j++;
+            i++;
+        }
+    }
+    printStr(buf);
+}
+
+function int readInt()
+{
+    int n = 0;
+    byte b;
+    loop
+    {
+        b = readChar();
+        if ( b < '0' or b > '9' )
+        {
+            return n;
+        }
+        n = 10*n+(b-'0');
+    }
+}
+
+program MAX
+{
+    /* ask for number of numbers */
+    printStr("How many numbers? ");
+    int n;
+    n = readInt();
+    if ( n > 10 ) {
+        printStr("Bad number of numbers, aborting\n");
+        exit();
+    }
+
+    /* read array values */
+    int[10] in;
+    int i;
+    loop
+    {
+        in[i] = readInt();
+        i = i + 1;
+        if ( i == 10) break;
+    }
+
+    /* compute max */
+    int max;
+    max = in[0];
+    i = 1;
+    loop
+    {
+        if ( in[i] > max ) max = in[i];
+        i = i + 1;
+        if ( i == n ) break;
+    }
+
+    /* print results */
+    printStr("Max of {");
+    printInt(in[0]);
+    i = 1;
+    loop {
+        printStr(", ");
+        printInt(in[i]);
+        i = i + 1;
+        if ( i == n ) break;
+    }
+    printStr("} is ");
+    printInt(max);
+    printStr("\n");
+    exit();
+}
+
