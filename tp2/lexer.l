@@ -58,18 +58,43 @@ comment2                "/*"
 "readInt()"             { UPDATE_LOC; return READINT; }
 "readChar()"            { UPDATE_LOC; return READCHAR; }
 
-{comment1}  {}
+"=="                    { UPDATE_LOC; yylval->ivalue = 0; return RELOP; }
+"!="                    { UPDATE_LOC; yylval->ivalue = 1; return RELOP; }
+"<"                     { UPDATE_LOC; yylval->ivalue = 2; return RELOP; }
+"<="                    { UPDATE_LOC; yylval->ivalue = 3; return RELOP; }
+">"                     { UPDATE_LOC; yylval->ivalue = 4; return RELOP; }
+">="                    { UPDATE_LOC; yylval->ivalue = 5; return RELOP; }
 
-"/*"        { yycolumn+=yyleng; BEGIN(COMM); }
-<COMM>.     { yycolumn+=yyleng; }
-<COMM>"\n"  { yycolumn = 1; }
-<COMM>"*/"  { yycolumn+=yyleng; BEGIN(INITIAL); }
+"or"                    { UPDATE_LOC; return OR; }
+"and"                   { UPDATE_LOC; return AND; }
+"xor"                   { UPDATE_LOC; return XOR; }
+"not"                   { UPDATE_LOC; return NOT; }
 
-[ \t]       {yycolumn+=yyleng; } 
+{type}\[{decimal}\]     { UPDATE_LOC; yylval -> svalue = strdup(yytext); return ARRAY; }
 
-.           { UPDATE_LOC; return yytext[0]; }
+"byte"                  { UPDATE_LOC; yylval->ivalue = 0; return TYPE; }
+"int"                   { UPDATE_LOC; yylval->ivalue = 1; return TYPE; }
+"float"                 { UPDATE_LOC; yylval->ivalue = 2; return TYPE; }
+"boolean"               { UPDATE_LOC; yylval->ivalue = 3; return TYPE; }
+{id}                    { UPDATE_LOC; yylval->svalue = strdup(yytext); return ID; }
+{hexadecimal}           { UPDATE_LOC; yylval->ivalue = (int32_t)strtol(yytext, NULL, 0); return INTEGER; }
+{decimal}               { UPDATE_LOC; yylval->ivalue = atoi(yytext); return INTEGER; }
+{float}                 { UPDATE_LOC; yylval->fvalue = atof(yytext); return FLOAT; }
+{char}                  { UPDATE_LOC; yylval->svalue = strdup(yytext); return INTEGER; }
+{string}                { UPDATE_LOC; yylval->svalue = strdup(yytext); return STRING; }
 
-\n          { yycolumn = 0; }
+{comment1}              {}
+
+"/*"                    { yycolumn+=yyleng; BEGIN(COMM); }
+<COMM>.                 { yycolumn+=yyleng; }
+<COMM>"\n"              { yycolumn = 1; }
+<COMM>"*/"              { yycolumn+=yyleng; BEGIN(INITIAL); }
+
+[ \t]                   {yycolumn+=yyleng; }
+
+\n                      { yycolumn = 0; }
+
+.                       { UPDATE_LOC; return yytext[0]; }
+
 
 %%
-
