@@ -29,3 +29,4 @@ clean:
 
 cleanall:	clean
 	rm -f lsm-asm lsm-vm
+	find -name \*\.bsm | xargs rm -f
