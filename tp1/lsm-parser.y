@@ -74,22 +74,20 @@ block_list	:	block
 
 block		:	text_block
 			|	data_block
-            |   error '\n' { yyerrok; p -> error_cnt++; }
+            |   error '\n' { yyerrok; }
 		    ;
 
-nline_block :   '\n'
-            |   nline_block '\n'
+data_block	:   DIRDATA data_body
             ;
 
-data_block	:   DIRDATA nline_block
-            |   DIRDATA nline_block data_body
+data_body   :   data_line
+            |   data_body data_line
+            |   error '\n' { yyerrok; }
+            |   data_line error '\n' { yyerrok; }
             ;
 
-data_body   :   data_line nline_block
-            |   data_body data_line nline_block
-            ;
-
-data_line   :   LABEL ':' dir_decl {
+data_line   :   '\n'
+            |   LABEL ':' dir_decl {
                     if(p -> first_time) {
                         std::tuple<std::string,int16_t> varTuple ("DATA",p -> data_size); p->lbl_table->add($1, varTuple); p->data_size = p->data.size()/4; free($1);
                     }
@@ -200,15 +198,17 @@ dir_space   :   DIRSPACE INTEGER {
                 }
             ;
 
-text_block	:   DIRTEXT nline_block
-            |   DIRTEXT nline_block text_body
+text_block	:   DIRTEXT text_body
             ;
 
-text_body   :   text_line nline_block
-            |   text_body text_line nline_block
+text_body   :   text_line
+            |   text_body text_line
+            |   error '\n' { yyerrok; }
+            |   text_line error '\n' { yyerrok; }
             ;
 
-text_line   :   text_label  instruction
+text_line   :   '\n'
+            |   text_label instruction
             |   instruction
             |   text_label
 		    ;
@@ -246,6 +246,7 @@ regular_inst:   INTOP { $$ = $1; }
 
 void yyerror(YYLTYPE* loc, struct LSMData* p, const char* s)
 {
+    p -> error_cnt++;
     fprintf(stderr, "@ line %d: columns %d-%d: %s\n",
             loc->first_line, loc->first_column, loc->last_column, s);
 }
@@ -280,12 +281,12 @@ void parse_word(struct LSMData* p, uint8_t opcode, uint32_t word){
 
 void parse_mem(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16_t> tuple, YYLTYPE* loc) {
     // method to parse the instructions working with memory - identify operations
-    if(!strcmp(std::get<0>(tuple).c_str(), "NONE")) {
+    if(!strcmp(std::get<0>(tuple).c_str(), "NONE"))
         yyerror(loc, p, YY_("error: label does not exist."));
-    }
-    if(!strcmp(std::get<0>(tuple).c_str(), "TEXT")) {
+
+    if(!strcmp(std::get<0>(tuple).c_str(), "TEXT"))
         yyerror(loc, p, YY_("error: invalid label. Cannot load or store an address in the text segment."));
-    }
+
     int16_t label = std::get<1>(tuple);
     if(!strcmp(std::get<0>(tuple).c_str(), "BSS")) {
         label += p -> data.size()/4;
@@ -298,14 +299,11 @@ void parse_mem(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16_
 
 void parse_jump(struct LSMData* p, uint8_t opcode, std::tuple<std::string, int16_t> tuple, YYLTYPE* loc) {
     // method to parse the instructions working with jumps - identify operations
-    if(!strcmp(std::get<0>(tuple).c_str(), "NONE")) {
+    if(!strcmp(std::get<0>(tuple).c_str(), "NONE"))
         yyerror(loc, p, YY_("error: label does not exist."));
-        p -> error_cnt++;
-    }
-    if(!strcmp(std::get<0>(tuple).c_str(), "DATA") || !strcmp(std::get<0>(tuple).c_str(), "BSS")) {
+
+    if(!strcmp(std::get<0>(tuple).c_str(), "DATA") || !strcmp(std::get<0>(tuple).c_str(), "BSS"))
         yyerror(loc, p, YY_("error: invalid label. Cannot jump to a label in the data segment."));
-        p -> error_cnt++;
-    }
 
     int16_t label = std::get<1>(tuple) - p -> text.size();
     p -> text.push_back(opcode);
