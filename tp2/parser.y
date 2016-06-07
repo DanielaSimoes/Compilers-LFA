@@ -64,6 +64,61 @@ item_list       :   /* epsilon */                       { $$ = NULL; }
                 |   item_list item                      { $$ = new ASTSeq($1, $2); }
                 ;
 
+inst_list       :   /* epsilon */                       { $$ = NULL; }
+                |   inst_list instruction               { $$ = new ASTSeq($1, $2); }
+                ;
+
+item            :   instruction                         { $$ = $1; }
+                |   declaration                         { $$ = $1; }
+                |   block                               { $$ = $1; }
+                ;
+
+declaration     :   TYPE { type = $1; } decl_list ';'   { $$ = $3; }
+                ;
+
+decl_list       :   decl                                { $$ = $1; }
+                |   decl_list ',' decl                  { $$ = new ASTSeq($1, $3); }
+                ;
+
+decl            :   ID                                  { $$ = new ASTSpaceDecl($1,4); p->symtable->add($1, type); }
+                |   ID '=' INTEGER                      { $$ = (type==ASTNode::INT) ? (ASTValue*) new ASTIntDecl($1, $3) : (ASTValue*) new ASTFloatDecl($1, $3); }
+                |   ID '=' FLOAT                        {
+                        if (type==ASTNode::INT) {
+                            // error
+                        }
+                        else {
+                            $$ = new ASTFloatDecl($1, $3);
+                        }
+                    }
+                |   ID '[' INTEGER ']'                  { }
+                |   ID '[' ']' '=' '{' array '}'        { }
+                |   ID '[' INTEGER ']' '=' '{' array '}' {  $$ = new ASTArrayHead($3);  }
+                ;
+
+array           :   array_int                           { $$ = $1; }
+//                |   array_float                         { }
+//                |   array_byte                          { }
+//                |   array_char
+                ;
+
+array_int       :   array_int ',' INTEGER               {}//{ $$ = new ASTIntegerArrayValue($3, (ASTIntegerArrayValue*) $1); }
+                |   INTEGER                             {}//{ $$ = new ASTIntegerArrayValue($1, NULL); }
+                ;
+
+//array_float     :   array_float ',' FLOAT
+//                |   FLOAT
+//                ;
+
+//array_byte      :   array_byte ',' BYTE
+//                |   BYTE
+//                ;
+
+//array_char      :   array_char ',' CHAR
+//                |   CHAR
+//                ;
+
+
+
 
 %%
 
