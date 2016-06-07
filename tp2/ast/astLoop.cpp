@@ -13,12 +13,37 @@ void ASTLoop::show(uint32_t indent)
 {
     fprintf(stdout, ";%*s ASTLoop\n", 4*indent, "");
     indent++;
-    loop_block->show(indent);
+    if(loop_block) loop_block->show(indent);
 }
 
 void ASTLoop::generateLSM(FILE* fout)
 {
+    prev_scope = cur_scope;
+    cur_scope = cnt;
+
+    fprintf(stdout, "ASTLoop\n");
+    if(ASTNode::text == 0){
+        fprintf(fout, ".text\n");
+        fprintf(fout, "L%d:\n",ASTNode::cnt);
+        ASTNode::cnt++;
+        ASTNode::text = 1;
+    }
+
+    std::string labelstart = "LoopStart" + std::to_string(cnt);
+    fprintf(fout, "%s\n", (labelstart + ":").c_str());
+    //fprintf(fout, "prev_scope%d\n", ASTLoop::prev_scope);
+
+    if(loop_block) loop_block->generateLSM(fout);
+
+    // if !break
+    fprintf(fout, "goto %s\n", labelstart.c_str());
+    std::string labelend = "LoopEnd" + std::to_string(cnt);
+    fprintf(fout, "%s\n", (labelend + ":").c_str());
+    cur_scope = prev_scope;
+    //gcnt--;
+
+    cur_scope = prev_scope;
+
 }
 
 ////////////////////////////////////////////////////
-

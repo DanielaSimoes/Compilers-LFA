@@ -20,12 +20,12 @@ public:
     int prev_scope;
 
 private:
-    ASTNode* loop_block; 
+    ASTNode* loop_block;
 
 public:
     ASTLoop(ASTNode* lb) : loop_block(lb)
-    { 
-        gcnt++; 
+    {
+        gcnt++;
         cnt = gcnt;
         prev_scope = cur_scope;
         cur_scope = cnt;
