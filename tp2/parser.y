@@ -178,11 +178,42 @@ expression      :	term                     { $$ = $1; }
                 |	expression '-' term      { $$ = new ASTOperation(ASTNode::SUB, (ASTValue*) $1, (ASTValue*) $3); }
                 ;
 
+term            :   fact                    { $$ = $1; }
+                |   term '*' fact           { $$ = new ASTOperation(ASTNode::MUL, (ASTValue*) $1, (ASTValue*) $3); }
+                |   term '/' fact           { $$ = new ASTOperation(ASTNode::DIV, (ASTValue*) $1, (ASTValue*) $3); }
+                |   term '%' fact           { $$ = new ASTOperation(ASTNode::REM, (ASTValue*) $1, (ASTValue*) $3); }
+                ;
+
+fact            :   opnd                    { $$ = $1; }
+                |   '(' TYPE ')' opnd       { $$ = new ASTCast($2, (ASTValue*) $4); } // v falta validar
+                |   '-' fact                { $$ = new ASTOperation(ASTNode::NEG, (ASTValue*) $2, NULL); }
+                ;
+
+opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
+                |   FLOAT                   { $$ = new ASTFloatValue($1); }
+                |   ID                      { int type; p->symtable->getType($1, &type); $$ = new ASTVarValue($1, type); }
+                |   READCHAR ';'            { $$ = new ASTFunctionCall($1); }
+                |   READINT ';'             { $$ = new ASTFunctionCall($1); }
+                |	'(' expression ')'      { $$ = $2; }
+                ;
+
+ifthenelse      :   IF '(' condition ')' inner_cont else_block  { $$ = new ASTIf((ASTValue*) $3, $5, $6); }
+                ;
+
+inner_cont      :   inner_block             { $$ = $1; }
+                |   instruction             { $$ = $1; }
+                ;
+
+else_block      :   /* epsilon */           { $$ = NULL; }
+                |   ELSE inner_cont         { $$ = $2; }
+                ;
+
+loop            :   LOOP inner_cont         { $$ = new ASTLoop($2); }
+                ;
 
 %%
 
-void yyerror(YYLTYPE* loc, struct MainData* p, const char* s, ...)
-{
+void yyerror(YYLTYPE* loc, struct MainData* p, const char* s, ...) {
     va_list ap;
     va_start(ap, s);
 
