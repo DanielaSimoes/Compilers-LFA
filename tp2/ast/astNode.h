@@ -3,13 +3,16 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string>
+
+using namespace std;
 
 ////////////////////////////////////////////////////
 
 /** \brief The base class for all AST nodes */
-class ASTNode
-{
+class ASTNode {
 public:
+
     enum { NONE=0, TEXT, DATA };
 
     enum { BYTE, INT, FLOAT, BOOLEAN };
@@ -25,6 +28,9 @@ public:
     enum { PRINTCHAR, PRINTINT };
 
     static int cur_segm;
+    static int text;
+    static bool init;
+    static int cnt;
 
 public:
     ASTNode() {}

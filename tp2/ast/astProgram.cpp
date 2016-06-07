@@ -5,15 +5,15 @@
 
 ////////////////////////////////////////////////////
 
-void ASTProgram::show(uint32_t indent)
-{
+void ASTProgram::show(uint32_t indent) {
     fprintf(stdout, ";%*s ASTProgram:\n", 4*indent, "");
     indent++;
     program->show(indent);
 }
 
-void ASTProgram::generateLSM(FILE* fout)
-{
+void ASTProgram::generateLSM(FILE* fout) {
+    fprintf(stdout, "ASTProgram\n");
+    program -> generateLSM(fout);
 }
 
 ////////////////////////////////////////////////////

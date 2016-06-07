@@ -7,13 +7,19 @@
 
 ////////////////////////////////////////////////////
 
-void ASTExit::show(uint32_t indent)
-{
+void ASTExit::show(uint32_t indent) {
     fprintf(stdout, ";%*s ASTExit\n", indent, "");
 }
 
-void ASTExit::generateLSM(FILE* fout)
-{
+void ASTExit::generateLSM(FILE* fout) {
+    fprintf(stdout, "ASTExit\n");
+    if (ASTNode::text == 0) {
+        fprintf(fout, ".text\n");
+        fprintf(fout, "L%d:\n", ASTNode::cnt);
+        ASTNode::cnt++;
+        ASTNode::text = 1;
+    }
+    fprintf(fout, "halt\n");
 }
 
 ////////////////////////////////////////////////////
