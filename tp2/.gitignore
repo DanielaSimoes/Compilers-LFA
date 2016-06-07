@@ -1,0 +1,16 @@
+.DS_Store
+*.o
+*.bsm
+*.s
+
+parser.h
+parser.dot
+parser.output
+parser.cpp
+
+lexer.h
+lexer.cpp
+
+s16c
+
+ast/libast.a
