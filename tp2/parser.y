@@ -10,6 +10,7 @@
     #include "main-data.h"
     void yyerror(YYLTYPE* loc, struct MainData* p, const char*, ...);
     #define scan_info p->scaninfo
+    int type;
 }
 
 %error-verbose
@@ -20,52 +21,49 @@
 %lex-param {scan_info}
 %parse-param {struct MainData* p}
 
-%union
-{
+%union {
     int32_t ivalue;
     float fvalue;
     char* svalue;
     ASTNode* node;
-    ASTValue* nvalue;
     int relop;
-    /* ... */
 }
 
-%token PROGRAM 
+%token FUNCTION CONTINUE WHILE DO ARRAY PROCEDURE PROGRAM BYTE IF ELSE BREAK PRINTSTR WRITECHAR RELOP EXIT NULLL
 
-%token <svalue> ID 
+%token <svalue> ID LOOP
+%token <ivalue> INTEGER OR AND XOR NOT READCHAR READINT PRINTCHAR PRINTINT TYPE
+%token <svalue> STRING
+%token <fvalue> FLOAT
 
-%type <node>   outer_block di_seq 
-%type <node>   decl inst
+%type <ivalue> RELOP
+%type <node> block inner_block item_list inst_list item declaration decl_list decl instruction assignment condition xor_expression and_expression not_expression comparison_exp expression term fact opnd ifthenelse inner_cont else_block loop
+%type <node> array array_int
+
+%expect 1   // else ambiguity
 
 %%
-
 program_file    :   PROGRAM ID '(' ')'
-                        {
-                            p->symtable->add($2, SymTable::PROGRAM);
-                        }
-                            outer_block
-                        { 
-                            if (p->no_of_errors > 0) return -1;
+                    {
+                        p->symtable->add($2, SymTable::PROGRAM);
+                    }
+                        block
+                    {
+                        if (p->no_of_errors > 0) return -1;
                             p->ast = new ASTProgram($2, $6);
-                        }
+                    }
                 ;
 
-outer_block     :   '{' di_seq '}'                  { $$ = $2; }
+block           :   '{' item_list '}'                   { $$ = $2; }
                 ;
 
-di_seq          :                                   { $$ = NULL; }
-                |   di_seq decl                     { $$ = new ASTSeq ($1, $2); }
-                |   di_seq inst                     { $$ = new ASTSeq ($1, $2); }
-                |   di_seq error ';'                { $$ = $1; }
-                |   di_seq error '}'                { $$ = $1; }
+inner_block     :   '{' inst_list '}'                   { $$ = $2; }
                 ;
 
-decl            :   'd' ';'        { $$ = NULL; }
+item_list       :   /* epsilon */                       { $$ = NULL; }
+                |   item_list item                      { $$ = new ASTSeq($1, $2); }
                 ;
 
-inst            :   'i' ';'        { $$ = NULL; }
-                ;
 
 %%
 
@@ -76,7 +74,7 @@ void yyerror(YYLTYPE* loc, struct MainData* p, const char* s, ...)
 
     if (loc->first_line)
     {
-        fprintf(stderr, "%d.%d:%d.%d: ", loc->first_line, loc->first_column, 
+        fprintf(stderr, "%d.%d:%d.%d: ", loc->first_line, loc->first_column,
                 loc->last_line, loc->last_column);
     }
     vfprintf(stderr, s, ap);
