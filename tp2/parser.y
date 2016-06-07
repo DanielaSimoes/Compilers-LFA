@@ -117,7 +117,66 @@ array_int       :   array_int ',' INTEGER               {}//{ $$ = new ASTIntege
 //                |   CHAR
 //                ;
 
+instruction     :   ifthenelse                          { $$ = $1; }
+                |   loop                                { $$ = $1; }
+                |   assignment ';'                      { $$ = $1; }
+                |   BREAK ';'                           { $$ = new ASTBreak(); }
+                |   PRINTINT '(' expression ')' ';'     { $$ = new ASTPrint($1, (ASTValue*) $3); }
+                |   PRINTSTR '(' STRING ')' ';' {
+                        char s[2];
+                        strcpy(s, std::to_string(ASTPrintStr::gcnt).c_str());
+                        char c[4] = "s";
+                        strcat(c,s);
+                        /*printf("%s\n", c);*/
+                        /*p -> symtable -> add(strcat(c,strcpy(s, std::to_string(ASTPrintStr::gcnt).c_str())), SymTable::BYTEARRAY);*/
+                        if (!(p -> symtable -> getType(c, NULL)))
+                            p -> symtable -> add(c, SymTable::BYTEARRAY);
+                        $$ = new ASTPrintStr($3);
+                    }
+                |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
+                |   PRINTCHAR '(' INTEGER ')' ';'       { $$ = new ASTPrint($1, new ASTIntegerValue($3)); }
+                |   EXIT ';'                            { $$ = new ASTExit(); }
+                ;
 
+assignment      :   ID  '=' expression  {
+    if (!(p -> symtable -> getType($1, &type)))
+    {
+        // label nao existe
+    } else if (type == ASTNode::FLOAT && ((ASTValue*)$3)->type == ASTNode::INT) {
+        $$ = new ASTAssignToVar($1, type, new ASTCast(ASTNode::FLOAT, (ASTValue*) $3));
+    } else if (type == ASTNode::INT && ((ASTValue*)$3)->type == ASTNode::FLOAT) {
+        $$ = new ASTAssignToVar($1, type, new ASTCast(ASTNode::INT, (ASTValue*) $3));
+    } else {
+        $$ = new ASTAssignToVar($1, type, (ASTValue*) $3);
+    }
+}
+                ;
+
+condition       :   xor_expression                      { $$ = $1; }
+                |   condition OR xor_expression         { $$ = new ASTOperation($2, (ASTValue*) $1, (ASTValue*) $3); }
+                ;
+
+xor_expression  :   and_expression                      { $$ = $1; }
+                |   xor_expression XOR and_expression   { $$ = new ASTOperation($2, (ASTValue*) $1, (ASTValue*) $3); }
+                ;
+
+and_expression  :   not_expression                      { $$ = $1; }
+	            |   and_expression AND not_expression   { $$ = new ASTOperation($2, (ASTValue*) $1, (ASTValue*) $3); }
+                ;
+
+not_expression  :   comparison_exp                      { $$ = $1; }
+                |   NOT comparison_exp                  { $$ = new ASTOperation($1, (ASTValue*) $2, NULL); }
+                ;
+
+
+comparison_exp  :   expression RELOP expression         { $$ = new ASTRelop($2, (ASTValue*) $1, (ASTValue*) $3); }
+                |   '(' condition ')'                   { $$ = $2; }
+                ;
+
+expression      :	term                     { $$ = $1; }
+                |	expression '+' term      { $$ = new ASTOperation(ASTNode::ADD, (ASTValue*) $1, (ASTValue*) $3); }
+                |	expression '-' term      { $$ = new ASTOperation(ASTNode::SUB, (ASTValue*) $1, (ASTValue*) $3); }
+                ;
 
 
 %%
@@ -136,4 +195,3 @@ void yyerror(YYLTYPE* loc, struct MainData* p, const char* s, ...)
     fprintf(stderr, "\n");
     p->no_of_errors++;
 }
-
