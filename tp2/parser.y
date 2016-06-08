@@ -112,7 +112,7 @@ decl            :   ID
                     }
                 |   ID '=' STRING
                     {
-                        $$ = new ASTStringDecl($1, $3);
+                        $$ = new ASTStringDecl($1, sizeof($3));
                         if (!p->symtable->add($1, type)) {
                             yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                         }
@@ -213,7 +213,7 @@ assignment      :   ID '+''+'                           { $$ = new ASTOperation(
                         if (!(p -> symtable -> getType($1, &type))) {
                             yyerror(&yylloc, p, YY_("Error: variable doesn't exist."));
                         } else {
-                            $$ = new ASTAssignToVar($1, type, new ASTStringValue($3));
+                            $$ = new ASTAssignToVar($1, type, new ASTStringValue($3, $1));
                         }
                     }
                 ;
