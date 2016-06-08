@@ -21,7 +21,7 @@ void ASTPrintStr::generateLSM(FILE* fout) {
         ASTNode::text = 0;
         init = true;
     }
-    fprintf(fout, "%14s .string %s\n", (variable + ":").c_str(), str.c_str());
+    fprintf(fout, "%-14s .string %s\n", (variable + ":").c_str(), str.c_str());
     if (ASTNode::text == 0) {
         fprintf(fout, "%15s.text\n", " ");
         fprintf(fout, "L%d:\n", ASTNode::cnt);
