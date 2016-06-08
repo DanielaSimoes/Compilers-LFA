@@ -11,7 +11,6 @@
     void yyerror(YYLTYPE* loc, struct MainData* p, const char*, ...);
     #define scan_info p->scaninfo
     int type;
-    int condition;
 }
 
 %error-verbose
@@ -172,11 +171,7 @@ array_int       :   array_int ',' INTEGER               { $$ = new ASTSeq($1, ne
 //                ;
 
 
-instruction     :   ifthenelse  {
-                        $$ = $1;
-                        condition = 1;
-                        yyerror(&yylloc, p, YY_("CONDIÇÃO"));
-                    }
+instruction     :   ifthenelse  { $$ = $1; }
                 |   loop                                { $$ = $1; }
                 |   assignment ';'                      { $$ = $1; }
                 |   BREAK ';'                           { $$ = new ASTBreak(); }
@@ -261,11 +256,8 @@ fact            :   opnd                    { $$ = $1; }
 opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
                 |   FLOAT                   { $$ = new ASTFloatValue($1); }
                 |   ID                      { int type; bool isValid = p->symtable->getType($1, &type); $$ = new ASTVarValue($1, type);
-                                                if (!isValid) {
-                                                    yyerror(&yylloc, p, YY_("var inválida;"));
-                                                } else if (!p->symtable->add($1, type))
-                                                    { yyerror(&yylloc, p, YY_("BUG")); }
-                                                condition = 0;
+                                                if (!isValid)
+                                                    yyerror(&yylloc, p, YY_("Variable doesn't exist."));
                                             }
                 |   READCHAR ';'            { $$ = new ASTFunctionCall($1); }
                 |   READINT ';'             { $$ = new ASTFunctionCall($1); }
