@@ -16,13 +16,14 @@ void ASTOperation::show(uint32_t indent)
 void ASTOperation::generateLSM(FILE* fout){
 
     fprintf(stdout, "ASTOperation\n");
+    fprintf(fout, "%15s; creating an operation\n", " ");
     if(ASTNode::text == 0){
-        fprintf(fout, ".text\n");
+        fprintf(fout, "%15s.text\n", " ");
         fprintf(fout, "L%d:\n",ASTNode::cnt);
         ASTNode::cnt++;
         ASTNode::text = 1;
     }
-    
+
     if(getType() == ASTNode::FLOAT){
 
         left->generateLSM(fout);
@@ -30,17 +31,17 @@ void ASTOperation::generateLSM(FILE* fout){
         right->generateLSM(fout);
         fprintf(fout, "\n");
         if(op == ADD){
-            fprintf(fout, "fadd\n");
+            fprintf(fout, "%15sfadd\n", " ");
         }else if(op == SUB){
-            fprintf(fout, "fsub\n");
+            fprintf(fout, "%15sfsub\n", " ");
         }else if(op == MUL){
-            fprintf(fout, "fmul\n");
+            fprintf(fout, "%15sfmul\n", " ");
         }else if( op == DIV){
-            fprintf(fout, "fdiv\n");
+            fprintf(fout, "%15sfdiv\n", " ");
         }else if( op == REM){
-            fprintf(fout, "frem\n");
+            fprintf(fout, "%15sfrem\n", " ");
         }else if(op == NEG){
-            fprintf(fout, "fneg\n");
+            fprintf(fout, "%15sfneg\n", " ");
         }
     }else if(getType() == ASTNode::INT){
         left->generateLSM(fout);
@@ -48,30 +49,30 @@ void ASTOperation::generateLSM(FILE* fout){
         right->generateLSM(fout);
         fprintf(fout, "\n");
         if(op == ADD){
-            fprintf(fout, "iadd\n");
+            fprintf(fout, "%15siadd\n", " ");
         }else if(op == SUB){
-            fprintf(fout, "isub\n");
+            fprintf(fout, "%15sisub\n", " ");
         }else if(op == MUL){
-            fprintf(fout, "imul\n");
+            fprintf(fout, "%15simul\n", " ");
         }else if( op == DIV){
-            fprintf(fout, "idiv\n");
+            fprintf(fout, "%15sidiv\n", " ");
         }else if( op == REM){
-            fprintf(fout, "irem\n");
+            fprintf(fout, "%15sirem\n", " ");
         }else if(op == NEG){
-            fprintf(fout, "ineg\n");
+            fprintf(fout, "%15sineg\n", " ");
         }
     }else if(getType() == ASTNode::BOOLEAN){
         if(op == AND){
-            fprintf(fout, "iand\n");
+            fprintf(fout, "%15siand\n", " ");
         }else if(op == OR){
-            fprintf(fout, "ior\n");
+            fprintf(fout, "%15sior\n", " ");
         }else if(op == XOR){
-            fprintf(fout, "ixor\n");
+            fprintf(fout, "%15sixor\n", " ");
         }else if(op == NOT){
-            fprintf(fout, "ineg\n"); //NÃO TENHO A CERTEZA DISTO
+            fprintf(fout, "%15sineg\n", " "); //NÃO TENHO A CERTEZA DISTO
         }
-
     }
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

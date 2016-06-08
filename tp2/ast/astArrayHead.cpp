@@ -21,7 +21,8 @@ void ASTArrayHead::generateLSM(FILE* fout)
     ASTIntegerArrayValue::init = true;
 
     fprintf(stdout, "ASTArrayHead\n");
-    fprintf(fout, "%s:\t .word", name.c_str());
+    fprintf(fout, "%15s; creating an array\n", " ");
+    fprintf(fout, "%-14s .word ", (name + ":").c_str());
 
     seq->generateLSM(fout);
 

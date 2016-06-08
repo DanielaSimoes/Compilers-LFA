@@ -15,11 +15,10 @@ void ASTBreak::show(uint32_t indent)
 void ASTBreak::generateLSM(FILE* fout)
 {
     fprintf(stdout, "ASTBreak\n");
+    fprintf(fout, "%15s; breaking a loop\n", " ");
     if (ASTLoop::gcnt)
-        //ASTLoop::cur_scope= ASTLoop::cur_scope+1;
-
-        //fprintf(fout, "curr_scope%d\n", ASTLoop::cur_scope);
-        fprintf(fout, "goto LoopEnd%s\n", std::to_string(ASTLoop::cur_scope).c_str());
+        fprintf(fout, "%15sgoto LoopEnd%s\n", " ",  std::to_string(ASTLoop::cur_scope).c_str());
+    fprintf(fout, "\n");
 
 }
 

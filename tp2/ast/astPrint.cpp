@@ -13,14 +13,16 @@ void ASTPrint::show(uint32_t indent)
 void ASTPrint::generateLSM(FILE* fout)
 {
     fprintf(stdout, "ASTPrint\n");
+    fprintf(fout, "%15s; calling print\n", " ");
     switch (proc_id) {
         case PRINTCHAR:
-            fprintf(fout, "write\n");
+            fprintf(fout, "%15swrite\n", " ");
             break;
         case PRINTINT:
-            fprintf(fout, "jsr PrintInt\n");
+            fprintf(fout, "%15sjsr PrintInt\n", " ");
         break;
     }
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

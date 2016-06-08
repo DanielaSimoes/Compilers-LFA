@@ -22,8 +22,9 @@ void ASTLoop::generateLSM(FILE* fout)
     cur_scope = cnt;
 
     fprintf(stdout, "ASTLoop\n");
+    fprintf(fout, "%15s; creating a loop\n", " ");
     if(ASTNode::text == 0){
-        fprintf(fout, ".text\n");
+        fprintf(fout, "%15s.text\n", " ");
         fprintf(fout, "L%d:\n",ASTNode::cnt);
         ASTNode::cnt++;
         ASTNode::text = 1;
@@ -36,9 +37,10 @@ void ASTLoop::generateLSM(FILE* fout)
     if(loop_block) loop_block->generateLSM(fout);
 
     // if !break
-    fprintf(fout, "goto %s\n", labelstart.c_str());
+    fprintf(fout, "%15sgoto %s\n", " ", labelstart.c_str());
     std::string labelend = "LoopEnd" + std::to_string(cnt);
     fprintf(fout, "%s\n", (labelend + ":").c_str());
+    fprintf(fout, "\n");
     cur_scope = prev_scope;
     //gcnt--;
 
