@@ -21,6 +21,7 @@ void ASTIntegerArrayValue::generateLSM(FILE* fout)
     fprintf(stdout, "ASTIntegerArrayValue\n");
     if (init)
     {
+        elems++;
         fprintf(fout, " %d", value);
         init = false;
     }

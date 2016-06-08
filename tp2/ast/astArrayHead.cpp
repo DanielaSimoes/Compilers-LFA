@@ -27,7 +27,7 @@ void ASTArrayHead::generateLSM(FILE* fout)
 
     // if there aren't enough elements for the size specified
     if (ASTIntegerArrayValue::elems < cur_size) {
-        while (++ASTIntegerArrayValue::elems < cur_size && cur_size != NOT_DEFINED) {
+        while (ASTIntegerArrayValue::elems++ < cur_size && cur_size != NOT_DEFINED) {
             fprintf(fout, ", 0");
         }
     }

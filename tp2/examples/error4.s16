@@ -1,0 +1,8 @@
+/* duplicated var names */
+
+program error4 ()
+{
+    int n = 3;
+    int n;
+    exit();
+}

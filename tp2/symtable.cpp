@@ -7,12 +7,21 @@ using namespace std;
 bool SymTable::add(const char* key, int type)
 {
     printf("adding %s --> %d\n", key, type);
-    return true;
+    if (!table[std::string(key)]) {
+        table[std::string(key)] = type;
+        return true;
+    }
+
+    return false;
 }
 
 bool SymTable::getType(const char* key, int* p_type)
 {
     printf("geting %s\n", key);
-    return true;
-}
+    if (table[std::string(key)] != NONE) {
+        *p_type = table[std::string(key)];
+        return true;
+    }
 
+    return false;
+}

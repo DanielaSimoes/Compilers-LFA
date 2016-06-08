@@ -80,23 +80,59 @@ decl_list       :   decl                                { $$ = $1; }
                 |   decl_list ',' decl                  { $$ = new ASTSeq($1, $3); }
                 ;
 
-decl            :   ID                                  { $$ = new ASTSpaceDecl($1,4); p->symtable->add($1, type); }
-                |   ID '=' INTEGER                      { $$ = (type==ASTNode::INT) ? (ASTValue*) new ASTIntDecl($1, $3) : (ASTValue*) new ASTFloatDecl($1, $3); }
+decl            :   ID
+                    {
+                        $$ = new ASTSpaceDecl($1,4);
+                        if (!p->symtable->add($1, type)) {
+                            // duplicated var name
+                        }
+                    }
+                |   ID '=' INTEGER
+                    {
+                        $$ = (type==ASTNode::INT) ? (ASTValue*) new ASTIntDecl($1, $3) : (ASTValue*) new ASTFloatDecl($1, $3);
+                        if (!p->symtable->add($1, type)) {
+                            // duplicated var name
+                        }
+                    }
                 |   ID '=' FLOAT                        {
                         if (type==ASTNode::INT) {
                             // error
                         }
                         else {
                             $$ = new ASTFloatDecl($1, $3);
+                            if (!p->symtable->add($1, type)) {
+                                // duplicated var name
+                            }
                         }
                     }
-                |   ID '=' STRING                       { $$ = new ASTStringDecl($1, $3); p->symtable->add($1, type);}
-                |   ID '[' INTEGER ']'                  { $$ = new ASTSpaceDecl($1, 4 * $3); p->symtable->add($1, type); ASTIntegerArrayValue::elems = 0; }
-                |   ID '[' ']' '=' '{' array '}'        { $$ = new ASTArrayHead($1, ASTArrayHead::NOT_DEFINED, $6); p->symtable->add($1, type); ASTIntegerArrayValue::elems = 0; }
+                |   ID '=' STRING
+                    {
+                        $$ = new ASTStringDecl($1, $3);
+                        if (!p->symtable->add($1, type)) {
+                            // duplicated var name
+                        }
+                    }
+                |   ID '[' INTEGER ']'
+                    {
+                        $$ = new ASTSpaceDecl($1, 4 * $3);
+                        if (!p->symtable->add($1, type)) {
+                            // duplicated var name
+                        }
+                    }
+                |   ID '[' ']' '=' '{' array '}'
+                    {
+                        $$ = new ASTArrayHead($1, ASTArrayHead::NOT_DEFINED, $6);
+                        if (!p->symtable->add($1, type)) {
+                            // duplicated var name
+                        }
+                        ASTIntegerArrayValue::elems = 0;
+                    }
                 |   ID '[' INTEGER ']' '=' '{' array '}'
                 {
                     $$ = new ASTArrayHead($1, $3, $7);
-                    p->symtable->add($1, type);
+                    if (!p->symtable->add($1, type)) {
+                        // duplicated var name
+                    }
                     if (ASTIntegerArrayValue::elems > ASTArrayHead::cur_size) {
                         // warning: truncate elements
                     }
@@ -134,13 +170,12 @@ instruction     :   ifthenelse                          { $$ = $1; }
                 |   assignment ';'                      { $$ = $1; }
                 |   BREAK ';'                           { $$ = new ASTBreak(); }
                 |   PRINTINT '(' expression ')' ';'     { $$ = new ASTPrint($1, (ASTValue*) $3); }
-                |   PRINTSTR '(' STRING ')' ';' {
+                |   PRINTSTR '(' STRING ')' ';'
+                    {
                         char s[2];
                         strcpy(s, std::to_string(ASTPrintStr::gcnt).c_str());
                         char c[4] = "s";
                         strcat(c,s);
-                        /*printf("%s\n", c);*/
-                        /*p -> symtable -> add(strcat(c,strcpy(s, std::to_string(ASTPrintStr::gcnt).c_str())), SymTable::BYTEARRAY);*/
                         if (!(p -> symtable -> getType(c, NULL)))
                             p -> symtable -> add(c, SymTable::BYTEARRAY);
                         $$ = new ASTPrintStr($3);
@@ -150,7 +185,8 @@ instruction     :   ifthenelse                          { $$ = $1; }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
 
-assignment      :   ID  '=' expression  {
+assignment      :   ID  '=' expression
+                    {
                         if (!(p -> symtable -> getType($1, &type)))
                         {
                             // label nao existe
@@ -162,7 +198,8 @@ assignment      :   ID  '=' expression  {
                             $$ = new ASTAssignToVar($1, type, (ASTValue*) $3);
                         }
                     }
-                |   ID '=' STRING       {
+                |   ID '=' STRING
+                    {
                         if (!(p -> symtable -> getType($1, &type))) {
                             // label nao existe
                         } else {
