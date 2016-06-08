@@ -165,6 +165,7 @@ array_int       :   array_int ',' INTEGER               { $$ = new ASTSeq($1, ne
 //                |   CHAR
 //                ;
 
+
 instruction     :   ifthenelse                          { $$ = $1; }
                 |   loop                                { $$ = $1; }
                 |   assignment ';'                      { $$ = $1; }
@@ -180,12 +181,15 @@ instruction     :   ifthenelse                          { $$ = $1; }
                             p -> symtable -> add(c, SymTable::BYTEARRAY);
                         $$ = new ASTPrintStr($3);
                     }
+
                 |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
                 |   PRINTCHAR '(' INTEGER ')' ';'       { $$ = new ASTPrint($1, new ASTIntegerValue($3)); }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
 
-assignment      :   ID  '=' expression
+assignment      :   ID '+''+'                           { $$ = new ASTOperation(ASTNode::ADD, new ASTVarValue($1, type), new ASTIntegerValue(1)); }
+                |   ID '-''-'                           { $$ = new ASTOperation(ASTNode::SUB, new ASTVarValue($1, type), new ASTIntegerValue(1)); }
+                |   ID  '=' expression
                     {
                         if (!(p -> symtable -> getType($1, &type)))
                         {
