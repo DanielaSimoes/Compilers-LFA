@@ -27,4 +27,7 @@
 #include <ast/astIf.h>
 #include <ast/astPrint.h>
 
+#include <ast/astIntegerArrayValue.h>
+#include <ast/astArrayHead.h>
+
 #endif

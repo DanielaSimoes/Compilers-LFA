@@ -13,12 +13,11 @@ class ASTIntegerArrayValue : public ASTValue
 {
 private:
     int32_t value;
-    ASTIntegerArrayValue *next;
     static bool init;
 
 public:
-    ASTIntegerArrayValue(int32_t v, ASTIntegerArrayValue* n)
-        : value(v), next(n) { type = INT; }
+    ASTIntegerArrayValue(int32_t v)
+        : value(v) { type = INT; }
 
     ~ASTIntegerArrayValue() {}
 

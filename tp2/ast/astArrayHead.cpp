@@ -13,7 +13,7 @@ void ASTArrayHead::show(uint32_t indent)
 void ASTArrayHead::generateLSM(FILE* fout)
 {
     fprintf(stdout, "ASTArrayHead\n");
-    fprintf(fout, ".word");
+    fprintf(fout, "%s:\t .word", name.c_str());
 }
 
 ////////////////////////////////////////////////////

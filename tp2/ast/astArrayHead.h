@@ -2,10 +2,10 @@
 #define __S16_AST_ARRAY_HEAD__
 
 #include "astValue.h"
-#include "astIntegerArrayValue.h"
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string>
 
 ////////////////////////////////////////////////////
 
@@ -13,12 +13,13 @@
 class ASTArrayHead : public ASTValue
 {
 private:
+    std::string name;
     int32_t size;
-    ASTIntegerArrayValue *first;
+    ASTNode* seq;
 
 public:
-    ASTArrayHead(int32_t s, ASTIntegerArrayValue* f)
-        : size(s), first(f) { type = INT; }
+    ASTArrayHead(const char* n, int32_t si, ASTNode* se)
+        : name(n), size(si), seq(se) { type = INT; }
 
     ~ASTArrayHead() {}
 

@@ -92,7 +92,7 @@ decl            :   ID                                  { $$ = new ASTSpaceDecl(
                     }
                 |   ID '[' INTEGER ']'                  { }
                 |   ID '[' ']' '=' '{' array '}'        { }
-                |   ID '[' INTEGER ']' '=' '{' array '}' {  $$ = new ASTArrayHead($3);  }
+                |   ID '[' INTEGER ']' '=' '{' array '}' { } //{ $$ = new ASTArrayHead($1, $3, $7); }
                 ;
 
 array           :   array_int                           { $$ = $1; }
@@ -101,8 +101,8 @@ array           :   array_int                           { $$ = $1; }
 //                |   array_char
                 ;
 
-array_int       :   array_int ',' INTEGER               {}//{ $$ = new ASTIntegerArrayValue($3, (ASTIntegerArrayValue*) $1); }
-                |   INTEGER                             {}//{ $$ = new ASTIntegerArrayValue($1, NULL); }
+array_int       :   array_int ',' INTEGER               { } //{ $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
+                |   INTEGER                             { } //{ $$ = new ASTIntegerArrayValue($1); }
                 ;
 
 //array_float     :   array_float ',' FLOAT
