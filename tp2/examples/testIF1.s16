@@ -1,0 +1,5 @@
+program testIF1 () {
+    if (1 > 0)
+        printStr("Hello World!");
+    exit();
+}

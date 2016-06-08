@@ -1,0 +1,9 @@
+/* Programa escrito em S16 */
+
+program OP ()
+{
+    int i;
+int a = 3;
+    i = i +3;
+    exit();
+}

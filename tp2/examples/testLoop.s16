@@ -1,0 +1,19 @@
+/* Programa escrito em S16 */
+
+program LOOP ()
+{
+    loop
+    {
+        loop
+        {
+            break;
+        }
+    	loop
+    	{
+    	    break;
+    	}
+        break;
+    }
+
+    exit();
+}

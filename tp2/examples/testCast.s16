@@ -1,0 +1,11 @@
+/* Programa escrito em S16 */
+
+program MAX ()
+{
+    float n = 2.0;
+    int f;
+    f = (int)n;
+    int j;
+    exit();
+
+}

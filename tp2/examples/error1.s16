@@ -1,0 +1,35 @@
+/* Programa escrito em S16 */
+
+program error1 ()
+{
+    /* ask for number of numbers */
+    printStr("How many numbers? ");
+    ///////////////////////////////
+    int n a;                                // syntax error
+    ///////////////////////////////
+    n = readInt();
+    if ( n > 10 or n < 1 )
+    {
+        printStr("Bad number of numbers, aborting\n");
+        exit();
+    }
+
+    /* read values and compute max */
+    int i = 0;
+    int v;
+    int max;
+    max = readInt();
+    i = i + 1;
+    loop
+    {
+        v = readInt();
+        if ( v > max ) { max = v; }
+        i = i + 1;
+        if ( i == n) break;
+    }
+
+    /* print results */
+    printStr("Max = ");
+    printInt(max);
+    exit();
+}

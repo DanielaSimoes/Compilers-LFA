@@ -1,0 +1,29 @@
+program testRelOp ()
+{
+    int a = 1;
+    int b = 2;
+    float c = 3.0;
+    float d = 4.0;
+    float e = -5.0;
+    if (a > b)
+        printStr("a is bigger than b\n");
+    else
+        printStr("a is not bigger than b\n");
+    if (b > c)
+        printStr("b is bigger than c\n");
+    else
+        printStr("b is not bigger than c\n");
+    if (c > b)
+        printStr("c is bigger than b\n");
+    else
+        printStr("c is not bigger than b\n");
+    if (c > d)
+        printStr("c is bigger than d\n");
+    else
+        printStr("c is not bigger than d\n");
+    if (e < c)
+        printStr("e is smaller than c\n");
+    else
+        printStr("e is not smaller than c\n");
+    exit();
+}
