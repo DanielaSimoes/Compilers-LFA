@@ -12,11 +12,12 @@
 class ASTStringValue : public ASTValue
 {
 private:
+    std::string name;
     std::string value;
 
 public:
-    ASTStringValue(const char* v)
-        : value(v) { type = STRING; }
+    ASTStringValue(const char* n, const char* v)
+        : name(n), value(v) { type = STRING; }
 
     ~ASTStringValue() {}
 
@@ -25,6 +26,9 @@ public:
 
     /** Generate LSM code */
     void generateLSM(FILE* fout);
+
+    /** Remove char from string */
+    // void removeCharsFromString(std::string &str, char* charsToRemove);
 };
 
 ////////////////////////////////////////////////////

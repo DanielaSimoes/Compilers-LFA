@@ -15,11 +15,11 @@ class ASTStringDecl : public ASTNode
 {
 private:
     std::string name;        ///< the name of the variable
-    std::string value;       ///< its initial value
+    int16_t size;       ///< its initial value
 
 public:
-    ASTStringDecl(const char* n, const char* v)
-        : name(n), value(v) {}
+    ASTStringDecl(const char* n, int16_t s)
+        : name(n), size(s) {}
 
     ~ASTStringDecl() {}
 

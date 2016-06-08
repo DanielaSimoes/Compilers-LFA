@@ -30,11 +30,11 @@ void ASTPrintStr::generateLSM(FILE* fout) {
     }
     fprintf(fout, "%15sla s%d\n", " ", cnt);
     fprintf(fout, "%15sjsr printStr\n", " ");
-    int i;
-    for (i = 0; i != str.length(); i++) {
-        fprintf(fout, "%15sbipush '%c'\n", " ", str[i]);
-        fprintf(fout, "%15swrite\n", " ");
-    }
+    // int i;
+    // for (i = 1; i != str.length()-1; i++) {
+    //     fprintf(fout, "%15sbipush '%c'\n", " ", str[i]);
+    //     fprintf(fout, "%15swrite\n", " ");
+    // }
     fprintf(fout, "\n");
 }
 
