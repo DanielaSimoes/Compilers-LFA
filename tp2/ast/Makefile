@@ -29,6 +29,7 @@ VCLASSES += astOperation
 VCLASSES += astIntegerArrayValue
 VCLASSES += astArrayHead
 VCLASSES += astStringValue
+VCLASSES += astArrayElementValue
 
 OBJS += $(ANCLASSES:%=%.o)
 OBJS += $(NCLASSES:%=%.o)

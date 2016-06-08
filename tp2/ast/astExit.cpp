@@ -13,13 +13,15 @@ void ASTExit::show(uint32_t indent) {
 
 void ASTExit::generateLSM(FILE* fout) {
     fprintf(stdout, "ASTExit\n");
+    fprintf(fout, "%15s; exiting program\n", " ");
     if (ASTNode::text == 0) {
-        fprintf(fout, ".text\n");
+        fprintf(fout, "%15s.text\n", " ");
         fprintf(fout, "L%d:\n", ASTNode::cnt);
         ASTNode::cnt++;
         ASTNode::text = 1;
     }
-    fprintf(fout, "halt\n");
+    fprintf(fout, "%15shalt\n", " ");
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

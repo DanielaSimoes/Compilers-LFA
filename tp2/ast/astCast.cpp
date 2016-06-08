@@ -17,9 +17,9 @@ void ASTCast::generateLSM(FILE* fout)
     fprintf(stdout, "ASTCast\n");
     //verificar função
     //verificar label em falta - deve ser criada com o
-
+    fprintf(fout, "%15s; casting a variable\n", " ");
     if(ASTNode::text == 0){
-        fprintf(fout, ".text\n");
+        fprintf(fout, "%15s.text\n", " ");
         fprintf(fout, "L%d:\n",ASTNode::cnt);
         ASTNode::cnt++;
         ASTNode::text = 1;
@@ -27,10 +27,11 @@ void ASTCast::generateLSM(FILE* fout)
 
     opnd->generateLSM(fout);
     if(type == INT){
-        fprintf(fout, "f2i\n");
+        fprintf(fout, "%15sf2i\n", " ");
     }else if(type == FLOAT){ // confirmar se FLOAT ou 3
-        fprintf(fout, "i2f\n");
+        fprintf(fout, "%15si2f\n", " ");
     }
+    fprintf(fout, "\n");
     //fprintf(fout, "store\n");
     //opnd->generateLSM(fout);
 }

@@ -13,12 +13,14 @@ void ASTSpaceDecl::show(uint32_t indent)
 
 void ASTSpaceDecl::generateLSM(FILE* fout){
     fprintf(stdout, "ASTSpaceDecl\n");
+    fprintf(fout, "%15s; creating a space\n", " ");
     if(ASTNode::text || !init){
-        fprintf(fout, ".data\n");
+        fprintf(fout, "%15s.data\n", " ");
         ASTNode::text = 0;
         init = true;
     }
-    fprintf(fout, "%s:\t .space %d\n", name.c_str(), size);
+    fprintf(fout, "%-14s .space %d\n", (name + ":").c_str(), size);
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

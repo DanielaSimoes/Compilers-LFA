@@ -13,13 +13,15 @@ void ASTIntegerValue::show(uint32_t indent)
 void ASTIntegerValue::generateLSM(FILE* fout)
 {
     fprintf(stdout, "ASTIntegerValue\n");
+    fprintf(fout, "%15s; designating an integer value\n", " ");
     if(ASTNode::text == 0){
-        fprintf(fout, ".text\n");
+        fprintf(fout, "%15s.text\n", " ");
         fprintf(fout, "L%d:\n",ASTNode::cnt);
         ASTNode::cnt++;
         ASTNode::text = 1;
     }
-    fprintf(fout, "ipush %d\n", value);
+    fprintf(fout, "%15sipush %d\n", " ", value);
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

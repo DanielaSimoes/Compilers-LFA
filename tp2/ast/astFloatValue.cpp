@@ -13,13 +13,15 @@ void ASTFloatValue::show(uint32_t indent)
 void ASTFloatValue::generateLSM(FILE* fout)
 {
     fprintf(stdout, "ASTValue\n");
+    fprintf(fout, "%15s; designating a float value\n", " ");
     if(ASTNode::text == 0){
-        fprintf(fout, ".text\n");
+        fprintf(fout, "%15s.text\n", " ");
         fprintf(fout, "L%d:\n",ASTNode::cnt);
         ASTNode::cnt++;
         ASTNode::text = 1;
     }
-    fprintf(fout, "fpush %f\n", value);
+    fprintf(fout, "%15sfpush %f\n", " ", value);
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////
