@@ -83,7 +83,7 @@ decl_list       :   decl                                { $$ = $1; }
 
 decl            :   ID
                     {
-                        $$ = new ASTSpaceDecl($1,4);
+                        $$ = new ASTSpaceDecl($1,4); // TODO - space de 4... não pode ser sempre 4... caso das strings
                         if (!p->symtable->add($1, type)) {
                             // duplicated var name
                             yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
@@ -172,13 +172,16 @@ array_int       :   array_int ',' INTEGER               { $$ = new ASTSeq($1, ne
 //                ;
 
 
-instruction     :   ifthenelse                          { $$ = $1; condition = 1; yyerror(&yylloc, p, YY_("CONDIÇÃO")); }
+instruction     :   ifthenelse  {
+                        $$ = $1;
+                        condition = 1;
+                        yyerror(&yylloc, p, YY_("CONDIÇÃO"));
+                    }
                 |   loop                                { $$ = $1; }
                 |   assignment ';'                      { $$ = $1; }
                 |   BREAK ';'                           { $$ = new ASTBreak(); }
                 |   PRINTINT '(' expression ')' ';'     { $$ = new ASTPrint($1, (ASTValue*) $3); }
-                |   PRINTSTR '(' STRING ')' ';'
-                    {
+                |   PRINTSTR '(' STRING ')' ';' {
                         char s[2];
                         strcpy(s, std::to_string(ASTPrintStr::gcnt).c_str());
                         char c[4] = "s";
@@ -257,12 +260,12 @@ fact            :   opnd                    { $$ = $1; }
 
 opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
                 |   FLOAT                   { $$ = new ASTFloatValue($1); }
-                |   ID                      { int type; p->symtable->getType($1, &type); $$ = new ASTVarValue($1, type);
-                                                if(condition){
-                                                    if (!p->symtable->add($1, type))
-                                                        { yyerror(&yylloc, p, YY_("BUG")); }
-                                                    condition = 0;
-                                                }
+                |   ID                      { int type; bool isValid = p->symtable->getType($1, &type); $$ = new ASTVarValue($1, type);
+                                                if (!isValid) {
+                                                    yyerror(&yylloc, p, YY_("var inválida;"));
+                                                } else if (!p->symtable->add($1, type))
+                                                    { yyerror(&yylloc, p, YY_("BUG")); }
+                                                condition = 0;
                                             }
                 |   READCHAR ';'            { $$ = new ASTFunctionCall($1); }
                 |   READINT ';'             { $$ = new ASTFunctionCall($1); }
