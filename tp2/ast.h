@@ -29,6 +29,7 @@
 
 #include <ast/astArrayHead.h>
 #include <ast/astIntegerArrayValue.h>
+#include <ast/astArrayElementValue.h>
 
 #include <ast/astStringDecl.h>
 #include <ast/astStringValue.h>
