@@ -31,6 +31,6 @@
 #include <ast/astIntegerArrayValue.h>
 
 #include <ast/astStringDecl.h>
-#include <ast/ASTStringValue.h>
+#include <ast/astStringValue.h>
 
 #endif
