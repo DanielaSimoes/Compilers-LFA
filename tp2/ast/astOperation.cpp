@@ -69,7 +69,7 @@ void ASTOperation::generateLSM(FILE* fout){
         }else if(op == XOR){
             fprintf(fout, "%15sixor\n", " ");
         }else if(op == NOT){
-            fprintf(fout, "%15sineg\n", " "); //NÃO TENHO A CERTEZA DISTO
+            fprintf(fout, "%15sineg\n", " ");
         }
     }
     fprintf(fout, "\n");

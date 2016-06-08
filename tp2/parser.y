@@ -11,6 +11,7 @@
     void yyerror(YYLTYPE* loc, struct MainData* p, const char*, ...);
     #define scan_info p->scaninfo
     int type;
+    int condition;
 }
 
 %error-verbose
@@ -85,6 +86,7 @@ decl            :   ID
                         $$ = new ASTSpaceDecl($1,4);
                         if (!p->symtable->add($1, type)) {
                             // duplicated var name
+                            yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                         }
                     }
                 |   ID '=' INTEGER
@@ -92,16 +94,19 @@ decl            :   ID
                         $$ = (type==ASTNode::INT) ? (ASTValue*) new ASTIntDecl($1, $3) : (ASTValue*) new ASTFloatDecl($1, $3);
                         if (!p->symtable->add($1, type)) {
                             // duplicated var name
+                            yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                         }
                     }
                 |   ID '=' FLOAT                        {
                         if (type==ASTNode::INT) {
                             // error
+                            yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                         }
                         else {
                             $$ = new ASTFloatDecl($1, $3);
                             if (!p->symtable->add($1, type)) {
                                 // duplicated var name
+                                yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                             }
                         }
                     }
@@ -109,21 +114,21 @@ decl            :   ID
                     {
                         $$ = new ASTStringDecl($1, $3);
                         if (!p->symtable->add($1, type)) {
-                            // duplicated var name
+                            yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                         }
                     }
                 |   ID '[' INTEGER ']'
                     {
                         $$ = new ASTSpaceDecl($1, 4 * $3);
                         if (!p->symtable->add($1, type)) {
-                            // duplicated var name
+                            yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                         }
                     }
                 |   ID '[' ']' '=' '{' array '}'
                     {
                         $$ = new ASTArrayHead($1, ASTArrayHead::NOT_DEFINED, $6);
                         if (!p->symtable->add($1, type)) {
-                            // duplicated var name
+                            yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                         }
                         ASTIntegerArrayValue::elems = 0;
                     }
@@ -132,6 +137,7 @@ decl            :   ID
                     $$ = new ASTArrayHead($1, $3, $7);
                     if (!p->symtable->add($1, type)) {
                         // duplicated var name
+                        yyerror(&yylloc, p, YY_("Error: duplicated variable name."));
                     }
                     if (ASTIntegerArrayValue::elems > ASTArrayHead::cur_size) {
                         // warning: truncate elements
@@ -166,7 +172,7 @@ array_int       :   array_int ',' INTEGER               { $$ = new ASTSeq($1, ne
 //                ;
 
 
-instruction     :   ifthenelse                          { $$ = $1; }
+instruction     :   ifthenelse                          { $$ = $1; condition = 1; yyerror(&yylloc, p, YY_("CONDIÇÃO")); }
                 |   loop                                { $$ = $1; }
                 |   assignment ';'                      { $$ = $1; }
                 |   BREAK ';'                           { $$ = new ASTBreak(); }
@@ -205,7 +211,7 @@ assignment      :   ID '+''+'                           { $$ = new ASTOperation(
                 |   ID '=' STRING
                     {
                         if (!(p -> symtable -> getType($1, &type))) {
-                            // label nao existe
+                            yyerror(&yylloc, p, YY_("Error: variable doesn't exist."));
                         } else {
                             $$ = new ASTAssignToVar($1, type, new ASTStringValue($3));
                         }
@@ -251,7 +257,13 @@ fact            :   opnd                    { $$ = $1; }
 
 opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
                 |   FLOAT                   { $$ = new ASTFloatValue($1); }
-                |   ID                      { int type; p->symtable->getType($1, &type); $$ = new ASTVarValue($1, type); }
+                |   ID                      { int type; p->symtable->getType($1, &type); $$ = new ASTVarValue($1, type);
+                                                if(condition){
+                                                    if (!p->symtable->add($1, type))
+                                                        { yyerror(&yylloc, p, YY_("BUG")); }
+                                                    condition = 0;
+                                                }
+                                            }
                 |   READCHAR ';'            { $$ = new ASTFunctionCall($1); }
                 |   READINT ';'             { $$ = new ASTFunctionCall($1); }
                 |	'(' expression ')'      { $$ = $2; }
@@ -285,4 +297,5 @@ void yyerror(YYLTYPE* loc, struct MainData* p, const char* s, ...) {
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
     p->no_of_errors++;
+    //exit(1);
 }
