@@ -13,6 +13,7 @@ NCLASSES += astPrintStr
 NCLASSES += astProgram
 NCLASSES += astSeq
 NCLASSES += astSpaceDecl
+NCLASSES += astStringDecl
 
 AVCLASSES += astValue
 
@@ -25,6 +26,9 @@ VCLASSES += astAssignToVar
 VCLASSES += astCast
 VCLASSES += astRelop
 VCLASSES += astOperation
+VCLASSES += astIntegerArrayValue
+VCLASSES += astArrayHead
+VCLASSES += astStringValue
 
 OBJS += $(ANCLASSES:%=%.o)
 OBJS += $(NCLASSES:%=%.o)
@@ -37,7 +41,7 @@ $(NCLASSES:%=%.o):	%.o:	%.h $(ANCLASSES:%=%.h)
 $(VCLASSES:%=%.o):	%.o:	%.h $(ANCLASSES:%=%.h) $(AVCLASSES:%=%.h)
 $(ANCLASSES:%=%.o):	%.o:	%.h
 
-clean:  
+clean:
 	rm -rf *.o
 
 cleanall:	clean

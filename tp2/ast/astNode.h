@@ -10,12 +10,13 @@ using namespace std;
 ////////////////////////////////////////////////////
 
 /** \brief The base class for all AST nodes */
-class ASTNode {
+class ASTNode
+{
 public:
 
     enum { NONE=0, TEXT, DATA };
 
-    enum { BYTE, INT, FLOAT, BOOLEAN };
+    enum { BYTE, INT, FLOAT, BOOLEAN, STRING };
 
     enum { EQ, NE, LE, LT, GE, GT };
 

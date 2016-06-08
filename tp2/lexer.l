@@ -20,11 +20,11 @@
 %option header-file="lexer.h"
 
 id                      [A-Za-z_][A-Za-z0-9_]*
-hexadecimal             [+-]?0[Xx][0-9A-Fa-f]{1,8}
-decimal                 [+-]?[0-9]+
-float                   [+-]?(([0-9]*\.)*[0-9]+)|(\.[0-9]+)|([0-9]+\.)
+hexadecimal             0[Xx][0-9A-Fa-f]{1,8}
+decimal                 [0-9]+
+float                   (([0-9]*\.)*[0-9]+)|(\.[0-9]+)|([0-9]+\.)
 char		            ('.'|'\\n'|'\\t'|'\\r')
-string		            (\"[^"]*\")
+string		            \"(\\.|[^"\\])*\"
 whitespace              [ \r\t]*
 type                    (int|float|string|byte|char)
 
@@ -35,7 +35,7 @@ comment2                "/*"
 
 %%
 
-"null"                  { UPDATE_LOC; yylval->ivalue = 0; return NULL; }
+"null"                  { UPDATE_LOC; yylval->ivalue = 0; return NULLL; }
 "program"               { UPDATE_LOC; return PROGRAM; }
 "function"              { UPDATE_LOC; return FUNCTION; }
 "procedure"             { UPDATE_LOC; return PROCEDURE; }
@@ -52,30 +52,31 @@ comment2                "/*"
 
 "exit()"                { UPDATE_LOC; return EXIT; }
 "writeChar"             { UPDATE_LOC; return WRITECHAR; }
-"printInt"              { UPDATE_LOC; return PRINTINT; }
+"printInt"              { UPDATE_LOC; yylval->ivalue = ASTNode::PRINTINT; return PRINTINT; }
 "printStr"              { UPDATE_LOC; return PRINTSTR; }
-"printChar"             { UPDATE_LOC; return PRINTCHAR; }
-"readInt()"             { UPDATE_LOC; return READINT; }
-"readChar()"            { UPDATE_LOC; return READCHAR; }
+"printChar"             { UPDATE_LOC; yylval->ivalue = ASTNode::PRINTCHAR; return PRINTCHAR; }
+"readInt()"             { UPDATE_LOC; yylval->ivalue = ASTNode::READCHAR; return READINT; }
+"readChar()"            { UPDATE_LOC; yylval->ivalue = ASTNode::READINT; return READCHAR; }
 
-"=="                    { UPDATE_LOC; yylval->ivalue = 0; return RELOP; }
-"!="                    { UPDATE_LOC; yylval->ivalue = 1; return RELOP; }
-"<"                     { UPDATE_LOC; yylval->ivalue = 2; return RELOP; }
-"<="                    { UPDATE_LOC; yylval->ivalue = 3; return RELOP; }
-">"                     { UPDATE_LOC; yylval->ivalue = 4; return RELOP; }
-">="                    { UPDATE_LOC; yylval->ivalue = 5; return RELOP; }
+"=="                    { UPDATE_LOC; yylval->ivalue = ASTNode::EQ; return RELOP; }
+"!="                    { UPDATE_LOC; yylval->ivalue = ASTNode::NE; return RELOP; }
+"<"                     { UPDATE_LOC; yylval->ivalue = ASTNode::LT; return RELOP; }
+"<="                    { UPDATE_LOC; yylval->ivalue = ASTNode::LE; return RELOP; }
+">"                     { UPDATE_LOC; yylval->ivalue = ASTNode::GT; return RELOP; }
+">="                    { UPDATE_LOC; yylval->ivalue = ASTNode::GE; return RELOP; }
 
-"or"                    { UPDATE_LOC; return OR; }
-"and"                   { UPDATE_LOC; return AND; }
-"xor"                   { UPDATE_LOC; return XOR; }
-"not"                   { UPDATE_LOC; return NOT; }
+"or"                    { UPDATE_LOC; yylval->ivalue = ASTNode::OR; return OR; }
+"and"                   { UPDATE_LOC; yylval->ivalue = ASTNode::AND; return AND; }
+"xor"                   { UPDATE_LOC; yylval->ivalue = ASTNode::XOR; return XOR; }
+"not"                   { UPDATE_LOC; yylval->ivalue = ASTNode::NOT; return NOT; }
 
 {type}\[{decimal}\]     { UPDATE_LOC; yylval -> svalue = strdup(yytext); return ARRAY; }
 
-"byte"                  { UPDATE_LOC; yylval->ivalue = 0; return TYPE; }
-"int"                   { UPDATE_LOC; yylval->ivalue = 1; return TYPE; }
-"float"                 { UPDATE_LOC; yylval->ivalue = 2; return TYPE; }
-"boolean"               { UPDATE_LOC; yylval->ivalue = 3; return TYPE; }
+"byte"                  { UPDATE_LOC; yylval->ivalue = ASTNode::BYTE; return TYPE; }
+"int"                   { UPDATE_LOC; yylval->ivalue = ASTNode::INT; return TYPE; }
+"float"                 { UPDATE_LOC; yylval->ivalue = ASTNode::FLOAT; return TYPE; }
+"boolean"               { UPDATE_LOC; yylval->ivalue = ASTNode::BOOLEAN; return TYPE; }
+"string"                { UPDATE_LOC; yylval->ivalue = ASTNode::STRING; return TYPE; }
 {id}                    { UPDATE_LOC; yylval->svalue = strdup(yytext); return ID; }
 {hexadecimal}           { UPDATE_LOC; yylval->ivalue = (int32_t)strtol(yytext, NULL, 0); return INTEGER; }
 {decimal}               { UPDATE_LOC; yylval->ivalue = atoi(yytext); return INTEGER; }

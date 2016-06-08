@@ -90,9 +90,10 @@ decl            :   ID                                  { $$ = new ASTSpaceDecl(
                             $$ = new ASTFloatDecl($1, $3);
                         }
                     }
+                |   ID '=' STRING                       { $$ = new ASTStringDecl($1, $3); }
                 |   ID '[' INTEGER ']'                  { }
                 |   ID '[' ']' '=' '{' array '}'        { }
-                |   ID '[' INTEGER ']' '=' '{' array '}' { } //{ $$ = new ASTArrayHead($1, $3, $7); }
+                |   ID '[' INTEGER ']' '=' '{' array '}' { $$ = new ASTArrayHead($1, $3, $7); }
                 ;
 
 array           :   array_int                           { $$ = $1; }
@@ -101,8 +102,8 @@ array           :   array_int                           { $$ = $1; }
 //                |   array_char
                 ;
 
-array_int       :   array_int ',' INTEGER               { } //{ $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
-                |   INTEGER                             { } //{ $$ = new ASTIntegerArrayValue($1); }
+array_int       :   array_int ',' INTEGER               { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
+                |   INTEGER                             { $$ = new ASTIntegerArrayValue($1); }
                 ;
 
 //array_float     :   array_float ',' FLOAT
@@ -139,17 +140,24 @@ instruction     :   ifthenelse                          { $$ = $1; }
                 ;
 
 assignment      :   ID  '=' expression  {
-    if (!(p -> symtable -> getType($1, &type)))
-    {
-        // label nao existe
-    } else if (type == ASTNode::FLOAT && ((ASTValue*)$3)->type == ASTNode::INT) {
-        $$ = new ASTAssignToVar($1, type, new ASTCast(ASTNode::FLOAT, (ASTValue*) $3));
-    } else if (type == ASTNode::INT && ((ASTValue*)$3)->type == ASTNode::FLOAT) {
-        $$ = new ASTAssignToVar($1, type, new ASTCast(ASTNode::INT, (ASTValue*) $3));
-    } else {
-        $$ = new ASTAssignToVar($1, type, (ASTValue*) $3);
-    }
-}
+                        if (!(p -> symtable -> getType($1, &type)))
+                        {
+                            // label nao existe
+                        } else if (type == ASTNode::FLOAT && ((ASTValue*)$3)->type == ASTNode::INT) {
+                            $$ = new ASTAssignToVar($1, type, new ASTCast(ASTNode::FLOAT, (ASTValue*) $3));
+                        } else if (type == ASTNode::INT && ((ASTValue*)$3)->type == ASTNode::FLOAT) {
+                            $$ = new ASTAssignToVar($1, type, new ASTCast(ASTNode::INT, (ASTValue*) $3));
+                        } else {
+                            $$ = new ASTAssignToVar($1, type, (ASTValue*) $3);
+                        }
+                    }
+                |   ID '=' STRING       {
+                        if (!(p -> symtable -> getType($1, &type))) {
+                            // label nao existe
+                        } else {
+                            $$ = new ASTAssignToVar($1, type, new ASTStringValue($3));
+                        }
+                    }
                 ;
 
 condition       :   xor_expression                      { $$ = $1; }
