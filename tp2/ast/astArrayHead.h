@@ -14,12 +14,13 @@ class ASTArrayHead : public ASTValue
 {
 private:
     std::string name;
-    int32_t size;
-    ASTNode* seq;
+    int32_t size;   // size specified
+    int32_t elems;  // number of elements given
+    ASTNode* seq;   // pointer to the head of the sequence of elems
 
 public:
     ASTArrayHead(const char* n, int32_t si, ASTNode* se)
-        : name(n), size(si), seq(se) { type = INT; }
+        : name(n), size(si), seq(se) { type = INT; elems = 0; }
 
     ~ASTArrayHead() {}
 

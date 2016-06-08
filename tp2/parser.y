@@ -90,10 +90,10 @@ decl            :   ID                                  { $$ = new ASTSpaceDecl(
                             $$ = new ASTFloatDecl($1, $3);
                         }
                     }
-                |   ID '=' STRING                       { $$ = new ASTStringDecl($1, $3); }
-                |   ID '[' INTEGER ']'                  { }
-                |   ID '[' ']' '=' '{' array '}'        { }
-                |   ID '[' INTEGER ']' '=' '{' array '}' { $$ = new ASTArrayHead($1, $3, $7); }
+                |   ID '=' STRING                       { $$ = new ASTStringDecl($1, $3); p->symtable->add($1, type);}
+                |   ID '[' INTEGER ']'                  { $$ = new ASTSpaceDecl($1, 4 * $3); p->symtable->add($1, type); }
+                |   ID '[' ']' '=' '{' array '}'        { $$ = new ASTArrayHead($1, -1, $6); p->symtable->add($1, type); } // -1 means no size specified
+                |   ID '[' INTEGER ']' '=' '{' array '}'{ $$ = new ASTArrayHead($1, $3, $7); p->symtable->add($1, type); }
                 ;
 
 array           :   array_int                           { $$ = $1; }

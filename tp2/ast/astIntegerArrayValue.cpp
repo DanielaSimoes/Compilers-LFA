@@ -7,6 +7,8 @@
 
 bool ASTIntegerArrayValue::init = true;
 
+////////////////////////////////////////////////////
+
 void ASTIntegerArrayValue::show(uint32_t indent)
 {
     fprintf(stdout, ";%*s ASTIntegerArrayValue\n", 4*indent, "");
@@ -15,10 +17,13 @@ void ASTIntegerArrayValue::show(uint32_t indent)
 void ASTIntegerArrayValue::generateLSM(FILE* fout)
 {
     fprintf(stdout, "ASTIntegerArrayValue\n");
-    if (init) {
+    if (init)
+    {
         fprintf(fout, " %d", value);
         init = false;
-    }else {
+    }
+    else
+    {
         fprintf(fout, ", %d", value);
     }
 

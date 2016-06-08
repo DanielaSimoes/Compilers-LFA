@@ -14,6 +14,8 @@ void ASTArrayHead::generateLSM(FILE* fout)
 {
     fprintf(stdout, "ASTArrayHead\n");
     fprintf(fout, "%s:\t .word", name.c_str());
+    seq->generateLSM(fout);
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////
