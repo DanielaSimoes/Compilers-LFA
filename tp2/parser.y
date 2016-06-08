@@ -91,9 +91,20 @@ decl            :   ID                                  { $$ = new ASTSpaceDecl(
                         }
                     }
                 |   ID '=' STRING                       { $$ = new ASTStringDecl($1, $3); p->symtable->add($1, type);}
-                |   ID '[' INTEGER ']'                  { $$ = new ASTSpaceDecl($1, 4 * $3); p->symtable->add($1, type); }
-                |   ID '[' ']' '=' '{' array '}'        { $$ = new ASTArrayHead($1, -1, $6); p->symtable->add($1, type); } // -1 means no size specified
-                |   ID '[' INTEGER ']' '=' '{' array '}'{ $$ = new ASTArrayHead($1, $3, $7); p->symtable->add($1, type); }
+                |   ID '[' INTEGER ']'                  { $$ = new ASTSpaceDecl($1, 4 * $3); p->symtable->add($1, type); ASTIntegerArrayValue::elems = 0; }
+                |   ID '[' ']' '=' '{' array '}'        { $$ = new ASTArrayHead($1, ASTArrayHead::NOT_DEFINED, $6); p->symtable->add($1, type); ASTIntegerArrayValue::elems = 0; }
+                |   ID '[' INTEGER ']' '=' '{' array '}'
+                {
+                    $$ = new ASTArrayHead($1, $3, $7);
+                    p->symtable->add($1, type);
+                    if (ASTIntegerArrayValue::elems > ASTArrayHead::cur_size) {
+                        // warning: truncate elements
+                    }
+                    else if (ASTIntegerArrayValue::elems < ASTArrayHead::cur_size) {
+                        // warning: fill with zeroes
+                    }
+                    ASTIntegerArrayValue::elems = 0;
+                }
                 ;
 
 array           :   array_int                           { $$ = $1; }

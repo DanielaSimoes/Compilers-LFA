@@ -13,11 +13,14 @@ class ASTIntegerArrayValue : public ASTValue
 {
 private:
     int32_t value;
-    static bool init;
+
+public:
+    static int32_t elems;   // number of elements already given
+    static bool init;       // tell if it is being written the first elem
 
 public:
     ASTIntegerArrayValue(int32_t v)
-        : value(v) { type = INT; }
+        : value(v) { type = INT; elems++; }
 
     ~ASTIntegerArrayValue() {}
 

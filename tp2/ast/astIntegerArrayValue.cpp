@@ -1,10 +1,12 @@
 #include "astIntegerArrayValue.h"
+#include "astArrayHead.h"
 
 #include <stdint.h>
 #include <stdio.h>
 
 ////////////////////////////////////////////////////
 
+int32_t ASTIntegerArrayValue::elems = 0;
 bool ASTIntegerArrayValue::init = true;
 
 ////////////////////////////////////////////////////
@@ -22,11 +24,10 @@ void ASTIntegerArrayValue::generateLSM(FILE* fout)
         fprintf(fout, " %d", value);
         init = false;
     }
-    else
-    {
+    else if (elems < ASTArrayHead::cur_size || ASTArrayHead::cur_size == -1) {
+        elems++;
         fprintf(fout, ", %d", value);
     }
-
 }
 
 ////////////////////////////////////////////////////
