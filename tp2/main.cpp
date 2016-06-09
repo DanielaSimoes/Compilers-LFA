@@ -11,13 +11,30 @@
 
 const char* options =
     "OPTIONS:\n"
-    "=======\n" 
+    "=======\n"
     " -h            this help\n"
     " -o file-path  output file (default: stdout)\n"
     " -s            syntax only (default)\n"
     " -t            show AST tree\n"
     " -g            generate LSM code\n"
 	"\n";
+
+
+const char* inc =
+            "printInt:\n"
+            "ipush 28 \n"
+"Print1:     dup2 \n"
+            "iushr \n"
+            "ipush 0xF \n"
+            "iand \n"
+            "jsr pNibble \n"
+            "dup \n"
+            "ifeq Print2 \n"
+            "ipush 4 \n"
+            "isub \n"
+            "goto Print1 \n"
+"Print2:     pop \n"
+            "ret \n";
 
 
 int main(int argc, char *argv[])
@@ -99,7 +116,8 @@ int main(int argc, char *argv[])
 		if (lsm) main_data.ast->generateLSM(ofp);
     }
 
-    /* ... */
+    fprintf(ofp, ";includes\n");
+    fprintf(ofp, "%s\n", inc);
 
     /* clean up and quit */
     yylex_destroy(main_data.scaninfo);
@@ -107,4 +125,3 @@ int main(int argc, char *argv[])
     delete main_data.ast;
     return 0;
 }
-
