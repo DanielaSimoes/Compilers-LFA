@@ -1,0 +1,8 @@
+/* syntax error */
+
+program error6 ()
+{
+    int n = 3;
+    int n---;
+    exit();
+}

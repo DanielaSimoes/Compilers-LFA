@@ -197,7 +197,7 @@ assignment      :   ID '+''+'                           { $$ = new ASTOperation(
                     {
                         if (!(p -> symtable -> getType($1, &type)))
                         {
-                            // label nao existe
+                            yyerror(&yylloc, p, YY_("Variable doesn't exist."));
                         } else if (type == ASTNode::FLOAT && ((ASTValue*)$3)->type == ASTNode::INT) {
                             $$ = new ASTAssignToVar($1, type, new ASTCast(ASTNode::FLOAT, (ASTValue*) $3));
                         } else if (type == ASTNode::INT && ((ASTValue*)$3)->type == ASTNode::FLOAT) {
@@ -212,6 +212,15 @@ assignment      :   ID '+''+'                           { $$ = new ASTOperation(
                             yyerror(&yylloc, p, YY_("Error: variable doesn't exist."));
                         } else {
                             $$ = new ASTAssignToVar($1, type, new ASTStringValue($1, $3));
+                        }
+                    }
+                |   ID '+''=' expression
+                    {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("Variable doesn't exist."));
+                        } else {
+                            $$ = new ASTOperation(ASTNode::ADD, new ASTVarValue($1, type) , (ASTValue*)$4);
+                            $$ = new ASTAssignToVar($1, type, (ASTValue*)$4);
                         }
                     }
                 ;
