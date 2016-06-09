@@ -24,8 +24,12 @@ void ASTAssignToVar::generateLSM(FILE* fout)
         ASTNode::text = 1;
     }
     value->generateLSM(fout);
-    fprintf(fout, "\n");
+    if(ASTNode::text == 0){
+        fprintf(fout, "%15s.text\n", " ");
+        ASTNode::text = 1;
+    }
     fprintf(fout, "%15sstore %s\n", " ", name.c_str());
+    fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

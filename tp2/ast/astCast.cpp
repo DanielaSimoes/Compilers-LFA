@@ -31,7 +31,7 @@ void ASTCast::generateLSM(FILE* fout)
     }else if(type == FLOAT){ // confirmar se FLOAT ou 3
         fprintf(fout, "%15si2f\n", " ");
     }
-    fprintf(fout, "\n");
+    // fprintf(fout, "\n");
     //fprintf(fout, "store\n");
     //opnd->generateLSM(fout);
 }

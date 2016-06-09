@@ -27,9 +27,17 @@ void ASTOperation::generateLSM(FILE* fout){
     if(getType() == ASTNode::FLOAT){
 
         left->generateLSM(fout);
-        fprintf(fout, "\n");
+        if(ASTNode::text == 0){
+            fprintf(fout, "%15s.text\n", " ");
+            ASTNode::text = 1;
+        }
+        // fprintf(fout, "\n");
         right->generateLSM(fout);
-        fprintf(fout, "\n");
+        if(ASTNode::text == 0){
+            fprintf(fout, "%15s.text\n", " ");
+            ASTNode::text = 1;
+        }
+        // fprintf(fout, "\n");
         if(op == ADD){
             fprintf(fout, "%15sfadd\n", " ");
         }else if(op == SUB){
@@ -45,9 +53,17 @@ void ASTOperation::generateLSM(FILE* fout){
         }
     }else if(getType() == ASTNode::INT){
         left->generateLSM(fout);
-        fprintf(fout, "\n");
+        if(ASTNode::text == 0){
+            fprintf(fout, "%15s.text\n", " ");
+            ASTNode::text = 1;
+        }
+        // fprintf(fout, "\n");
         right->generateLSM(fout);
-        fprintf(fout, "\n");
+        if(ASTNode::text == 0){
+            fprintf(fout, "%15s.text\n", " ");
+            ASTNode::text = 1;
+        }
+        // fprintf(fout, "\n");
         if(op == ADD){
             fprintf(fout, "%15siadd\n", " ");
         }else if(op == SUB){
@@ -72,7 +88,7 @@ void ASTOperation::generateLSM(FILE* fout){
             fprintf(fout, "%15sineg\n", " ");
         }
     }
-    fprintf(fout, "\n");
+    // fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

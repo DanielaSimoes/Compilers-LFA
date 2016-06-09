@@ -35,12 +35,15 @@ void ASTLoop::generateLSM(FILE* fout)
     //fprintf(fout, "prev_scope%d\n", ASTLoop::prev_scope);
 
     if(loop_block) loop_block->generateLSM(fout);
-
+    if(ASTNode::text == 0){
+        fprintf(fout, "%15s.text\n", " ");
+        ASTNode::text = 1;
+    }
     // if !break
     fprintf(fout, "%15sgoto %s\n", " ", labelstart.c_str());
     std::string labelend = "LoopEnd" + std::to_string(cnt);
     fprintf(fout, "%s\n", (labelend + ":").c_str());
-    fprintf(fout, "\n");
+    // fprintf(fout, "\n");
     cur_scope = prev_scope;
     //gcnt--;
 

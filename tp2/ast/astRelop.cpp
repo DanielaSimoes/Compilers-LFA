@@ -21,11 +21,19 @@ void ASTRelop::generateLSM(FILE* fout) {
     int rightType = right -> getType();
     bool floatComparison = leftType == FLOAT && rightType == FLOAT;
     left -> generateLSM(fout);      // este gera elemento A na stack
+    if(ASTNode::text == 0){
+        fprintf(fout, "%15s.text\n", " ");
+        ASTNode::text = 1;
+    }
     if (leftType == INT && rightType == FLOAT) {
         fprintf(fout, "%15si2f\n", " ");     // se for comparação com reais, inteiro A passa para real A
         floatComparison = true;
     }
     right -> generateLSM(fout);     // este gera elemento B na stack
+    if(ASTNode::text == 0){
+        fprintf(fout, "%15s.text\n", " ");
+        ASTNode::text = 1;
+    }
     if (leftType == FLOAT && rightType == INT) {
         fprintf(fout, "%15si2f\n", " ");     // se for comparação com reais, inteiro B passa para real B
         floatComparison = true;
@@ -54,7 +62,7 @@ void ASTRelop::generateLSM(FILE* fout) {
             fprintf(fout, "%15sifge %s\n", " ", variable.c_str());
         }
     }
-    fprintf(fout, "\n");
+    // fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

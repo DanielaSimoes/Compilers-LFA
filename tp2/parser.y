@@ -211,7 +211,7 @@ assignment      :   ID '+''+'                           { $$ = new ASTOperation(
                         if (!(p -> symtable -> getType($1, &type))) {
                             yyerror(&yylloc, p, YY_("Error: variable doesn't exist."));
                         } else {
-                            $$ = new ASTAssignToVar($1, type, new ASTStringValue($3, $1));
+                            $$ = new ASTAssignToVar($1, type, new ASTStringValue($1, $3));
                         }
                     }
                 ;
