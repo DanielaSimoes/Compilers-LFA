@@ -223,6 +223,34 @@ assignment      :   ID '+''+'                           { $$ = new ASTAssignToVa
                             $$ = new ASTAssignToVar($1, type, (ASTValue*)$4);
                         }
                     }
+
+                | ID '-''=' expression
+                    {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("Variable doesn't exist."));
+                        } else {
+                            $$ = new ASTOperation(ASTNode::SUB, new ASTVarValue($1, type) , (ASTValue*)$4);
+                            $$ = new ASTAssignToVar($1, type, (ASTValue*)$4);
+                        }
+                    }
+                | ID '*''=' expression
+                    {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("Variable doesn't exist."));
+                        } else {
+                            $$ = new ASTOperation(ASTNode::MUL, new ASTVarValue($1, type) , (ASTValue*)$4);
+                            $$ = new ASTAssignToVar($1, type, (ASTValue*)$4);
+                        }
+                    }
+                | ID '%''=' expression
+                    {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("Variable doesn't exist."));
+                        } else {
+                            $$ = new ASTOperation(ASTNode::REM, new ASTVarValue($1, type) , (ASTValue*)$4);
+                            $$ = new ASTAssignToVar($1, type, (ASTValue*)$4);
+                        }
+                    }
                 ;
 
 condition       :   xor_expression                      { $$ = $1; }
