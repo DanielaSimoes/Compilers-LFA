@@ -19,24 +19,6 @@ const char* options =
     " -g            generate LSM code\n"
 	"\n";
 
-
-const char* inc =
-            "printInt:\n"
-            "ipush 28 \n"
-"Print1:     dup2 \n"
-            "iushr \n"
-            "ipush 0xF \n"
-            "iand \n"
-            "jsr pNibble \n"
-            "dup \n"
-            "ifeq Print2 \n"
-            "ipush 4 \n"
-            "isub \n"
-            "goto Print1 \n"
-"Print2:     pop \n"
-            "ret \n";
-
-
 int main(int argc, char *argv[])
 {
     /* instantiate main data structure and init it with default values */
@@ -114,10 +96,20 @@ int main(int argc, char *argv[])
     {
 		if (show) main_data.ast->show(0);
 		if (lsm) main_data.ast->generateLSM(ofp);
-    }
 
-    fprintf(ofp, ";includes\n");
-    fprintf(ofp, "%s\n", inc);
+        /* includes */
+        FILE* ifp;
+        if ((ifp = fopen("includes.txt", "r")) == NULL)
+        {
+            fprintf(stderr, "Fail opening file with includes %s\n", optarg);
+            return EXIT_FAILURE;
+        }
+
+        char buffer[100];
+        size_t bytes;
+        while (0 < (bytes = fread(buffer, 1, sizeof(buffer), ifp)))
+            fwrite(buffer, 1, bytes, ofp);
+    }
 
     /* clean up and quit */
     yylex_destroy(main_data.scaninfo);

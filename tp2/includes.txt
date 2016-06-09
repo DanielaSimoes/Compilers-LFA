@@ -1,0 +1,28 @@
+               ; includes
+printInt:
+               ipush 28
+printInt1:     dup2
+               iushr
+               ipush 0xF
+               iand
+               jsr pNibble
+               dup
+               ifeq printInt2
+               ipush 4
+               isub
+               goto printInt1
+printInt2:     pop
+               ret
+
+pNibble:
+               ipush 0x30
+               iadd
+               dup
+               ipush 0x39
+               isub
+               ifle pNibble1
+               ipush 0x0a
+               iadd
+pNibble1:      write
+               ret
+
