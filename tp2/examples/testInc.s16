@@ -1,0 +1,7 @@
+program MAX ()
+{
+    int i = 2;
+    i--;
+    printInt(i);
+    exit();
+}

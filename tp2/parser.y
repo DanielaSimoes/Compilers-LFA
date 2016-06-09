@@ -191,12 +191,8 @@ instruction     :   ifthenelse  { $$ = $1; }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
 
-assignment      :   ID '+''+'                           { $$ = new ASTOperation(ASTNode::ADD, new ASTVarValue($1, type), new ASTIntegerValue(1));
-                                                            $$ = new ASTAssignToVar($1, type, (ASTValue*)$1);
-                                                        }
-                |   ID '-''-'                           { $$ = new ASTOperation(ASTNode::SUB, new ASTVarValue($1, type), new ASTIntegerValue(1));
-                                                            $$ = new ASTAssignToVar($1, type, (ASTValue*)$1);
-                                                        }
+assignment      :   ID '+''+'                           { $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::ADD, new ASTVarValue($1, type), new ASTIntegerValue(1))); }
+                |   ID '-''-'                           { $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::SUB, new ASTVarValue($1, type), new ASTIntegerValue(1))); }
                 |   ID  '=' expression
                     {
                         if (!(p -> symtable -> getType($1, &type)))
