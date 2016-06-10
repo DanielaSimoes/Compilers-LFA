@@ -188,7 +188,7 @@ instruction     :   ifthenelse  { $$ = $1; }
                 ;
 
 assignment      :   ID INCDEC                           { $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type), new                   ASTIntegerValue(1))); }
-                |   INCDEC ID                           { $$ = new ASTAssignToVar($2, type, new ASTOperation($1, new ASTVarValue($2, type), new ASTIntegerValue(1))); 
+                |   INCDEC ID                           { $$ = new ASTAssignToVar($2, type, new ASTOperation($1, new ASTVarValue($2, type), new ASTIntegerValue(1))); }
                 |   ID  '=' expression
                     {
                         if (!(p -> symtable -> getType($1, &type)))
