@@ -43,25 +43,33 @@ void ASTRelop::generateLSM(FILE* fout) {
         fprintf(fout, "%15s.text\n", " ");
         ASTNode::text = 1;
     }
-    std::string variable = "R" + std::to_string(cnt);
+    std::string variable = "relop" + std::to_string(cnt);
     if (floatComparison) {
         fprintf(fout, "%15sfcmpg\n", " ");
     } else if (leftType == INT && rightType == INT) {
         fprintf(fout, "%15sisub\n", " ");
         if (op == EQ) {
-            fprintf(fout, "%15sifeq %s\n", " ", variable.c_str());
+            fprintf(fout, "%15sifeq %s\n", " ", (variable + "_true").c_str());
         } else if (op == NE) {
-            fprintf(fout, "%15sifne %s\n", " ", variable.c_str());
+            fprintf(fout, "%15sifne %s\n", " ", (variable + "_true").c_str());
         } else if (op == LT) {
-            fprintf(fout, "%15siflt %s\n", " ", variable.c_str());
+            fprintf(fout, "%15siflt %s\n", " ", (variable + "_true").c_str());
         } else if ( op == LE) {
-            fprintf(fout, "%15sifle %s\n", " ", variable.c_str());
+            fprintf(fout, "%15sifle %s\n", " ", (variable + "_true").c_str());
         } else if (op == GT) {
-            fprintf(fout, "%15sifgt %s\n", " ", variable.c_str());
+            fprintf(fout, "%15sifgt %s\n", " ", (variable + "_true").c_str());
         } else if (op == GE) {
-            fprintf(fout, "%15sifge %s\n", " ", variable.c_str());
+            fprintf(fout, "%15sifge %s\n", " ", (variable + "_true").c_str());
         }
     }
+
+    fprintf(fout, "%s:\n", (variable + "_false").c_str());
+    fprintf(fout, "%15sipush 0\n", " ");
+    fprintf(fout, "%15sgoto %s\n", " ", (variable + "_end").c_str());
+    fprintf(fout, "%s:\n", (variable + "_true").c_str());
+    fprintf(fout, "%15sipush 1\n", " ");
+    fprintf(fout, "%s:\n", (variable + "_end").c_str());
+
     // fprintf(fout, "\n");
 }
 

@@ -272,20 +272,24 @@ void LSMVM::FPU(uint8_t opcode){
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
-  verifyOperands(ds, 1, "data");
+    bool conditionalJump = true;
 
-  if (debug)
+    if (opcode == 0x30 || opcode == 0x31)
+        conditionalJump = false;
+
+    if(conditionalJump)
+        verifyOperands(ds, 1, "data");
+
+    if (debug)
       fprintf(stdout, "label: 0x%04x", label);
 
     int32_t a = ds.top();
-    bool conditionalJump = true;
+
     switch (opcode) {
         case 0x30:
-            conditionalJump = false;
             ip = ip+label-1;
             break;
         case 0x31:
-            conditionalJump = false;
             if (debug)
                 fprintf(stdout, ", push: 0x%04x", ip+3-1);
             cs.push(ip+3-1);

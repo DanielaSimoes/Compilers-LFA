@@ -6,6 +6,6 @@ program testIf ()
         a = 5;
     }
     else a = 4;
-
+    printInt(a);
     exit();
 }

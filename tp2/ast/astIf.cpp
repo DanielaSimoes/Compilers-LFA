@@ -27,6 +27,8 @@ void ASTIf::generateLSM(FILE* fout)
         ASTNode::text = 1;
     }
 
+    cond->generateLSM(fout);
+
     if (else_block)
     {
         string elsestart = "else_start_" + to_string(cnt);
