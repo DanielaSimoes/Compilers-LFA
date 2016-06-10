@@ -1,5 +1,5 @@
 program testArray ()
 {
-    float n[] = {1.4,3.4,3.3};
+    byte n[] = {'1','2'};
     exit();
 }

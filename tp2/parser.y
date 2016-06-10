@@ -149,19 +149,19 @@ decl            :   ID
                 }
                 ;
 
-array           :   array ',' '\'' BYTE '\''
+array           :   array ','  '\'' INTEGER '\''
                     {
                         if (type == ASTNode::FLOAT){
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
                         }else
-                            $$ = new ASTSeq($1, new ASTByteArrayValue($4));
+                            $$ = new ASTSeq($1, new ASTByteArrayValue((char)$4));
                     }
-                |   '\'' BYTE '\''
+                |    '\'' INTEGER '\''
                     {
                         if (type == ASTNode::FLOAT)
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
                         else
-                            $$ = new ASTByteArrayValue($2);
+                            $$ = new ASTByteArrayValue((char)$2);
                     }
                 |   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
                 |   INTEGER                             { $$ = new ASTIntegerArrayValue($1); }
