@@ -70,6 +70,15 @@ comment2                "/*"
 "xor"                   { UPDATE_LOC; yylval->ivalue = ASTNode::XOR; return XOR; }
 "not"                   { UPDATE_LOC; yylval->ivalue = ASTNode::NOT; return NOT; }
 
+"+="                    { UPDATE_LOC; yylval->ivalue = ASTNode::ADD; return ASSIGN; }
+"-="                    { UPDATE_LOC; yylval->ivalue = ASTNode::SUB; return ASSIGN; }
+"*="                    { UPDATE_LOC; yylval->ivalue = ASTNode::MUL; return ASSIGN; }
+"/="                    { UPDATE_LOC; yylval->ivalue = ASTNode::DIV; return ASSIGN; }
+"%="                    { UPDATE_LOC; yylval->ivalue = ASTNode::REM; return ASSIGN; }
+
+"++"                    { UPDATE_LOC; yylval->ivalue = ASTNode::ADD; return INCDEC; }
+"--"                    { UPDATE_LOC; yylval->ivalue = ASTNode::SUB; return INCDEC; }
+
 {type}\[{decimal}\]     { UPDATE_LOC; yylval -> svalue = strdup(yytext); return ARRAY; }
 
 "byte"                  { UPDATE_LOC; yylval->ivalue = ASTNode::BYTE; return TYPE; }

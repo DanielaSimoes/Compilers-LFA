@@ -142,7 +142,9 @@ void LSMVM::run()
         }
     }
 
-    if (debug)
+    fprintf(stdout, "\n");
+
+    if (debug && ds.size())
         fprintf(stdout, "Execution ended. TOS: %8d decimal\n%30x hexadecimal\n%30.2f float\n", ds.top(), ds.top(), float(ds.top()));
 }
 
@@ -183,7 +185,7 @@ void LSMVM::ALU(uint8_t opcode){
               ds.push(b/a);
               break;
           case 0x14:
-              ds.push(a%b);
+              ds.push(b%a);
               break;
           case 0x16:
               ds.push(b&a);
@@ -207,7 +209,7 @@ void LSMVM::ALU(uint8_t opcode){
       }
     }
 
-    if (debug)
+    if (debug && ds.size())
         printf("a: 0x%x, b: 0x%x, result: 0x%x", a, b, ds.top());
 }
 
@@ -232,7 +234,7 @@ void LSMVM::FPU(uint8_t opcode){
       a = ds.top();
       ds.pop();
       ds.push((int)a);
-      if (debug && f == false)
+      if (debug && f == false && ds.size())
            printf("a: %d, b: %d, result: %d", (int)a, (int)b, (int)ds.top());
     } else {
       verifyOperands(ds, 2, "data");
@@ -293,7 +295,7 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
             break;
         case 0x32:
             ip = (a == 0 ? ip+label-1 : ip+2);
-            if (debug)
+            if (debug && ds.size())
                 printf(", TOS: 0x%x", ds.top());
             break;
         case 0x33:
@@ -459,7 +461,7 @@ void LSMVM::STACK(uint8_t opcode, uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0
             break;
     }
 
-    if(debug)
+    if(debug && ds.size())
         printf("TOS: 0x%x", ds.top());
 }
 
@@ -671,7 +673,7 @@ void LSMVM::show()
 void LSMVM::verifyOperands(std::stack<uint32_t> stack, unsigned int n, std::string name) {
     unsigned int size = stack.size();
     if(size < n && n == 1) {
-        fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operand, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n-1, size);
+        fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operand, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n, size);
         exit(EXIT_FAILURE);
     } else if(size < n) {
         fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operands, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n, size);

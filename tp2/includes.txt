@@ -1,4 +1,5 @@
                ; includes
+               halt
 printInt:
                ipush 28
 printInt1:     dup2

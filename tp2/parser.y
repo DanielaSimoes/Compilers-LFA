@@ -32,7 +32,7 @@
 %token FUNCTION CONTINUE WHILE DO ARRAY PROCEDURE PROGRAM BYTE IF ELSE BREAK PRINTSTR WRITECHAR RELOP EXIT NULLL
 
 %token <svalue> ID LOOP
-%token <ivalue> INTEGER OR AND XOR NOT READCHAR READINT PRINTCHAR PRINTINT TYPE
+%token <ivalue> INTEGER OR AND XOR NOT READCHAR READINT PRINTCHAR PRINTINT TYPE INCDEC ASSIGN
 %token <svalue> STRING
 %token <fvalue> FLOAT
 
@@ -192,8 +192,7 @@ instruction     :   ifthenelse  { $$ = $1; }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
 
-assignment      :   ID '+''+'                           { $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::ADD, new ASTVarValue($1, type), new ASTIntegerValue(1))); }
-                |   ID '-''-'                           { $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::SUB, new ASTVarValue($1, type), new ASTIntegerValue(1))); }
+assignment      :   ID INCDEC                           { $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type), new ASTIntegerValue(1))); }
                 |   ID  '=' expression
                     {
                         if (!(p -> symtable -> getType($1, &type)))
@@ -215,45 +214,12 @@ assignment      :   ID '+''+'                           { $$ = new ASTAssignToVa
                             $$ = new ASTAssignToVar($1, type, new ASTStringValue($1, $3));
                         }
                     }
-                |   ID '+''=' expression
-                    {
-                        if (1)   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::ADD, new ASTVarValue($1, type) , (ASTValue*)$4));
-                        }
-                    }
-
-                | ID '-''=' expression
+                |   ID ASSIGN expression
                     {
                         if (!(p -> symtable -> getType($1, &type)))   {
                             yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
                         } else {
-                            $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::SUB, new ASTVarValue($1, type) , (ASTValue*)$4));
-                        }
-                    }
-                | ID '*''=' expression
-                    {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::MUL, new ASTVarValue($1, type) , (ASTValue*)$4));
-                        }
-                    }
-                | ID '/''=' expression
-                    {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::DIV, new ASTVarValue($1, type) , (ASTValue*)$4));
-                        }
-                    }
-                | ID '%''=' expression
-                    {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            $$ = new ASTAssignToVar($1, type, new ASTOperation(ASTNode::REM, new ASTVarValue($1, type) , (ASTValue*)$4));
+                            $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type) , (ASTValue*)$3));
                         }
                     }
                 ;

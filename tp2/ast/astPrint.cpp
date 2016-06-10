@@ -19,8 +19,9 @@ void ASTPrint::generateLSM(FILE* fout)
             fprintf(fout, "%15swrite\n", " ");
             break;
         case PRINTINT:
-            fprintf(fout, "%15sjsr PrintInt\n", " ");
-        break;
+            value->generateLSM(fout);
+            fprintf(fout, "%15sjsr printInt\n", " ");
+            break;
     }
     fprintf(fout, "\n");
 }
