@@ -29,10 +29,10 @@
     int relop;
 }
 
-%token FUNCTION CONTINUE WHILE DO ARRAY PROCEDURE PROGRAM BYTE IF ELSE BREAK PRINTSTR WRITECHAR RELOP EXIT NULLL
+%token FUNCTION CONTINUE WHILE DO ARRAY PROCEDURE PROGRAM IF ELSE BREAK PRINTSTR WRITECHAR RELOP EXIT NULLL
 
 %token <svalue> ID LOOP
-%token <ivalue> INTEGER OR AND XOR NOT READCHAR READINT PRINTCHAR PRINTINT TYPE INCDEC ASSIGN
+%token <ivalue> BYTE INTEGER OR AND XOR NOT READCHAR READINT PRINTCHAR PRINTINT TYPE INCDEC ASSIGN
 %token <svalue> STRING
 %token <fvalue> FLOAT
 
@@ -149,7 +149,21 @@ decl            :   ID
                 }
                 ;
 
-array           :   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
+array           :   array ',' '\'' BYTE '\''
+                    {
+                        if (type == ASTNode::FLOAT){
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        }else
+                            $$ = new ASTSeq($1, new ASTByteArrayValue($4));
+                    }
+                |   '\'' BYTE '\''
+                    {
+                        if (type == ASTNode::FLOAT)
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        else
+                            $$ = new ASTByteArrayValue($2);
+                    }
+                |   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
                 |   INTEGER                             { $$ = new ASTIntegerArrayValue($1); }
                 |   array ',' FLOAT
                     {

@@ -32,6 +32,7 @@ VCLASSES += astFloatArrayValue
 VCLASSES += astArrayElementValue
 VCLASSES += astStringValue
 VCLASSES += astAssignToArrayElement
+VCLASSES += astByteArrayValue
 
 OBJS += $(ANCLASSES:%=%.o)
 OBJS += $(NCLASSES:%=%.o)

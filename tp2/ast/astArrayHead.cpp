@@ -32,8 +32,10 @@ void ASTArrayHead::generateLSM(FILE* fout)
 
     if (type == ASTNode::INT)
         fprintf(fout, "%-14s .word ", (name + ":").c_str());
-    else
+    else if (type == ASTNode::FLOAT)
         fprintf(fout, "%-14s .float ", (name + ":").c_str());
+    else if (type == ASTNode::BYTE)
+        fprintf(fout, "%-14s .byte ", (name + ":").c_str());
 
     seq->generateLSM(fout);
 

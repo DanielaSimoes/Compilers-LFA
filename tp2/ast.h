@@ -32,6 +32,7 @@
 #include <ast/astFloatArrayValue.h>
 #include <ast/astArrayElementValue.h>
 #include <ast/astAssignToArrayElement.h>
+#include <ast/astByteArrayValue.h>
 
 #include <ast/astStringDecl.h>
 #include <ast/astStringValue.h>
