@@ -82,7 +82,7 @@ decl_list       :   decl                                { $$ = $1; }
 
 decl            :   ID
                     {
-                        $$ = new ASTSpaceDecl($1,4); // TODO - space de 4... não pode ser sempre 4... caso das strings
+                        $$ = new ASTSpaceDecl($1,4);
                         if (!p->symtable->add($1, type)) {
                             yyerror(&yylloc, p, YY_("error: duplicated variable name."));
                         }
@@ -181,7 +181,12 @@ instruction     :   ifthenelse  { $$ = $1; }
                             p -> symtable -> add(c, SymTable::BYTEARRAY);
                         $$ = new ASTPrintStr($3);
                     }
-
+                |   PRINTSTR '(' ID ')' ';' {
+                        int idType = ASTNode::NONE;
+                        if (!(p -> symtable -> getType($3, &idType)))
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        $$ = new ASTPrintStr(new ASTVarValue($3, ASTNode::STRING));
+                    }
                 |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
                 |   PRINTCHAR '(' INTEGER ')' ';'       { $$ = new ASTPrint($1, new ASTIntegerValue($3)); }
                 |   EXIT ';'                            { $$ = new ASTExit(); }

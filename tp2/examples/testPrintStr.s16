@@ -1,0 +1,7 @@
+program testStringDecl () {
+    string hello;
+    hello = "hello";
+    printStr("sou do printStr");
+    printStr(hello);
+    exit();
+}
