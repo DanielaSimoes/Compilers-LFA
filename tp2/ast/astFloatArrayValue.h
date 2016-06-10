@@ -1,5 +1,5 @@
-#ifndef __S16_AST_INTEGER_ARRAY_VALUE__
-#define __S16_AST_INTEGER_ARRAY_VALUE__
+#ifndef __S16_AST_FLOAT_ARRAY_VALUE__
+#define __S16_AST_FLOAT_ARRAY_VALUE__
 
 #include "astValue.h"
 #include "astArrayHead.h"
@@ -10,16 +10,16 @@
 ////////////////////////////////////////////////////
 
 /** \brief A node representing a integer numeric constant */
-class ASTIntegerArrayValue : public ASTValue
+class ASTFloatArrayValue : public ASTValue
 {
 private:
-    int32_t value;
+    float value;
 
 public:
-    ASTIntegerArrayValue(int32_t v)
+    ASTFloatArrayValue(int32_t v)
         : value(v) { type = INT; ASTArrayHead::elems++; }
 
-    ~ASTIntegerArrayValue() {}
+    ~ASTFloatArrayValue() {}
 
     /** show AST tree */
     void show(uint32_t indent);

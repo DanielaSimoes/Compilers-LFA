@@ -1,0 +1,7 @@
+/* error: incompatible types */
+
+program error7 ()
+{
+    int a[] = {1,2,3.0,4};
+    exit();
+}

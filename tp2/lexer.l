@@ -35,7 +35,6 @@ comment2                "/*"
 
 %%
 
-"null"                  { UPDATE_LOC; yylval->ivalue = 0; return NULLL; }
 "program"               { UPDATE_LOC; return PROGRAM; }
 "function"              { UPDATE_LOC; return FUNCTION; }
 "procedure"             { UPDATE_LOC; return PROCEDURE; }

@@ -19,11 +19,13 @@ private:
 
 public:
     static int32_t cur_size;// size of current array
+    static int32_t elems;   // number of elements already given
+    static bool first;       // tell if it is being written the first elem
     enum { NOT_DEFINED = -1 };
 
 public:
-    ASTArrayHead(const char* n, int32_t si, ASTNode* se)
-        : name(n), size(si), seq(se) { type = INT; cur_size = size; }
+    ASTArrayHead(int t, const char* n, int32_t si, ASTNode* se)
+        : name(n), size(si), seq(se) {type = t; cur_size = size; }
 
     ~ASTArrayHead() {}
 

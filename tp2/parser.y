@@ -38,7 +38,7 @@
 
 %type <ivalue> RELOP
 %type <node> block inner_block item_list inst_list item declaration decl_list decl instruction assignment condition xor_expression and_expression not_expression comparison_exp expression term fact opnd ifthenelse inner_cont else_block loop
-%type <node> array array_int
+%type <node> array
 
 %expect 1   // else ambiguity
 
@@ -123,54 +123,49 @@ decl            :   ID
                     }
                 |   ID '[' ']' '=' '{' array '}'
                     {
-                        $$ = new ASTArrayHead($1, ASTArrayHead::NOT_DEFINED, $6);
+                        $$ = new ASTArrayHead(type, $1, ASTArrayHead::NOT_DEFINED, $6);
                         if (!p->symtable->add($1, type)) {
                             yyerror(&yylloc, p, YY_("error: duplicated variable name."));
                         }
-                        ASTIntegerArrayValue::elems = 0;
+                        ASTArrayHead::elems = 0;
                     }
                 |   ID '[' INTEGER ']' '=' '{' array '}'
                 {
-                    $$ = new ASTArrayHead($1, $3, $7);
+                    $$ = new ASTArrayHead(type, $1, $3, $7);
                     if (!p->symtable->add($1, type)) {
                         yyerror(&yylloc, p, YY_("error: duplicated variable name."));
                     }
-                    if (ASTIntegerArrayValue::elems > ASTArrayHead::cur_size) {
+                    if (ASTArrayHead::elems > ASTArrayHead::cur_size) {
                         // warning: ignore elements in excess
                         yyerror(&yylloc, p, YY_("warning: elements given exceed the defined array size."));
                         p->no_of_errors--;
                     }
-                    else if (ASTIntegerArrayValue::elems < ASTArrayHead::cur_size) {
+                    else if (ASTArrayHead::elems < ASTArrayHead::cur_size) {
                         // warning: fill with zeroes
                         yyerror(&yylloc, p, YY_("warning: not enough elements given for the defined array size."));
                         p->no_of_errors--;
                     }
-                    ASTIntegerArrayValue::elems = 0;
+                    ASTArrayHead::elems = 0;
                 }
                 ;
 
-array           :   array_int                           { $$ = $1; }
-//                |   array_float                         { }
-//                |   array_byte                          { }
-//                |   array_char
-                ;
-
-array_int       :   array_int ',' INTEGER               { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
+array           :   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
                 |   INTEGER                             { $$ = new ASTIntegerArrayValue($1); }
+                |   array ',' FLOAT
+                    {
+                        if (type == ASTNode::INT)
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        else
+                            $$ = new ASTSeq($1, new ASTFloatArrayValue($3));
+                    }
+                |   FLOAT
+                    {
+                        if (type == ASTNode::INT)
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        else
+                            $$ = new ASTFloatArrayValue($1);
+                    }
                 ;
-
-//array_float     :   array_float ',' FLOAT
-//                |   FLOAT
-//                ;
-
-//array_byte      :   array_byte ',' BYTE
-//                |   BYTE
-//                ;
-
-//array_char      :   array_char ',' CHAR
-//                |   CHAR
-//                ;
-
 
 instruction     :   ifthenelse  { $$ = $1; }
                 |   loop                                { $$ = $1; }

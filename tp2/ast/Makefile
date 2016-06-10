@@ -26,10 +26,11 @@ VCLASSES += astAssignToVar
 VCLASSES += astCast
 VCLASSES += astRelop
 VCLASSES += astOperation
-VCLASSES += astIntegerArrayValue
 VCLASSES += astArrayHead
-VCLASSES += astStringValue
+VCLASSES += astIntegerArrayValue
+VCLASSES += astFloatArrayValue
 VCLASSES += astArrayElementValue
+VCLASSES += astStringValue
 
 OBJS += $(ANCLASSES:%=%.o)
 OBJS += $(NCLASSES:%=%.o)

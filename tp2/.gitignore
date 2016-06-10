@@ -2,6 +2,7 @@
 *.o
 *.bsm
 *.s
+*~
 
 parser.h
 parser.dot
@@ -12,5 +13,7 @@ lexer.h
 lexer.cpp
 
 s16c
+lsm-asm
+lsm-vm
 
 ast/libast.a

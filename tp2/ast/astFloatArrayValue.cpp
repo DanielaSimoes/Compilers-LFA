@@ -1,4 +1,4 @@
-#include "astIntegerArrayValue.h"
+#include "astFloatArrayValue.h"
 #include "astArrayHead.h"
 
 #include <stdint.h>
@@ -6,23 +6,23 @@
 
 ////////////////////////////////////////////////////
 
-void ASTIntegerArrayValue::show(uint32_t indent)
+void ASTFloatArrayValue::show(uint32_t indent)
 {
-    fprintf(stdout, ";%*s ASTIntegerArrayValue\n", 4*indent, "");
+    fprintf(stdout, ";%*s ASTFloatArrayValue\n", 4*indent, "");
 }
 
-void ASTIntegerArrayValue::generateLSM(FILE* fout)
+void ASTFloatArrayValue::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTIntegerArrayValue\n");
+    fprintf(stdout, "ASTFloatArrayValue\n");
     if (ASTArrayHead::first)
     {
         ASTArrayHead::elems++;
-        fprintf(fout, " %d", value);
+        fprintf(fout, " %f", value);
         ASTArrayHead::first = false;
     }
     else if (ASTArrayHead::elems < ASTArrayHead::cur_size || ASTArrayHead::cur_size == -1) {
         ASTArrayHead::elems++;
-        fprintf(fout, ", %d", value);
+        fprintf(fout, ", %f", value);
     }
 }
 

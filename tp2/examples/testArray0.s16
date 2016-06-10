@@ -2,10 +2,11 @@
 
 program ARRAY ()
 {
-    int a[5] = {1,2,3,4,5};
-    int b[] = {6,7,8,9,10};
-    int c[10] = {11,12,13,14,15}; /* to be completed with zeros */
-    int e[2] = {16,17,18,19}; /* to be truncated */
-    int d[10];
+    int a[5] = {1, 2, 3, 4, 5};
+    int b[] = {6, 7, 8, 9};             /* size not specified */
+    int c[10] = {11, 12, 13, 14, 15};   /* to be completed with zeros */
+    int d[2] = {16, 17, 18, 19};        /* to be truncated */
+    int e[15];                          /* space declaration */
+    float f[5] = {1, 2.2, 3, 4};        /* ints and floats */
     exit();
 }
