@@ -12,11 +12,11 @@
 class ASTArrayElementValue : public ASTValue {
 private:
     std::string label;
-    int16_t offset;
+    ASTValue* value;
 
 public:
-    ASTArrayElementValue(const char* l, int16_t o)
-        : label(l), offset(o) { type = INT; }
+    ASTArrayElementValue(int t, const char* l, ASTValue* v)
+        : label(l), value(v) { type = t; }
 
     ~ASTArrayElementValue() {}
 

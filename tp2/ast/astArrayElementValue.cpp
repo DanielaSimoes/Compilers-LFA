@@ -16,24 +16,19 @@ void ASTArrayElementValue::generateLSM(FILE* fout)
     fprintf(fout, "%15s; accessing element value on array %s\n", " ", label.c_str());
     if (ASTNode::text == 0) {
         fprintf(fout, "%15s.text", " ");
-        if (getType() == INT) {
-            fprintf(fout, "%15sla %s\n", " ", label.c_str());
-            fprintf(fout, "%15sipush %d\n", " ", offset);
-            fprintf(fout, "%15sipush 2\n", " ");
-            fprintf(fout, "%15sishl\n", " ");
-            fprintf(fout, "%15siadd\n", " ");
-            fprintf(fout, "%15siaload\n", " ");
-            fprintf(fout, "\n");
-        } else if (getType() == FLOAT) {
-            fprintf(fout, "%15sla %s\n", " ", label.c_str());
-            fprintf(fout, "%15sipush %d\n", " ", offset);
-            fprintf(fout, "%15sipush 2\n", " ");
-            fprintf(fout, "%15sishl\n", " ");
-            fprintf(fout, "%15siadd\n", " ");
-            fprintf(fout, "%15sfaload\n", " ");
-            fprintf(fout, "\n");
-        }
         ASTNode::text = 1;
+    }
+
+    if (type == INT || type == STRING) {
+        fprintf(fout, "%15sla %s\n", " ", label.c_str());
+        value->generateLSM(fout);
+        fprintf(fout, "%15siaload\n", " ");
+        fprintf(fout, "\n");
+    } else if (type == FLOAT) {
+        fprintf(fout, "%15sla %s\n", " ", label.c_str());
+        value->generateLSM(fout);
+        fprintf(fout, "%15sfaload\n", " ");
+        fprintf(fout, "\n");
     }
 }
 

@@ -14,12 +14,12 @@
 class ASTStringDecl : public ASTNode
 {
 private:
-    std::string name;        ///< the name of the variable
-    int16_t size;       ///< its initial value
+    std::string name;       ///< the name of the variable
+    std::string str;        // the string content
 
 public:
-    ASTStringDecl(const char* n, int16_t s)
-        : name(n), size(s) {}
+    ASTStringDecl(const char* n, const char* s)
+        : name(n), str(s) {}
 
     ~ASTStringDecl() {}
 

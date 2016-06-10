@@ -18,7 +18,7 @@ void ASTStringDecl::generateLSM(FILE* fout) {
         ASTNode::text = 0;
         init = true;
     }
-    fprintf(fout, "%-14s .space %d\n", (name + ":").c_str(), size);
+    fprintf(fout, "%-14s .string %s\n", (name + ":").c_str(), str.c_str());
     fprintf(fout, "\n");
 }
 

@@ -1,0 +1,8 @@
+/* error: incompatible types */
+
+program error8 ()
+{
+    int n[] = {1, 2, 3};
+    n[2] = 4.1;
+    exit();
+}

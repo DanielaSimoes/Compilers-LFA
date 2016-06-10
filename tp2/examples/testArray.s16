@@ -1,10 +1,9 @@
-program ARRAY ()
+program testArray ()
 {
-    int a[] = {3,4,5,6,7,5};
-    loop{
-    	int i = 0;
-    	a[i] = 0;
-    	i++;
-    }
+    int n[] = {1, 2, 3};
+    n[1+1] = 2 + 2;
+    int a;
+    a = n[1] + 1;
+    printInt(n[0] + a + n[2]);
     exit();
 }

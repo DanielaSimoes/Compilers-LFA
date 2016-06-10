@@ -109,7 +109,7 @@ decl            :   ID
                     }
                 |   ID '=' STRING
                     {
-                        $$ = new ASTStringDecl($1, sizeof($3));
+                        $$ = new ASTStringDecl($1, $3);
                         if (!p->symtable->add($1, type)) {
                             yyerror(&yylloc, p, YY_("error: duplicated variable name."));
                         }
@@ -188,7 +188,7 @@ instruction     :   ifthenelse  { $$ = $1; }
                         $$ = new ASTPrintStr(new ASTVarValue($3, ASTNode::STRING));
                     }
                 |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
-                |   PRINTCHAR '(' INTEGER ')' ';'       { $$ = new ASTPrint($1, new ASTIntegerValue($3)); }
+                |   PRINTCHAR '(' expression ')' ';'    { $$ = new ASTPrint($1, (ASTValue*)$3); }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
 
@@ -223,71 +223,17 @@ assignment      :   ID INCDEC                           { $$ = new ASTAssignToVa
                             $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type) , (ASTValue*)$3));
                         }
                     }
-                |   ID '[' INTEGER ']' '=' INTEGER {
+                |   ID '[' expression ']' '=' expression {
                         if (!(p -> symtable -> getType($1, &type)))   {
                             yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else if (((ASTValue*)$3)->getType() != ASTNode::INT) {
+                            yyerror(&yylloc, p, YY_("error: array index must be an integer."));
+                        } else if ( type == ASTNode::INT && ((ASTValue*)$6)->getType() == ASTNode::FLOAT) {
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        } else if ( type == ASTNode::FLOAT && ((ASTValue*)$6)->getType() == ASTNode::INT) {
+                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, new ASTCast(ASTNode::FLOAT, (ASTValue*)$6));
                         } else {
-                            $$ = new ASTAssignToArrayElement($1, $3, $6);
-                        }
-                    }
-                |   ID '[' INTEGER ']' '=' FLOAT {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            $$ = new ASTAssignToArrayElement($1, $3, $6);
-                        }
-                    }
-                |   ID '[' INTEGER ']' '=' ID {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            int idType = ASTNode::NONE;
-                            if (!(p -> symtable -> getType($6, &idType))) {
-                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                            } else {
-                                $$ = new ASTAssignToArrayElement($1, $3, new ASTVarValue($6, idType));
-                            }
-                        }
-                    }
-                |   ID '[' ID ']' '=' INTEGER {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            int idType = ASTNode::NONE;
-                            if (!(p -> symtable -> getType($3, &idType))) {
-                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                            } else {
-                                $$ = new ASTAssignToArrayElement($1, new ASTVarValue($3, ASTNode::INT), $6);
-                            }
-                        }
-                    }
-                |   ID '[' ID ']' '=' FLOAT {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            int idType = ASTNode::NONE;
-                            if (!(p -> symtable -> getType($3, &idType))) {
-                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                            } else {
-                                $$ = new ASTAssignToArrayElement($1, new ASTVarValue($3, ASTNode::INT), $6);
-                            }
-                        }
-                    }
-                |   ID '[' ID ']' '=' ID {
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else {
-                            int idType = ASTNode::NONE;
-                            if (!(p -> symtable -> getType($3, &idType))) {
-                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                            } else {
-                                idType = ASTNode::NONE;
-                                if (!(p -> symtable -> getType($6, &idType))) {
-                                    yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                                } else {
-                                    $$ = new ASTAssignToArrayElement($1, new ASTVarValue($3, ASTNode::INT), new ASTVarValue($6, idType));
-                                }
-                            }
+                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, (ASTValue*)$6);
                         }
                     }
                 ;
@@ -331,10 +277,22 @@ fact            :   opnd                    { $$ = $1; }
 
 opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
                 |   FLOAT                   { $$ = new ASTFloatValue($1); }
-                |   ID                      { int type; bool isValid = p->symtable->getType($1, &type); $$ = new ASTVarValue($1, type);
-                                                if (!isValid)
-                                                    yyerror(&yylloc, p, YY_("Variable doesn't exist."));
-                                            }
+                |   ID
+                    {
+                        if (!p->symtable->getType($1, &type)) {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            $$ = new ASTVarValue($1, type);
+                        }
+                    }
+                |   ID '[' expression ']'
+                    {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            $$ = new ASTArrayElementValue(type, $1, (ASTValue*) $3);
+                        }
+                    }
                 |   READCHAR ';'            { $$ = new ASTFunctionCall($1); }
                 |   READINT ';'             { $$ = new ASTFunctionCall($1); }
                 |	'(' expression ')'      { $$ = $2; }

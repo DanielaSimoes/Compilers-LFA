@@ -18,7 +18,15 @@ void ASTAssignToArrayElement::generateLSM(FILE* fout)
         fprintf(fout, "%15s.text", " ");
         ASTNode::text = 1;
     }
-    switch (entryPoint) {
+
+    fprintf(fout, "\n%15sla %s\n", " ", label.c_str());
+    offset->generateLSM(fout);
+    value->generateLSM(fout);
+    fprintf(fout, "%15siastore\n", " ");
+    fprintf(fout, "\n");
+
+
+    /*switch (entryPoint) {
         case 1:
             fprintf(fout, "%15sla %s\n", " ", label.c_str());
             fprintf(fout, "%15sipush %d\n", " ", offset);
@@ -101,7 +109,7 @@ void ASTAssignToArrayElement::generateLSM(FILE* fout)
                 fprintf(fout, "\n");
             }
             break;
-    }
+    }*/
 }
 
 ////////////////////////////////////////////////////
