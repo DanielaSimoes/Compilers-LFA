@@ -13,10 +13,10 @@
 class ASTByteArrayValue : public ASTValue
 {
 private:
-    unsigned char value;
+    unsigned int value;
 
 public:
-    ASTByteArrayValue(unsigned char v)
+    ASTByteArrayValue(unsigned int v)
         : value(v) { type = BYTE; ASTArrayHead::elems++; }
 
     ~ASTByteArrayValue() {}
