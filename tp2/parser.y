@@ -187,7 +187,7 @@ instruction     :   ifthenelse  { $$ = $1; }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
 
-assignment      :   ID INCDEC                           { $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type), new                   ASTIntegerValue(1))); }
+assignment      :   ID INCDEC                           { $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type), new ASTIntegerValue(1))); }
                 |   INCDEC ID                           { $$ = new ASTAssignToVar($2, type, new ASTOperation($1, new ASTVarValue($2, type), new ASTIntegerValue(1))); }
                 |   ID  '=' expression
                     {
@@ -216,6 +216,73 @@ assignment      :   ID INCDEC                           { $$ = new ASTAssignToVa
                             yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
                         } else {
                             $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type) , (ASTValue*)$3));
+                        }
+                    }
+                |   ID '[' INTEGER ']' '=' INTEGER {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            $$ = new ASTAssignToArrayElement($1, $3, $6);
+                        }
+                    }
+                |   ID '[' INTEGER ']' '=' FLOAT {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            $$ = new ASTAssignToArrayElement($1, $3, $6);
+                        }
+                    }
+                |   ID '[' INTEGER ']' '=' ID {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            int idType = ASTNode::NONE;
+                            if (!(p -> symtable -> getType($6, &idType))) {
+                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                            } else {
+                                $$ = new ASTAssignToArrayElement($1, $3, new ASTVarValue($6, idType));
+                            }
+                        }
+                    }
+                |   ID '[' ID ']' '=' INTEGER {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            int idType = ASTNode::NONE;
+                            if (!(p -> symtable -> getType($3, &idType))) {
+                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                            } else {
+                                $$ = new ASTAssignToArrayElement($1, new ASTVarValue($3, ASTNode::INT), $6);
+                            }
+                        }
+                    }
+                |   ID '[' ID ']' '=' FLOAT {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            int idType = ASTNode::NONE;
+                            if (!(p -> symtable -> getType($3, &idType))) {
+                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                            } else {
+                                $$ = new ASTAssignToArrayElement($1, new ASTVarValue($3, ASTNode::INT), $6);
+                            }
+                        }
+                    }
+                |   ID '[' ID ']' '=' ID {
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else {
+                            int idType = ASTNode::NONE;
+                            if (!(p -> symtable -> getType($3, &idType))) {
+                                yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                            } else {
+                                idType = ASTNode::NONE;
+                                if (!(p -> symtable -> getType($6, &idType))) {
+                                    yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                                } else {
+                                    $$ = new ASTAssignToArrayElement($1, new ASTVarValue($3, ASTNode::INT), new ASTVarValue($6, idType));
+                                }
+                            }
                         }
                     }
                 ;
