@@ -156,14 +156,14 @@ array           :   array ',' INTEGER                   { $$ = new ASTSeq($1, ne
                         if (type == ASTNode::INT)
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
                         else
-                            $$ = new ASTSeq($1, new ASTFloatArrayValue($3));
+                            $$ = new ASTSeq($1, new ASTFloatArrayValue((float)$3));
                     }
                 |   FLOAT
                     {
                         if (type == ASTNode::INT)
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
                         else
-                            $$ = new ASTFloatArrayValue($1);
+                            $$ = new ASTFloatArrayValue((float)$1);
                     }
                 ;
 

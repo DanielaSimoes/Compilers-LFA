@@ -16,8 +16,9 @@ private:
     float value;
 
 public:
-    ASTFloatArrayValue(int32_t v)
-        : value(v) { type = INT; ASTArrayHead::elems++; }
+    ASTFloatArrayValue(float v)
+        : value(v) { type = FLOAT; ASTArrayHead::elems++; }
+
 
     ~ASTFloatArrayValue() {}
 
