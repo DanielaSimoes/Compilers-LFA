@@ -18,13 +18,19 @@ void ASTAssignToArrayElement::generateLSM(FILE* fout)
         fprintf(fout, "%15s.text", " ");
         if (getType() == INT) {
             fprintf(fout, "%15sla %s\n", " ", label.c_str());
-            fprintf(fout, "%15siadd %d\n", " ", offset);
+            fprintf(fout, "%15sipush %d\n", " ", offset);
+            fprintf(fout, "%15sipush 2\n", " ");
+            fprintf(fout, "%15sishl\n", " ");
+            fprintf(fout, "%15siadd\n", " ");
             fprintf(fout, "%15sipush %d\n", " ", value);
             fprintf(fout, "%15siastore\n", " ");
             fprintf(fout, "\n");
         } else if (getType() == FLOAT) {
             fprintf(fout, "%15sla %s\n", " ", label.c_str());
-            fprintf(fout, "%15siadd %d\n", " ", offset);
+            fprintf(fout, "%15sipush %d\n", " ", offset);
+            fprintf(fout, "%15sipush 2\n", " ");
+            fprintf(fout, "%15sishl\n", " ");
+            fprintf(fout, "%15siadd\n", " ");
             fprintf(fout, "%15sfpush %d\n", " ", value);
             fprintf(fout, "%15sfastore\n", " ");
             fprintf(fout, "\n");
