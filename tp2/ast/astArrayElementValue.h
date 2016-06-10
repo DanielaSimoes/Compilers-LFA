@@ -11,8 +11,8 @@
 /** \brief A node representing a integer numeric constant */
 class ASTArrayElementValue : public ASTValue {
 private:
-    int16_t offset;
     std::string label;
+    int16_t offset;
 
 public:
     ASTArrayElementValue(const char* l, int16_t o)
