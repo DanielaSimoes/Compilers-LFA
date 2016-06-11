@@ -1,0 +1,9 @@
+program finalTest ()
+{
+    int y = 3;
+    int n = -22;
+    // assignment with vars
+    n = y;
+
+    exit();
+}
