@@ -1,0 +1,50 @@
+               ; declarating a integer variable
+               .data
+y:             .word 3
+
+               ; declarating a integer variable
+n:             .word -22
+
+               ; declarating a float variable
+x:             .float -2.350000
+
+               ; assigning value to n
+               .text
+L0:
+               ; checking value of variable
+               load y
+
+               store n
+
+               ; exiting program
+               halt
+
+               ; includes
+               halt
+printInt:
+               ipush 28
+printInt1:     dup2
+               iushr
+               ipush 0xF
+               iand
+               jsr pNibble
+               dup
+               ifeq printInt2
+               ipush 4
+               isub
+               goto printInt1
+printInt2:     pop
+               ret
+
+pNibble:
+               ipush 0x30
+               iadd
+               dup
+               ipush 0x39
+               isub
+               ifle pNibble1
+               ipush 0x0a
+               iadd
+pNibble1:      write
+               ret
+

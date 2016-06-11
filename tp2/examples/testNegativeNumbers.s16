@@ -2,6 +2,7 @@ program finalTest ()
 {
     int y = 3;
     int n = -22;
+    float x = -2.35;
     // assignment with vars
     n = y;
 
