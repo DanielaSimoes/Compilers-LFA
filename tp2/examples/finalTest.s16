@@ -6,7 +6,6 @@ program finalTest ()
     int n = 2;
     // assignment with vars
     n = y;
-    //testing if with negative numbers
 
 
     //must not exit
