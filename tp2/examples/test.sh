@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FILES=$(ls examples/*.s.expected)
+FILES=$(find examples -type f -name "*.s.expected")
 
 # colors
 RED='\033[0;31m'
