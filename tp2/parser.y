@@ -153,13 +153,18 @@ array           :   array ','  '\'' INTEGER '\''
                     {
                         if (type == ASTNode::FLOAT){
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
-                        }else
+                        }else if($4 < 0 || $4 > 255){
+                            yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
+                        }
+                        else
                             $$ = new ASTSeq($1, new ASTByteArrayValue((char)$4));
                     }
                 |    '\'' INTEGER '\''
                     {
                         if (type == ASTNode::FLOAT)
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        else if ($2 < 0 || $2 > 255)
+                            yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
                         else
                             $$ = new ASTByteArrayValue((char)$2);
                     }
