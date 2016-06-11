@@ -295,7 +295,7 @@ fact            :   opnd                    { $$ = $1; }
                 ;
 
 opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
-                |   FLOAT                   { $$ = new ASTFloatValue($1); }
+                |   FLOAT                   { $$ = new ASTFloatValue((float)$1); }
                 |   ID
                     {
                         if (!p->symtable->getType($1, &type)) {
