@@ -48,6 +48,7 @@
 %token <opcode> HALT
 %token <opcode> READ
 %token <opcode> WRITE
+%token <opcode> FCOMPG
 %token <vstr> DIRBYTE
 %token <vstr> DIRWORD
 %token <vstr> DIRFLOAT
@@ -238,6 +239,7 @@ regular_inst:   INTOP { $$ = $1; }
             |   HALT { $$ = $1; }
             |   READ { $$ = $1; }
             |   WRITE { $$ = $1; }
+            |   FCOMPG { $$ = $1; }
             ;
 
 %%

@@ -90,6 +90,7 @@ whitespace    [ \r\t]*
 "halt"          { UPDATE_LOC; yylval->opcode = 0xF0; return HALT; }
 "read"          { UPDATE_LOC; yylval->opcode = 0xF1; return READ; }
 "write"         { UPDATE_LOC; yylval->opcode = 0xF2; return WRITE; }
+"fcmpg"			{ UPDATE_LOC; yylval->opcode = 0xFF; return FCOMPG;}
 {dirdata}		{ UPDATE_LOC; return DIRDATA; }
 {dirtext}		{ UPDATE_LOC; return DIRTEXT; }
 {dirbyte}       { UPDATE_LOC; yylval->vstr = strdup(yytext); return DIRBYTE; }

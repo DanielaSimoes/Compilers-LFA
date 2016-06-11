@@ -115,7 +115,7 @@ void LSMVM::run()
         if(opcode >= 0x10 && opcode <= 0x1b){
             ALU(opcode);
         }
-        else if (opcode >= 0x20 && opcode <= 0x27){
+        else if ((opcode >= 0x20 && opcode <= 0x27) || opcode == 0xFF){
             FPU(opcode);
         }
         else if (opcode >= 0x30 && opcode <= 0x37){
@@ -141,8 +141,6 @@ void LSMVM::run()
             sleep_for(nanoseconds(250000000)); // wait 0.25 secs in case we enter ina endless loop
         }
     }
-
-    fprintf(stdout, "\n");
 
     if (debug && ds.size())
         fprintf(stdout, "Execution ended. TOS: %8d decimal\n%30x hexadecimal\n%30.2f float\n", ds.top(), ds.top(), float(ds.top()));
@@ -185,7 +183,7 @@ void LSMVM::ALU(uint8_t opcode){
               ds.push(b/a);
               break;
           case 0x14:
-              ds.push(b%a);
+              ds.push(a%b);
               break;
           case 0x16:
               ds.push(b&a);
@@ -262,34 +260,39 @@ void LSMVM::FPU(uint8_t opcode){
         case 0x24:
             ds.push(fmod(a, b));
             break;
+        case 0xFF:
+            if(a>b)
+                ds.push(1);
+            else if(a<b)
+                ds.push(-1);
+            else if(a==b)
+                ds.push(0);
+            break;
         }
+        
     }
 
     if (debug && f == true)
-        printf("a: %f, b: %f, result: %f", a, b, (float)ds.top());
+        printf("a: %f, b: %f, result: %d", a, b, ds.top());
 
 }
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
-    bool conditionalJump = true;
+  verifyOperands(ds, 1, "data");
 
-    if (opcode == 0x30 || opcode == 0x31)
-        conditionalJump = false;
-
-    if(conditionalJump)
-        verifyOperands(ds, 1, "data");
-
-    if (debug)
+  if (debug)
       fprintf(stdout, "label: 0x%04x", label);
 
     int32_t a = ds.top();
-
+    bool conditionalJump = true;
     switch (opcode) {
         case 0x30:
+            conditionalJump = false;
             ip = ip+label-1;
             break;
         case 0x31:
+            conditionalJump = false;
             if (debug)
                 fprintf(stdout, ", push: 0x%04x", ip+3-1);
             cs.push(ip+3-1);
@@ -637,6 +640,7 @@ bool LSMVM::parse(const char* path)
     opcodes[0xF0] = "halt"   ;
     opcodes[0xF1] = "read"   ;
     opcodes[0xF2] = "write"  ;
+    opcodes[0xFF] = "fcmpg"  ;
 
     return true;
 
@@ -677,7 +681,7 @@ void LSMVM::show()
 void LSMVM::verifyOperands(std::stack<uint32_t> stack, unsigned int n, std::string name) {
     unsigned int size = stack.size();
     if(size < n && n == 1) {
-        fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operand, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n, size);
+        fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operand, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n-1, size);
         exit(EXIT_FAILURE);
     } else if(size < n) {
         fprintf(stderr, "\033[1m\033[91mError:\033[0m Incorrect number of operands in the %s stack while executing instruction \"%s\". Should be present at least %d operands, but %d found. \n", name.c_str(), opcodes[text[ip]].c_str(), n, size);
