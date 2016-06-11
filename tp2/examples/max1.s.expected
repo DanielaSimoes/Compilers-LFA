@@ -1,0 +1,177 @@
+               ; calling print string
+               .data
+s1:            .string "How many numbers? "
+               .text
+L0:
+               la s1
+               jsr printStr
+
+               ; creating a space
+               .data
+n:             .space 4
+
+               ; assigning value to n
+               .text
+L1:
+               ; calling a function
+               read
+
+               store n
+
+               ; creating an IF...THEN...ELSE block
+               ; creating an operation
+               ior
+               ifeq then_end_1
+               ; calling print string
+               .data
+s2:            .string "Bad number of numbers, aborting\n"
+               .text
+L2:
+               la s2
+               jsr printStr
+
+               ; exiting program
+               halt
+
+then_end_1:
+               ; declarating a integer variable
+               .data
+i:             .word 0
+
+               ; creating a space
+v:             .space 4
+
+               ; creating a space
+max:           .space 4
+
+               ; assigning value to max
+               .text
+L3:
+               ; calling a function
+               read
+
+               store max
+
+               ; assigning value to i
+               ; creating an operation
+               ; checking value of variable
+               load i
+
+               ; designating an integer value
+               ipush 1
+
+               iadd
+               store i
+
+               ; creating a loop
+LoopStart1:
+               ; assigning value to v
+               ; calling a function
+               read
+
+               store v
+
+               ; creating an IF...THEN...ELSE block
+               ; checking solution for relation (RELOP)
+               ; checking value of variable
+               load v
+
+               ; checking value of variable
+               load max
+
+               isub
+               ifgt relop3_true
+relop3_false:
+               ipush 0
+               goto relop3_end
+relop3_true:
+               ipush 1
+relop3_end:
+               ifeq then_end_2
+               ; assigning value to max
+               ; checking value of variable
+               load v
+
+               store max
+
+then_end_2:
+               ; assigning value to i
+               ; creating an operation
+               ; checking value of variable
+               load i
+
+               ; designating an integer value
+               ipush 1
+
+               iadd
+               store i
+
+               ; creating an IF...THEN...ELSE block
+               ; checking solution for relation (RELOP)
+               ; checking value of variable
+               load i
+
+               ; checking value of variable
+               load n
+
+               isub
+               ifeq relop4_true
+relop4_false:
+               ipush 0
+               goto relop4_end
+relop4_true:
+               ipush 1
+relop4_end:
+               ifeq then_end_3
+               ; breaking a loop
+               goto LoopEnd1
+
+then_end_3:
+               goto LoopStart1
+LoopEnd1:
+               ; calling print string
+               .data
+s3:            .string "Max = "
+               .text
+L4:
+               la s3
+               jsr printStr
+
+               ; calling print
+               ; checking value of variable
+               load max
+
+               jsr printInt
+
+               ; exiting program
+               halt
+
+               ; includes
+               halt
+printInt:
+               ipush 28
+printInt1:     dup2
+               iushr
+               ipush 0xF
+               iand
+               jsr pNibble
+               dup
+               ifeq printInt2
+               ipush 4
+               isub
+               goto printInt1
+printInt2:     pop
+               ret
+
+pNibble:
+               ipush 0x30
+               iadd
+               dup
+               ipush 0x39
+               isub
+               ifle pNibble1
+               ipush 0x0a
+               iadd
+pNibble1:      write
+               ret
+
