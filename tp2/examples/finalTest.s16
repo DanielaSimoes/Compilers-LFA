@@ -1,0 +1,61 @@
+/* Programa escrito em S16 */
+
+program finalTest ()
+{
+    int y = 3;
+    int n = 2;
+    // assignment with vars
+    n = y;
+    //testing if with negative numbers
+
+
+    //must not exit
+    if ( n > 0 ) {
+        exit();
+    }
+
+    int i = 0;
+    // increment -- 1 unity
+    i++;
+    // increment -- 1 unity
+    ++i;
+
+    int v = 6;
+    // decrement -- 1 unity
+    v--;
+    // decrement -- 1 unity
+    --v;
+
+    // REM operation
+    int x = 3;
+    x%=3;
+
+    // MUL operation
+    int k = 9;
+    k*=3;
+
+    // DIV operation
+    int p = 5;
+    x/=2;
+
+    // SUB operation
+    int o = 10;
+    o -= 5;
+
+    // SUM operation
+    int t = 4;
+    t+=3;
+
+    loop
+    {
+        if (t == o) break;
+        printInt(t);
+
+        loop{
+            if(t > 10)
+                break;
+        }
+    }
+
+    exit();
+}
