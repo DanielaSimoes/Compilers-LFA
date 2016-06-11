@@ -46,6 +46,30 @@ void ASTRelop::generateLSM(FILE* fout) {
     std::string variable = "relop" + std::to_string(cnt);
     if (floatComparison) {
         fprintf(fout, "%15sfcmpg\n", " ");
+        switch (op) {
+            case EQ:
+                fprintf(fout, "%15sifeq %s\n", " ", (variable + "_true").c_str());
+                break;
+            case NE:
+                fprintf(fout, "%15sifne %s\n", " ", (variable + "_true").c_str());
+                break;
+            case LT:
+                fprintf(fout, "%15sipush -1\n", " ");
+                fprintf(fout, "%15sisub\n", " ");
+                fprintf(fout, "%15sifeq %s\n", " ", (variable + "_true").c_str());
+                break;
+            case GT:
+                fprintf(fout, "%15sipush 1\n", " ");
+                fprintf(fout, "%15sisub\n", " ");
+                fprintf(fout, "%15sifeq %s\n", " ", (variable + "_true").c_str());
+                break;
+            case LE:
+                fprintf(fout, "%15sifle %s\n", " ", (variable + "_true").c_str());
+                break;
+            case GE:
+                fprintf(fout, "%15sifge %s\n", " ", (variable + "_true").c_str());
+                break;
+        }
     } else if (leftType == INT && rightType == INT) {
         fprintf(fout, "%15sisub\n", " ");
         if (op == EQ) {
