@@ -1,0 +1,5 @@
+program testArray ()
+{
+    byte n[] = {'1','2'};
+    exit();
+}

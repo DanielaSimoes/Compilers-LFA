@@ -29,10 +29,10 @@
     int relop;
 }
 
-%token FUNCTION CONTINUE WHILE DO ARRAY PROCEDURE PROGRAM BYTE IF ELSE BREAK PRINTSTR WRITECHAR RELOP EXIT NULLL
+%token FUNCTION CONTINUE WHILE DO ARRAY PROCEDURE PROGRAM IF ELSE BREAK PRINTSTR WRITECHAR RELOP EXIT NULLL
 
 %token <svalue> ID LOOP
-%token <ivalue> INTEGER OR AND XOR NOT READCHAR READINT PRINTCHAR PRINTINT TYPE INCDEC ASSIGN
+%token <ivalue> BYTE INTEGER OR AND XOR NOT READCHAR READINT PRINTCHAR PRINTINT TYPE INCDEC ASSIGN
 %token <svalue> STRING
 %token <fvalue> FLOAT
 
@@ -149,7 +149,26 @@ decl            :   ID
                 }
                 ;
 
-array           :   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
+array           :   array ','  '\'' INTEGER '\''
+                    {
+                        if (type == ASTNode::FLOAT){
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        }else if($4 < 0 || $4 > 255){
+                            yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
+                        }
+                        else
+                            $$ = new ASTSeq($1, new ASTByteArrayValue((char)$4));
+                    }
+                |    '\'' INTEGER '\''
+                    {
+                        if (type == ASTNode::FLOAT)
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        else if ($2 < 0 || $2 > 255)
+                            yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
+                        else
+                            $$ = new ASTByteArrayValue((char)$2);
+                    }
+                |   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
                 |   INTEGER                             { $$ = new ASTIntegerArrayValue($1); }
                 |   array ',' FLOAT
                     {
