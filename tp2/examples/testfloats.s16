@@ -1,0 +1,49 @@
+program testRelOp ()
+{
+    int a ;
+    int b = 1;
+    float c = 3.0;
+    float d = 4.0;
+    float e = -5.0;
+
+    // cast to int
+    a = (int)c;
+
+
+    // must fail
+    if( e > d ){
+        break;
+    }
+
+    loop{
+        //must pass
+        if ( 8.4 > 6.3 ){
+            d = (float)b;
+            break;
+        }
+    }
+
+    // REM operation
+    float x = 3;
+    x%=3;
+
+    // MUL operation
+    float k = 9.0;
+    //should cast
+    k*=3;
+
+    // DIV operation
+    float p = 5.0;
+    //should cast
+    x/=2;
+
+    // SUB operation
+    float o = 10.0;
+    o -= 5.1;
+
+    // SUM operation
+    float t = 4.3;
+    t+=3.1;
+
+    exit();
+}
