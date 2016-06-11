@@ -15,11 +15,11 @@ private:
     float value;
 
 public:
-    ASTFloatValue(int32_t v)
+    ASTFloatValue(float v)
         : value(v) { type = FLOAT; }
 
     ~ASTFloatValue() {}
-    
+
     /** show AST tree */
     void show(uint32_t indent);
 
