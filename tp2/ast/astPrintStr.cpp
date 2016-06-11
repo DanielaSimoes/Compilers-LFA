@@ -31,7 +31,7 @@ void ASTPrintStr::generateLSM(FILE* fout) {
                 ASTNode::cnt++;
                 ASTNode::text = 1;
             }
-            fprintf(fout, "%15sla s%d\n", " ", cnt);
+            fprintf(fout, "%15sload s%d\n", " ", cnt);
             fprintf(fout, "%15sjsr printStr\n", " ");
             break;
         case 2:
