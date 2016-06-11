@@ -22,8 +22,7 @@ void ASTByteArrayValue::generateLSM(FILE* fout)
     }
     else if (ASTArrayHead::elems < ASTArrayHead::cur_size || ASTArrayHead::cur_size == -1) {
         ASTArrayHead::elems++;
-        fprintf(fout, ", %d", value);
-        printf("%d\n", value);
+        fprintf(fout, ", %c", value);
     }
 }
 

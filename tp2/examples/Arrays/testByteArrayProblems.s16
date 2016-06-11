@@ -1,0 +1,6 @@
+program testArray ()
+{
+    char a = 'a';
+    byte b[] = {'a','b'};
+    exit();
+}

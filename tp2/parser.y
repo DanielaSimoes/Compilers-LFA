@@ -149,24 +149,26 @@ decl            :   ID
                 }
                 ;
 
-array           :   array ','  '\'' INTEGER '\''
+array           :   array ',' BYTE
                     {
+                        //printf("%d\n", $3);
                         if (type == ASTNode::FLOAT){
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
-                        }else if($4 < 0 || $4 > 255){
+                        }else if($3 < 0 || $3 > 255){
                             yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
                         }
                         else
-                            $$ = new ASTSeq($1, new ASTByteArrayValue((char)$4));
+                            $$ = new ASTSeq($1, new ASTByteArrayValue((int)$3));
                     }
-                |    '\'' INTEGER '\''
+                |    BYTE
                     {
+                        //printf("%d\n", $1);
                         if (type == ASTNode::FLOAT)
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
-                        else if ($2 < 0 || $2 > 255)
+                        else if ($1 < 0 || $1 > 255)
                             yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
                         else
-                            $$ = new ASTByteArrayValue((char)$2);
+                            $$ = new ASTByteArrayValue((int)$1);
                     }
                 |   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
                 |   INTEGER                             { $$ = new ASTIntegerArrayValue($1); }

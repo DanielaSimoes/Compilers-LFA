@@ -1,7 +1,8 @@
 %{
     #include <stdlib.h>
     #include <stdint.h>
-
+    #include <string.h>
+    #include <stdio.h>
     #include "parser.h"
     #include "ast.h"
 
@@ -23,11 +24,11 @@ id                      [A-Za-z_][A-Za-z0-9_]*
 hexadecimal             0[Xx][0-9A-Fa-f]{1,8}
 decimal                 [-]?[0-9]+
 float                   [-]?(([0-9]*\.)*[0-9]+)|[-]?(\.[0-9]+)|[-]?([0-9]+\.)
+byte                    '0[Xx][0-9A-Fa-f]{1,8}'|'[-]?[0-9]+'|'[A-Za-z_]'
 char		            ('.'|'\\n'|'\\t'|'\\r')
 string		            \"(\\.|[^"\\])*\"
 whitespace              [ \r\t]*
 type                    (int|float|string|byte|char)
-
 comment1                "//".*
 comment2                "/*"
 
@@ -89,6 +90,7 @@ comment2                "/*"
 {hexadecimal}           { UPDATE_LOC; yylval->ivalue = (int32_t)strtol(yytext, NULL, 0); return INTEGER; }
 {decimal}               { UPDATE_LOC; yylval->ivalue = atoi(yytext); return INTEGER; }
 {float}                 { UPDATE_LOC; yylval->fvalue = atof(yytext); return FLOAT; }
+{byte}                  { UPDATE_LOC; char *token; const char s[2] = "'"; token = strtok(yytext, s); /*printf("%s\n", token);*/ yylval->ivalue = (int)token[0]; return BYTE; }
 {char}                  { UPDATE_LOC; yylval->svalue = strdup(yytext); return INTEGER; }
 {string}                { UPDATE_LOC; yylval->svalue = strdup(yytext); return STRING; }
 

@@ -1,5 +1,8 @@
 program testArray ()
 {
-    byte n[] = {'1','2'};
+    byte a[] = {'a','b'};  
+    //byte n[] = {0x1,0x2};
+    //byte c[] = {0x1,0x2,'c'};
+    //byte d[] = {0x1,1,'c'};
     exit();
 }
