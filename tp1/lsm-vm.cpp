@@ -269,7 +269,7 @@ void LSMVM::FPU(uint8_t opcode){
                 ds.push(0);
             break;
         }
-        
+
     }
 
     if (debug && f == true)
@@ -279,20 +279,27 @@ void LSMVM::FPU(uint8_t opcode){
 
 void LSMVM::JUMP(uint8_t opcode, uint16_t label){
 
-  verifyOperands(ds, 1, "data");
+  bool conditionalJump = true;
+  int32_t a;
+
+  // printf("entrou op: %x\n", opcode);
+
+  if(opcode != 0x30 && opcode != 0x31){
+      verifyOperands(ds, 1, "data");
+      a = ds.top();
+  }else{
+      conditionalJump = false;
+  }
 
   if (debug)
       fprintf(stdout, "label: 0x%04x", label);
 
-    int32_t a = ds.top();
-    bool conditionalJump = true;
+
     switch (opcode) {
-        case 0x30:
-            conditionalJump = false;
+        case 0x30: // JUMP
             ip = ip+label-1;
             break;
-        case 0x31:
-            conditionalJump = false;
+        case 0x31: // jsr
             if (debug)
                 fprintf(stdout, ", push: 0x%04x", ip+3-1);
             cs.push(ip+3-1);
@@ -300,24 +307,24 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
                 fprintf(stdout, ", go to: ip+0x%04x ", label);
             ip = (ip+label-1);
             break;
-        case 0x32:
+        case 0x32: // ifeq
             ip = (a == 0 ? ip+label-1 : ip+2);
             if (debug && ds.size())
                 printf(", TOS: 0x%x", ds.top());
             break;
-        case 0x33:
+        case 0x33: // ifne
             ip = (a != 0 ? ip+label-1 : ip+2);
             break;
-        case 0x34:
+        case 0x34: // iflt
             ip = (a < 0 ? ip+label-1 : ip+2);
             break;
-        case 0x35:
+        case 0x35: // ifge
             ip = (a >= 0 ? ip+label-1 : ip+2);
             break;
-        case 0x36:
+        case 0x36: // ifgt
             ip = (a > 0 ? ip+label-1 : ip+2);
             break;
-        case 0x37:
+        case 0x37: // ifle
             ip = (a <= 0 ? ip+label-1 : ip+2);
             break;
     }
