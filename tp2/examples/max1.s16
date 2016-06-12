@@ -1,4 +1,4 @@
-/* Programa escrito em S16 */
+/* Programa escrito em S16/N1 */
 
 program MAX ()
 {
@@ -29,6 +29,7 @@ program MAX ()
     /* print results */
     printStr("Max = ");
     printInt(max);
+    printStr("\n");
     exit();
 }
 
