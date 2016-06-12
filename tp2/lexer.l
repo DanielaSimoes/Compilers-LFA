@@ -55,8 +55,8 @@ comment2                "/*"
 "printInt"              { UPDATE_LOC; yylval->ivalue = ASTNode::PRINTINT; return PRINTINT; }
 "printStr"              { UPDATE_LOC; return PRINTSTR; }
 "printChar"             { UPDATE_LOC; yylval->ivalue = ASTNode::PRINTCHAR; return PRINTCHAR; }
-"readInt()"             { UPDATE_LOC; yylval->ivalue = ASTNode::READCHAR; return READINT; }
-"readChar()"            { UPDATE_LOC; yylval->ivalue = ASTNode::READINT; return READCHAR; }
+"readInt()"             { UPDATE_LOC; yylval->ivalue = ASTNode::READINT; return READINT; }
+"readChar()"            { UPDATE_LOC; yylval->ivalue = ASTNode::READCHAR; return READCHAR; }
 
 "=="                    { UPDATE_LOC; yylval->ivalue = ASTNode::EQ; return RELOP; }
 "!="                    { UPDATE_LOC; yylval->ivalue = ASTNode::NE; return RELOP; }
