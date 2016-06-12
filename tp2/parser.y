@@ -321,7 +321,7 @@ opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
                     }
                 |   READCHAR ';'            { $$ = new ASTFunctionCall($1); }
                 |   READINT ';'             { $$ = new ASTFunctionCall($1); }
-                |	'(' expression ')'      { $$ = $2; }
+                |	'(' expression ')'      { $$ = $2; } 
                 ;
 
 ifthenelse      :   IF '(' condition ')' inner_cont else_block  { $$ = new ASTIf((ASTValue*) $3, $5, $6); }
