@@ -1,16 +1,7 @@
-               ; creating an array
+               ; creating a space
                .data
-a:             .byte  97, 98
-               ; creating an array
-n:             .byte  1, 2
-               ; creating an array
-c:             .byte  1, 2, 99
-               ; creating an array
-d:             .byte  1, 1, 99
-               ; creating an array
-t:             .word  1, 2, 3
-               ; creating an array
-x:             .word  1, 2
+in:            .space 40
+
                ; exiting program
                .text
 L0:

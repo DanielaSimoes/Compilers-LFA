@@ -1,18 +1,10 @@
-               ; calling print string
-               .data
-s1:            .string "How many numbers? "
-               .text
-L0:
-               la s1
-               jsr printStr
-
                ; creating a space
                .data
 n:             .space 4
 
                ; assigning value to n
                .text
-L1:
+L0:
                ; calling a function
                read
 
@@ -22,59 +14,47 @@ L1:
                ; creating an operation
                ior
                ifeq then_end_1
-               ; calling print string
-               .data
-s2:            .string "Bad number of numbers, aborting\n"
-               .text
-L2:
-               la s2
-               jsr printStr
-
                ; exiting program
                halt
 
 then_end_1:
-               ; declarating a integer variable
+               ; creating an array
                .data
-i:             .word 0
-
-               ; creating a space
-v:             .space 4
+in:            .word  1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+               ; declarating a integer variable
+i:             .word 1
 
                ; creating a space
 max:           .space 4
 
                ; assigning value to max
                .text
-L3:
-               ; calling a function
-               read
+L1:
+               ; accessing element value on array in
+               la in
+               ; designating an integer value
+               ipush 0
+
+               iaload
 
                store max
 
                ; assigning value to i
-               ; creating an operation
-               ; checking value of variable
-               load i
-
                ; designating an integer value
                ipush 1
 
-               iadd
                store i
 
                ; creating a loop
 LoopStart1:
-               ; assigning value to v
-               ; calling a function
-               read
-
-               store v
-
                ; creating an IF...THEN...ELSE block
                ; checking solution for relation (RELOP)
+               ; accessing element value on array in
+               la in
                ; checking value of variable
-               load v
+               load i
+
+               iaload
 
                ; checking value of variable
                load max
@@ -89,8 +69,12 @@ relop3_true:
 relop3_end:
                ifeq then_end_2
                ; assigning value to max
+               ; accessing element value on array in
+               la in
                ; checking value of variable
-               load v
+               load i
+
+               iaload
 
                store max
 
@@ -129,28 +113,48 @@ relop4_end:
 then_end_3:
                goto LoopStart1
 LoopEnd1:
-               ; calling print string
-               .data
-s3:            .string "Max = "
-               .text
-L4:
-               la s3
-               jsr printStr
+               ; assigning value to i
+               ; designating an integer value
+               ipush 1
 
-               ; calling print
+               store i
+
+               ; creating a loop
+LoopStart2:
+               ; assigning value to i
+               ; creating an operation
                ; checking value of variable
-               load max
+               load i
 
-               jsr printInt
+               ; designating an integer value
+               ipush 1
 
-               ; calling print string
-               .data
-s4:            .string "\n"
-               .text
-L5:
-               la s4
-               jsr printStr
+               iadd
+               store i
 
+               ; creating an IF...THEN...ELSE block
+               ; checking solution for relation (RELOP)
+               ; checking value of variable
+               load i
+
+               ; checking value of variable
+               load n
+
+               isub
+               ifeq relop5_true
+relop5_false:
+               ipush 0
+               goto relop5_end
+relop5_true:
+               ipush 1
+relop5_end:
+               ifeq then_end_4
+               ; breaking a loop
+               goto LoopEnd2
+
+then_end_4:
+               goto LoopStart2
+LoopEnd2:
                ; exiting program
                halt
 

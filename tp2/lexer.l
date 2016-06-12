@@ -79,7 +79,6 @@ comment2                "/*"
 "++"                    { UPDATE_LOC; yylval->ivalue = ASTNode::ADD; return INCDEC; }
 "--"                    { UPDATE_LOC; yylval->ivalue = ASTNode::SUB; return INCDEC; }
 
-{type}\[{decimal}\]     { UPDATE_LOC; yylval -> svalue = strdup(yytext); return ARRAY; }
 
 "byte"                  { UPDATE_LOC; yylval->ivalue = ASTNode::BYTE; return TYPE; }
 "int"                   { UPDATE_LOC; yylval->ivalue = ASTNode::INT; return TYPE; }
