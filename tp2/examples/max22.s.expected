@@ -1,0 +1,202 @@
+               ; creating a space
+               .data
+n:             .space 4
+
+               ; assigning value to n
+               .text
+L0:
+               ; calling a function
+               read
+
+               store n
+
+               ; creating an IF...THEN...ELSE block
+               ; creating an operation
+               ior
+               ifeq then_end_1
+               ; exiting program
+               halt
+
+then_end_1:
+               ; creating a space
+               .data
+in:            .space 40
+
+               ; declarating a integer variable
+i:             .word 1
+
+               ; creating a space
+max:           .space 4
+
+               ; assigning value to max
+               .text
+L1:
+               ; accessing element value on array in
+               la in
+               ; designating an integer value
+               ipush 0
+
+               iaload
+
+               store max
+
+               ; assigning value to i
+               ; designating an integer value
+               ipush 1
+
+               store i
+
+               ; creating a loop
+LoopStart1:
+               ; creating an IF...THEN...ELSE block
+               ; checking solution for relation (RELOP)
+               ; accessing element value on array in
+               la in
+               ; checking value of variable
+               load i
+
+               iaload
+
+               ; checking value of variable
+               load max
+
+               isub
+               ifgt relop3_true
+relop3_false:
+               ipush 0
+               goto relop3_end
+relop3_true:
+               ipush 1
+relop3_end:
+               ifeq then_end_2
+               ; assigning value to max
+               ; accessing element value on array in
+               la in
+               ; checking value of variable
+               load i
+
+               iaload
+
+               store max
+
+then_end_2:
+               ; assigning value to i
+               ; creating an operation
+               ; checking value of variable
+               load i
+
+               ; designating an integer value
+               ipush 1
+
+               iadd
+               store i
+
+               ; creating an IF...THEN...ELSE block
+               ; checking solution for relation (RELOP)
+               ; checking value of variable
+               load i
+
+               ; checking value of variable
+               load n
+
+               isub
+               ifeq relop4_true
+relop4_false:
+               ipush 0
+               goto relop4_end
+relop4_true:
+               ipush 1
+relop4_end:
+               ifeq then_end_3
+               ; breaking a loop
+               goto LoopEnd1
+
+then_end_3:
+               goto LoopStart1
+LoopEnd1:
+               ; assigning value to i
+               ; designating an integer value
+               ipush 1
+
+               store i
+
+               ; creating a loop
+LoopStart2:
+               ; assigning value to i
+               ; creating an operation
+               ; checking value of variable
+               load i
+
+               ; designating an integer value
+               ipush 1
+
+               iadd
+               store i
+
+               ; creating an IF...THEN...ELSE block
+               ; checking solution for relation (RELOP)
+               ; checking value of variable
+               load i
+
+               ; checking value of variable
+               load n
+
+               isub
+               ifeq relop5_true
+relop5_false:
+               ipush 0
+               goto relop5_end
+relop5_true:
+               ipush 1
+relop5_end:
+               ifeq then_end_4
+               ; breaking a loop
+               goto LoopEnd2
+
+then_end_4:
+               goto LoopStart2
+LoopEnd2:
+               ; exiting program
+               halt
+
+               ; includes
+               halt
+printInt:
+               ipush 28
+printInt1:     dup2
+               iushr
+               ipush 0xF
+               iand
+               jsr pNibble
+               dup
+               ifeq printInt2
+               ipush 4
+               isub
+               goto printInt1
+printInt2:     pop
+               ret
+
+pNibble:
+               ipush 0x30
+               iadd
+               dup
+               ipush 0x39
+               isub
+               ifle pNibble1
+               ipush 0x0a
+               iadd
+pNibble1:      write
+               ret
+
+printStr:      dup
+               ipush 0
+               baload
+               dup
+               ifeq printStr_end
+               write
+               ipush 1
+               iadd
+               goto printStr
+
+printStr_end:  write
+               ret

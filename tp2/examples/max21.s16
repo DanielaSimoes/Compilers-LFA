@@ -1,0 +1,8 @@
+/* Programa escrito em S16/N2 */
+
+program MAX ()
+{
+    int[10] in;
+    exit();
+}
+
