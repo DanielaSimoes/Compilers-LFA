@@ -1,12 +1,12 @@
                ; creating an array
                .data
-a:             .byte  a, b
+a:             .byte  97, 98
                ; creating an array
 n:             .byte  1, 2
                ; creating an array
-c:             .byte  1, 2, c
+c:             .byte  1, 2, 99
                ; creating an array
-d:             .byte  1, 1, c
+d:             .byte  1, 1, 99
                ; creating an array
 t:             .word  1, 2, 3
                ; creating an array
@@ -45,3 +45,15 @@ pNibble:
 pNibble1:      write
                ret
 
+printStr:      dup
+               ipush 0
+               baload
+               dup
+               ifeq printStr_end
+               write
+               ipush 1
+               iadd
+               goto printStr
+
+printStr_end:  write
+               ret
