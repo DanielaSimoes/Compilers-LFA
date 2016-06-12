@@ -73,7 +73,7 @@ item            :   instruction                         { $$ = $1; }
                 |   block                               { $$ = $1; }
                 ;
 
-declaration     :   TYPE { type = $1; printf("type: %d\n", $1); } decl_list ';'   { $$ = $3; }
+declaration     :   TYPE { type = $1; } decl_list ';'   { $$ = $3; }
                 ;
 
 decl_list       :   decl                                { $$ = $1; }
@@ -215,7 +215,7 @@ array           :   array ',' INTEGER {
                 ;
 
 instruction     :   ifthenelse  { $$ = $1; }
-                |   loop                                { $$ = $1; }
+                |   loop                                { $$ = $1;  }
                 |   assignment ';'                      { $$ = $1; }
                 |   BREAK ';'                           { $$ = new ASTBreak(); }
                 |   PRINTINT '(' expression ')' ';'     { $$ = new ASTPrint($1, (ASTValue*) $3); }
@@ -235,6 +235,22 @@ instruction     :   ifthenelse  { $$ = $1; }
                         $$ = new ASTPrintStr(new ASTVarValue($3, ASTNode::STRING));
                     }
                 |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
+                |   ID '[' expression ']'  '=' READINT ';'
+                    {
+                        ASTFunctionCall *result = new ASTFunctionCall($6);
+
+                        if (!(p -> symtable -> getType($1, &type)))   {
+                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
+                        } else if (result->getType() != ASTNode::INT) {
+                            yyerror(&yylloc, p, YY_("error: array index must be an integer."));
+                        } else if ( type == ASTNode::INT && result->getType() == ASTNode::FLOAT) {
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        } else if ( type == ASTNode::FLOAT && result->getType() == ASTNode::INT) {
+                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, new ASTCast(ASTNode::FLOAT, result));
+                        } else {
+                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, result);
+                        }
+                    }
                 |   PRINTCHAR '(' expression ')' ';'    { $$ = new ASTPrint($1, (ASTValue*)$3); }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;

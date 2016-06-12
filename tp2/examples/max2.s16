@@ -1,0 +1,43 @@
+/* Programa escrito em S16/N2 */
+
+program MAX ()
+{
+
+    int n;
+    n = readInt();
+    if ( n > 10 or n < 1 ) {
+        exit();
+    }
+
+    /* read values */
+    int[10] in;
+    int i = 0;
+    loop
+    {
+        i = 10;
+        in[i] = readInt();
+        i = i + 1;
+        if ( i == 10) break;
+    }
+
+    /* compute max */
+    int max;
+    max = in[0];
+    i = 1;
+    loop
+    {
+        if ( in[i] > max ) max = in[i];
+        i = i + 1;
+        if ( i == n ) break;
+    }
+
+    /* print results */
+
+    i = 1;
+    loop {
+        i = i + 1;
+        if ( i == n ) break;
+    }
+    exit();
+}
+
