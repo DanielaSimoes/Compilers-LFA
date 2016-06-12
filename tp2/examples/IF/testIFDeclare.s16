@@ -1,0 +1,9 @@
+program testIF1 () {
+    int i = 0;
+    if (1 > 0){
+        i = 1;
+        int j = 1;
+    }
+    printStr("Hello World!");
+    exit();
+}

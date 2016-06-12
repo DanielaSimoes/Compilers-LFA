@@ -1,0 +1,18 @@
+/* Programa escrito em S16/N2 */
+
+program MAX ()
+{
+
+    /* read values */
+    int[10] in;
+    int i = 0;
+    loop
+    {
+        in[i] = readInt();
+        i = 10;
+        i = i + 1;
+        if ( i == 10) break;
+    }
+    exit();
+}
+
