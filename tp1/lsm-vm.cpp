@@ -316,13 +316,13 @@ void LSMVM::JUMP(uint8_t opcode, uint16_t label){
             ip = (a != 0 ? ip+label-1 : ip+2);
             break;
         case 0x34: // iflt
-            ip = (a < 0 ? ip+label-1 : ip+2);
+            ip = (a < 0 ? ip+label-1 : ip+3);
             break;
         case 0x35: // ifge
             ip = (a >= 0 ? ip+label-1 : ip+2);
             break;
         case 0x36: // ifgt
-            ip = (a > 0 ? ip+label-1 : ip+2);
+            ip = (a > 0 ? ip+label-1 : ip+3);
             break;
         case 0x37: // ifle
             ip = (a <= 0 ? ip+label-1 : ip+2);
