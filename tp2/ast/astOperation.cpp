@@ -74,6 +74,16 @@ void ASTOperation::generateLSM(FILE* fout){
             fprintf(fout, "%15sineg\n", " ");
         }
     }else if(getType() == ASTNode::BOOLEAN){
+        left->generateLSM(fout);
+        if(ASTNode::text == 0){
+            fprintf(fout, "%15s.text\n", " ");
+            ASTNode::text = 1;
+        }
+        right->generateLSM(fout);
+        if(ASTNode::text == 0){
+            fprintf(fout, "%15s.text\n", " ");
+            ASTNode::text = 1;
+        }
         if(op == AND){
             fprintf(fout, "%15siand\n", " ");
         }else if(op == OR){
