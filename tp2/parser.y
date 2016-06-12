@@ -80,32 +80,7 @@ decl_list       :   decl                                { $$ = $1; }
                 |   decl_list ',' decl                  { $$ = new ASTSeq($1, $3); }
                 ;
 
-decl            :   '[' INTEGER ']'  ID
-                    {
-                        $$ = new ASTSpaceDecl($4, 4 * $2);
-                        if (!p->symtable->add($4, type)) {
-                            yyerror(&yylloc, p, YY_("error: duplicated variable name."));
-                        }
-                    }
-                |     '[' INTEGER ']' ID '=' '{' array '}'
-                        {
-                            $$ = new ASTArrayHead(type, $4, $2, $7);
-                            if (!p->symtable->add($4, type)) {
-                                yyerror(&yylloc, p, YY_("error: duplicated variable name."));
-                            }
-                            if (ASTArrayHead::elems > ASTArrayHead::cur_size) {
-                                // warning: ignore elements in excess
-                                yyerror(&yylloc, p, YY_("warning: elements given exceed the defined array size."));
-                                p->no_of_errors--;
-                            }
-                            else if (ASTArrayHead::elems < ASTArrayHead::cur_size) {
-                                // warning: fill with zeroes
-                                yyerror(&yylloc, p, YY_("warning: not enough elements given for the defined array size."));
-                                p->no_of_errors--;
-                            }
-                            ASTArrayHead::elems = 0;
-                        }
-                |   ID
+decl            :   ID
                     {
                         $$ = new ASTSpaceDecl($1,4);
                         if (!p->symtable->add($1, type)) {
@@ -215,7 +190,7 @@ array           :   array ',' INTEGER {
                 ;
 
 instruction     :   ifthenelse  { $$ = $1; }
-                |   loop                                { $$ = $1;  }
+                |   loop                                { $$ = $1; }
                 |   assignment ';'                      { $$ = $1; }
                 |   BREAK ';'                           { $$ = new ASTBreak(); }
                 |   PRINTINT '(' expression ')' ';'     { $$ = new ASTPrint($1, (ASTValue*) $3); }
@@ -229,35 +204,23 @@ instruction     :   ifthenelse  { $$ = $1; }
                         $$ = new ASTPrintStr($3);
                     }
                 |   PRINTSTR '(' ID ')' ';' {
-                        int idType = ASTNode::NONE;
+                        int idType;
                         if (!(p -> symtable -> getType($3, &idType)))
                             yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        $$ = new ASTPrintStr(new ASTVarValue($3, ASTNode::STRING));
-                    }
-                |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
-                |   ID '[' expression ']'  '=' READINT ';'
-                    {
-                        ASTFunctionCall *result = new ASTFunctionCall($6);
-
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else if (result->getType() != ASTNode::INT) {
-                            yyerror(&yylloc, p, YY_("error: array index must be an integer."));
-                        } else if ( type == ASTNode::INT && result->getType() == ASTNode::FLOAT) {
-                            yyerror(&yylloc, p, YY_("error: incompatible types."));
-                        } else if ( type == ASTNode::FLOAT && result->getType() == ASTNode::INT) {
-                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, new ASTCast(ASTNode::FLOAT, result));
+                        else if (idType == ASTNode::STRING) {
+                            $$ = new ASTPrintStr(new ASTVarValue($3, idType));
                         } else {
-                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, result);
+                            yyerror(&yylloc, p, YY_("error: this variable doesn't correspond to a string."));
                         }
                     }
+                |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
                 |   PRINTCHAR '(' expression ')' ';'    { $$ = new ASTPrint($1, (ASTValue*)$3); }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
 
 assignment      :   ID INCDEC                           { $$ = new ASTAssignToVar($1, type, new ASTOperation($2, new ASTVarValue($1, type), new ASTIntegerValue(1))); }
                 |   INCDEC ID                           { $$ = new ASTAssignToVar($2, type, new ASTOperation($1, new ASTVarValue($2, type), new ASTIntegerValue(1))); }
-                |   ID  '=' expression
+                |   ID '=' expression
                     {
                         if (!(p -> symtable -> getType($1, &type)))
                         {
