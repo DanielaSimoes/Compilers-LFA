@@ -1,6 +1,16 @@
                ; creating an array
                .data
 a:             .byte  a, b
+               ; creating an array
+n:             .byte  1, 2
+               ; creating an array
+c:             .byte  1, 2, c
+               ; creating an array
+d:             .byte  1, 1, c
+               ; creating an array
+t:             .word  1, 2, 3
+               ; creating an array
+x:             .word  1, 2
                ; exiting program
                .text
 L0:
