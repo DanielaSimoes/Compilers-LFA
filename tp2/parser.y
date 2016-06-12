@@ -149,29 +149,7 @@ decl            :   ID
                 }
                 ;
 
-array           :
-                    /*array ',' INTEGER
-                    {
-                        //printf("%d\n", $3);
-                        if (type == ASTNode::FLOAT){
-                            yyerror(&yylloc, p, YY_("error: incompatible types."));
-                        }else if($3 < 0 || $3 > 255){
-                            yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
-                        }
-                        else
-                            $$ = new ASTSeq($1, new ASTByteArrayValue((int)$3));
-                    }
-                |    INTEGER
-                    {
-                        //printf("%d\n", $1);
-                        if (type == ASTNode::FLOAT)
-                            yyerror(&yylloc, p, YY_("error: incompatible types."));
-                        else if ($1 < 0 || $1 > 255)
-                            yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
-                        else
-                            $$ = new ASTByteArrayValue((int)$1);
-                    }*/
-                array ',' INTEGER {
+array           :   array ',' INTEGER {
                         if (type == ASTNode::FLOAT) {
                             yyerror(&yylloc, p, YY_("error: incompatible types."));
                         } else if (type == ASTNode::BYTE) {
