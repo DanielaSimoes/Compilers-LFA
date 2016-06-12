@@ -1,0 +1,6 @@
+program testarrayBYTEINT ()
+{
+    byte b[] = {'a', 'b', 1, 2, 3, 4, 50, 0x54};
+    int i[] = {-'a', 'b', 1, 2, 3, 4, 50, 0x54, 500};
+    exit();
+}

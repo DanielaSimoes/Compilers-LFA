@@ -149,7 +149,8 @@ decl            :   ID
                 }
                 ;
 
-array           :   array ',' BYTE
+array           :
+                    /*array ',' INTEGER
                     {
                         //printf("%d\n", $3);
                         if (type == ASTNode::FLOAT){
@@ -160,7 +161,7 @@ array           :   array ',' BYTE
                         else
                             $$ = new ASTSeq($1, new ASTByteArrayValue((int)$3));
                     }
-                |    BYTE
+                |    INTEGER
                     {
                         //printf("%d\n", $1);
                         if (type == ASTNode::FLOAT)
@@ -169,9 +170,31 @@ array           :   array ',' BYTE
                             yyerror(&yylloc, p, YY_("warning: number must be bounded between 0 and 255."));
                         else
                             $$ = new ASTByteArrayValue((int)$1);
+                    }*/
+                array ',' INTEGER {
+                        if (type == ASTNode::FLOAT) {
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        } else if (type == ASTNode::BYTE) {
+                            if ($3 < 0 || $3 > 255)
+                                yyerror(&yylloc, p, YY_("warning: number must be bound between 0 and 255."));
+                            else
+                                $$ = new ASTSeq($1, new ASTIntegerArrayValue($3));
+                        } else if (type == ASTNode::INT) {
+                            $$ = new ASTSeq($1, new ASTIntegerArrayValue($3));
+                        }
                     }
-                |   array ',' INTEGER                   { $$ = new ASTSeq($1, new ASTIntegerArrayValue($3)); }
-                |   INTEGER                             { $$ = new ASTIntegerArrayValue($1); }
+                |   INTEGER {
+                        if (type == ASTNode::FLOAT) {
+                            yyerror(&yylloc, p, YY_("error: incompatible types."));
+                        } else if (type == ASTNode::BYTE) {
+                            if ($1 < 0 || $1 > 255)
+                                yyerror(&yylloc, p, YY_("warning: number must be bound between 0 and 255."));
+                            else
+                                $$ = new ASTIntegerArrayValue($1);;
+                        } else if (type == ASTNode::INT) {
+                            $$ = new ASTIntegerArrayValue($1);;
+                        }
+                    }
                 |   array ',' FLOAT
                     {
                         if (type == ASTNode::INT)
