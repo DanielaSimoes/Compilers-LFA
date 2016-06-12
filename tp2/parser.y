@@ -73,14 +73,39 @@ item            :   instruction                         { $$ = $1; }
                 |   block                               { $$ = $1; }
                 ;
 
-declaration     :   TYPE { type = $1; } decl_list ';'   { $$ = $3; }
+declaration     :   TYPE { type = $1; printf("type: %d\n", $1); } decl_list ';'   { $$ = $3; }
                 ;
 
 decl_list       :   decl                                { $$ = $1; }
                 |   decl_list ',' decl                  { $$ = new ASTSeq($1, $3); }
                 ;
 
-decl            :   ID
+decl            :   '[' INTEGER ']'  ID
+                    {
+                        $$ = new ASTSpaceDecl($4, 4 * $2);
+                        if (!p->symtable->add($4, type)) {
+                            yyerror(&yylloc, p, YY_("error: duplicated variable name."));
+                        }
+                    }
+                |     '[' INTEGER ']' ID '=' '{' array '}'
+                        {
+                            $$ = new ASTArrayHead(type, $4, $2, $7);
+                            if (!p->symtable->add($4, type)) {
+                                yyerror(&yylloc, p, YY_("error: duplicated variable name."));
+                            }
+                            if (ASTArrayHead::elems > ASTArrayHead::cur_size) {
+                                // warning: ignore elements in excess
+                                yyerror(&yylloc, p, YY_("warning: elements given exceed the defined array size."));
+                                p->no_of_errors--;
+                            }
+                            else if (ASTArrayHead::elems < ASTArrayHead::cur_size) {
+                                // warning: fill with zeroes
+                                yyerror(&yylloc, p, YY_("warning: not enough elements given for the defined array size."));
+                                p->no_of_errors--;
+                            }
+                            ASTArrayHead::elems = 0;
+                        }
+                |   ID
                     {
                         $$ = new ASTSpaceDecl($1,4);
                         if (!p->symtable->add($1, type)) {
