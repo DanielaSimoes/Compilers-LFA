@@ -182,12 +182,8 @@ float_args  :   FLOAT {
 
 dir_string  :   DIRSTRING STRING {
                     if (p -> first_time) {
-                        for (int i = (strlen($2)*8)-1; i != -1; i-=8) {
-                            p -> data.push_back(($2)[i] & 0x00FF);
-                        }
-                        p -> data.push_back(0);
-                        while (((p -> data.size()) % 4) != 0) {
-                            p -> data.push_back(0);
+                        for (unsigned int i = 1; i < (strlen($2) - 1); i++) {
+                            push_word(p, ($2)[i] & 0xFF);
                         }
                      }
                 }
