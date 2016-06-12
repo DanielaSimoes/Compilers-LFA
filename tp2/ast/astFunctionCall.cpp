@@ -24,7 +24,8 @@ void ASTFunctionCall::generateLSM(FILE* fout){
         fprintf(fout, "%15sread\n", " ");
     else if(func_id==ASTNode::READINT){
         fprintf(fout, "%15sread\n", " ");
-        fprintf(fout, "%15sbipush\n", " ");
+        fprintf(fout, "%15sbipush \'0\' \n", " ");
+        fprintf(fout, "%15sisub\n", " ");
     }
     fprintf(fout, "\n");
 }
