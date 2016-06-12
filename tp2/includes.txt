@@ -27,3 +27,15 @@ pNibble:
 pNibble1:      write
                ret
 
+printStr:      dup
+               ipush 0
+               baload
+               dup
+               ifeq printStr_end
+               write
+               ipush 1
+               iadd
+               goto printStr
+
+printStr_end:  write
+               ret
