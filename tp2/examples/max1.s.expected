@@ -3,7 +3,7 @@
 s1:            .string "How many numbers? "
                .text
 L0:
-               load s1
+               la s1
                jsr printStr
 
                ; creating a space
@@ -27,7 +27,7 @@ L1:
 s2:            .string "Bad number of numbers, aborting\n"
                .text
 L2:
-               load s2
+               la s2
                jsr printStr
 
                ; exiting program
@@ -134,7 +134,7 @@ LoopEnd1:
 s3:            .string "Max = "
                .text
 L4:
-               load s3
+               la s3
                jsr printStr
 
                ; calling print
@@ -142,6 +142,14 @@ L4:
                load max
 
                jsr printInt
+
+               ; calling print string
+               .data
+s4:            .string "\n"
+               .text
+L5:
+               la s4
+               jsr printStr
 
                ; exiting program
                halt

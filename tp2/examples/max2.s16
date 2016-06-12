@@ -1,71 +1,18 @@
-/* Programa escrito em S16 */
+/* Programa escrito em S16/N2 */
 
-procedure printStr(string s)
-{
-    int i = 0;
-    loop 
-    {
-        if ( s[i] == 0 ) return;
-        writeChar(s[i]);
-        i++;
-    }
-}
-
-procedure printInt(int n)
-{
-    byte buf[6];
-    buf[5] = '\0';
-    int r, d;
-    int i = 4;
-    loop
-    {
-        r = n % 10;
-        buf[i] = r;
-        d = n / 10;
-        if ( d == 0 ) break;
-        i--;
-    }
-    int j = 0;
-    if ( i != 0 )
-    {
-        loop
-        {
-            buf[j] = buf[i];
-            if ( i == 6 ) break;
-            j++;
-            i++;
-        }
-    }
-    printStr(buf);
-}
-
-function int readInt()
-{
-    int n = 0;
-    byte b;
-    loop
-    {
-        b = readChar();
-        if ( b < '0' or b > '9' )
-        {
-            return n;
-        }
-        n = 10*n+(b-'0');
-    }
-}
-
-program MAX
+program MAX ()
 {
     /* ask for number of numbers */
-    printStr("How many numbers? ");
+    string s1 = "How many numbers? ";
+    printStr(s1);
     int n;
     n = readInt();
-    if ( n > 10 ) {
+    if ( n > 10 or n < 1 ) {
         printStr("Bad number of numbers, aborting\n");
         exit();
     }
 
-    /* read array values */
+    /* read values */
     int[10] in;
     int i;
     loop
