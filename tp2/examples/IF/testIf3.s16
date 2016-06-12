@@ -1,0 +1,12 @@
+program testIf ()
+{
+    int a = 2;
+
+    if (a >= 1){
+        int b = 2;
+    }
+    else a = 4;
+    b++;
+    printInt(a);
+    exit();
+}
