@@ -12,7 +12,6 @@ void ASTArrayElementValue::show(uint32_t indent)
 
 void ASTArrayElementValue::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTArrayElementValue\n");
     fprintf(fout, "%15s; accessing element value on array %s\n", " ", label.c_str());
     if (ASTNode::text == 0) {
         fprintf(fout, "%15s.text", " ");

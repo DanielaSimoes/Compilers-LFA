@@ -234,23 +234,6 @@ instruction     :   ifthenelse  { $$ = $1; }
                             yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
                         $$ = new ASTPrintStr(new ASTVarValue($3, ASTNode::STRING));
                     }
-                |   ID '=' READINT ';'                  { $$ = new ASTAssignToVar($1, ASTNode::INT, new ASTFunctionCall($3)); }
-                |   ID '[' expression ']'  '=' READINT ';'
-                    {
-                        ASTFunctionCall *result = new ASTFunctionCall($6);
-
-                        if (!(p -> symtable -> getType($1, &type)))   {
-                            yyerror(&yylloc, p, YY_("error: variable doesn't exist."));
-                        } else if (result->getType() != ASTNode::INT) {
-                            yyerror(&yylloc, p, YY_("error: array index must be an integer."));
-                        } else if ( type == ASTNode::INT && result->getType() == ASTNode::FLOAT) {
-                            yyerror(&yylloc, p, YY_("error: incompatible types."));
-                        } else if ( type == ASTNode::FLOAT && result->getType() == ASTNode::INT) {
-                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, new ASTCast(ASTNode::FLOAT, result));
-                        } else {
-                            $$ = new ASTAssignToArrayElement($1, (ASTValue*)$3, result);
-                        }
-                    }
                 |   PRINTCHAR '(' expression ')' ';'    { $$ = new ASTPrint($1, (ASTValue*)$3); }
                 |   EXIT ';'                            { $$ = new ASTExit(); }
                 ;
@@ -356,8 +339,8 @@ opnd            :   INTEGER                 { $$ = new ASTIntegerValue($1); }
                             $$ = new ASTArrayElementValue(type, $1, (ASTValue*) $3);
                         }
                     }
-                |   READCHAR ';'            { $$ = new ASTFunctionCall($1); }
-                |   READINT ';'             { $$ = new ASTFunctionCall($1); }
+                |   READCHAR                { $$ = new ASTFunctionCall($1); }
+                |   READINT                 { $$ = new ASTFunctionCall($1); }
                 |	'(' expression ')'      { $$ = $2; }
                 ;
 

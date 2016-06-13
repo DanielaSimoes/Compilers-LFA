@@ -13,7 +13,6 @@ void ASTByteArrayValue::show(uint32_t indent)
 
 void ASTByteArrayValue::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTByteArrayValue\n");
     if (ASTArrayHead::first)
     {
         ASTArrayHead::elems++;

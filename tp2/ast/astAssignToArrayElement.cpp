@@ -12,7 +12,6 @@ void ASTAssignToArrayElement::show(uint32_t indent)
 
 void ASTAssignToArrayElement::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTAssignToArrayElement\n");
     fprintf(fout, "%15s; assigning integer element value on array %s\n", " ", label.c_str());
     if (ASTNode::text == 0) {
         fprintf(fout, "%15s.text", " ");

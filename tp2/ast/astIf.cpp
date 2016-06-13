@@ -18,7 +18,6 @@ void ASTIf::show(uint32_t indent)
 
 void ASTIf::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTIf\n");
     fprintf(fout, "%15s; creating an IF...THEN...ELSE block\n", " ");
     if(ASTNode::text == 0){
         fprintf(fout, "%15s.text\n", " ");
@@ -59,7 +58,6 @@ void ASTIf::generateLSM(FILE* fout)
         }
         fprintf(fout, "%s:\n", thenend.c_str());
     }
-    // fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

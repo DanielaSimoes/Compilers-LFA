@@ -19,7 +19,6 @@ void ASTArrayHead::show(uint32_t indent)
 
 void ASTArrayHead::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTArrayHead\n");
     fprintf(fout, "%15s; creating an array\n", " ");
     if(ASTNode::text || !init){
         fprintf(fout, "%15s.data\n", " ");

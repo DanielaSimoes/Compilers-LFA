@@ -12,7 +12,6 @@ void ASTExit::show(uint32_t indent) {
 }
 
 void ASTExit::generateLSM(FILE* fout) {
-    fprintf(stdout, "ASTExit\n");
     fprintf(fout, "%15s; exiting program\n", " ");
     if (ASTNode::text == 0) {
         fprintf(fout, "%15s.text\n", " ");

@@ -13,7 +13,6 @@ void ASTVarValue::show(uint32_t indent)
 
 void ASTVarValue::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTVarValue\n");
     fprintf(fout, "%15s; checking value of variable\n", " ");
     if(ASTNode::text == 0){
         fprintf(fout, "%15s.text\n", " ");
@@ -23,7 +22,6 @@ void ASTVarValue::generateLSM(FILE* fout)
     }
     fprintf(fout, "%15sload %s\n", " ", name.c_str());
     fprintf(fout, "\n");
-    //fprintf(fout, "write\n");
 }
 
 ////////////////////////////////////////////////////

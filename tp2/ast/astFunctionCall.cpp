@@ -12,7 +12,6 @@ void ASTFunctionCall::show(uint32_t indent)
 }
 
 void ASTFunctionCall::generateLSM(FILE* fout){
-    fprintf(stdout, "ASTFunctionCall\n");
     fprintf(fout, "%15s; calling a function\n", " ");
     if(ASTNode::text == 0){
         fprintf(fout, "%15s.text\n", " ");

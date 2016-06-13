@@ -13,7 +13,6 @@ void ASTIntegerArrayValue::show(uint32_t indent)
 
 void ASTIntegerArrayValue::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTIntegerArrayValue\n");
     if (ASTArrayHead::first)
     {
         ASTArrayHead::elems++;

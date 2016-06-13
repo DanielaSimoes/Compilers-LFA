@@ -14,7 +14,6 @@ void ASTCast::show(uint32_t indent)
 
 void ASTCast::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTCast\n");
     //verificar função
     //verificar label em falta - deve ser criada com o
     fprintf(fout, "%15s; casting a variable\n", " ");
@@ -31,9 +30,6 @@ void ASTCast::generateLSM(FILE* fout)
     }else if(type == FLOAT){ // confirmar se FLOAT ou 3
         fprintf(fout, "%15si2f\n", " ");
     }
-    // fprintf(fout, "\n");
-    //fprintf(fout, "store\n");
-    //opnd->generateLSM(fout);
 }
 
 ////////////////////////////////////////////////////

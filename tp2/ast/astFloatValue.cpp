@@ -12,7 +12,6 @@ void ASTFloatValue::show(uint32_t indent)
 
 void ASTFloatValue::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTValue\n");
     fprintf(fout, "%15s; designating a float value\n", " ");
     if(ASTNode::text == 0){
         fprintf(fout, "%15s.text\n", " ");

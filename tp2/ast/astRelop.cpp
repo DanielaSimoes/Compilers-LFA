@@ -15,7 +15,6 @@ void ASTRelop::show(uint32_t indent) {
 }
 
 void ASTRelop::generateLSM(FILE* fout) {
-    fprintf(stdout, "ASTRelop\n");
     fprintf(fout, "%15s; checking solution for relation (RELOP)\n", " ");
     int leftType = left -> getType();
     int rightType = right -> getType();
@@ -93,8 +92,6 @@ void ASTRelop::generateLSM(FILE* fout) {
     fprintf(fout, "%s:\n", (variable + "_true").c_str());
     fprintf(fout, "%15sipush 1\n", " ");
     fprintf(fout, "%s:\n", (variable + "_end").c_str());
-
-    // fprintf(fout, "\n");
 }
 
 ////////////////////////////////////////////////////

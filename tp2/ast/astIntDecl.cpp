@@ -10,7 +10,6 @@ void ASTIntDecl::show(uint32_t indent) {
 }
 
 void ASTIntDecl::generateLSM(FILE* fout) {
-    fprintf(stdout, "ASTIntDecl\n");
     fprintf(fout, "%15s; declarating a integer variable\n", " ");
     if (ASTNode::text || !init) {
         fprintf(fout, "%15s.data\n", " ");

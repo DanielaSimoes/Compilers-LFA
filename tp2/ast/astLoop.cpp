@@ -21,7 +21,6 @@ void ASTLoop::generateLSM(FILE* fout)
     prev_scope = cur_scope;
     cur_scope = cnt;
 
-    fprintf(stdout, "ASTLoop\n");
     fprintf(fout, "%15s; creating a loop\n", " ");
     if(ASTNode::text == 0){
         fprintf(fout, "%15s.text\n", " ");

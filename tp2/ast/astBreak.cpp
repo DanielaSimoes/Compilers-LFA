@@ -14,7 +14,6 @@ void ASTBreak::show(uint32_t indent)
 
 void ASTBreak::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTBreak\n");
     fprintf(fout, "%15s; breaking a loop\n", " ");
     if (ASTLoop::gcnt)
         fprintf(fout, "%15sgoto LoopEnd%s\n", " ",  std::to_string(ASTLoop::cur_scope).c_str());

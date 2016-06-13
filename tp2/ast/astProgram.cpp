@@ -12,7 +12,8 @@ void ASTProgram::show(uint32_t indent) {
 }
 
 void ASTProgram::generateLSM(FILE* fout) {
-    fprintf(stdout, "ASTProgram\n");
+    fprintf(fout, "%15s.text\n", " ");
+    fprintf(fout, "%s:\n", name.c_str());
     program -> generateLSM(fout);
 }
 

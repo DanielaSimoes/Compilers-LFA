@@ -1,0 +1,6 @@
+program readInt () {
+    int i;
+    i = readInt();
+    printInt(i);
+    exit();
+}

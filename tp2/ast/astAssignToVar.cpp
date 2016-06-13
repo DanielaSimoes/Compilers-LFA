@@ -15,7 +15,6 @@ void ASTAssignToVar::show(uint32_t indent)
 
 void ASTAssignToVar::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTAssignToVar\n");
     fprintf(fout, "%15s; assigning value to %s\n", " ", name.c_str());
     if(ASTNode::text == 0){
         fprintf(fout, "%15s.text\n", " ");

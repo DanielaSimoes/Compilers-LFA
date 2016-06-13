@@ -13,7 +13,6 @@ void ASTPrintStr::show(uint32_t indent) {
 }
 
 void ASTPrintStr::generateLSM(FILE* fout) {
-    fprintf(stdout, "ASTPrintStr\n");
     fprintf(fout, "%15s; calling print string\n", " ");
     std::string variable;
     switch (entryPoint) {

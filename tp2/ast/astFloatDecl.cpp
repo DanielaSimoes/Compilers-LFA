@@ -12,7 +12,6 @@ void ASTFloatDecl::show(uint32_t indent)
 
 void ASTFloatDecl::generateLSM(FILE* fout)
 {
-    fprintf(stdout, "ASTFloatDecl\n");
     fprintf(fout, "%15s; declarating a float variable\n", " ");
     if(ASTNode::text || !init){
         fprintf(fout, "%15s.data\n", " ");

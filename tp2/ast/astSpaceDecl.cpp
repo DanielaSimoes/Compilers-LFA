@@ -12,7 +12,6 @@ void ASTSpaceDecl::show(uint32_t indent)
 }
 
 void ASTSpaceDecl::generateLSM(FILE* fout){
-    fprintf(stdout, "ASTSpaceDecl\n");
     fprintf(fout, "%15s; creating a space\n", " ");
     if(ASTNode::text || !init){
         fprintf(fout, "%15s.data\n", " ");
